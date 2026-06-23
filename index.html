@@ -212,13 +212,12 @@
     .monster.lane-mid { --x: 0px; --scale: 1; }
     .monster.lane-right { --x: 260px; --scale: 1; }
 
-    .monster.active .monster-body {
-      outline: 3px solid rgba(255, 209, 102, .72);
-      box-shadow: 0 0 38px rgba(255, 209, 102, .28), inset 0 -24px 38px rgba(0,0,0,.18);
-    }
-
     .monster.attack {
       animation: monsterAttack .28s ease-in-out both;
+    }
+
+    .monster.hit .monster-body {
+      animation: monsterHit .16s ease-out both;
     }
 
     .monster.dead {
@@ -235,6 +234,12 @@
       0% { translate: 0 0; filter: drop-shadow(0 24px 22px rgba(0,0,0,.52)); }
       48% { translate: 0 60px; filter: drop-shadow(0 10px 12px rgba(0,0,0,.65)) brightness(1.25); }
       100% { translate: 0 0; }
+    }
+
+    @keyframes monsterHit {
+      0%, 100% { transform: translateX(0) scale(1); filter: none; }
+      35% { transform: translateX(-8px) scale(1.04); filter: brightness(1.65) saturate(1.25); }
+      70% { transform: translateX(5px) scale(.98); filter: brightness(1.2); }
     }
 
     @keyframes monsterDead {
@@ -955,6 +960,23 @@
       box-shadow: 0 2px 0 #8e5929, 0 8px 20px rgba(0,0,0,.36);
     }
 
+    .end-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .secondary-button {
+      color: #f8f1dc;
+      background: linear-gradient(#565656, #2d2d2d);
+      box-shadow: 0 7px 0 #171717, 0 18px 34px rgba(0,0,0,.36);
+    }
+
+    .secondary-button:active {
+      box-shadow: 0 2px 0 #171717, 0 8px 20px rgba(0,0,0,.36);
+    }
+
     #comboToast {
       position: absolute;
       z-index: 22;
@@ -1011,8 +1033,8 @@
       .timer-ring { width: 30px; height: 30px; }
       #sword { right: 10px; bottom: 162px; scale: .72; }
       #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 16px 10px 12px; gap: 8px 10px; bottom: 44px; }
-      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -18px; }
-      .hud-main { translate: 0 -18px; gap: 5px; }
+      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -10px; }
+      .hud-main { translate: 0 -10px; gap: 5px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
       #hearts { font-size: 23px; }
@@ -1022,7 +1044,7 @@
 
       #levelText { min-width: 58px; font-size: 13px; }
       #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
-      #alphaKeyboard { display: flex; gap: 3px; transform: translateY(-16px); }
+      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 24px; }
@@ -1086,7 +1108,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.13</div>
+          <div class="start-version">버전 0.14</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1094,7 +1116,7 @@
           <div class="entrance-gate"></div>
           <div class="entrance-path"></div>
         </div>
-        <button id="startButton">시작</button>
+        <button id="startButton">입장</button>
         <div class="start-hint"><span class="kbd">Space</span> 로도 시작</div>
       </div>
     </div>
@@ -1103,8 +1125,11 @@
       <div class="modal">
         <h2 id="endTitle">게임 오버</h2>
         <p id="endDesc">도구리가 던전 바닥과 친해졌습니다.</p>
-        <button id="restartButton">다시 도전</button>
-        <div class="button-hint"><span class="kbd">Space</span> 로도 진행</div>
+        <div class="end-actions">
+          <button id="restartButton">다시 도전</button>
+          <button id="homeButton" class="secondary-button">시작 화면</button>
+        </div>
+        <div class="button-hint"><span class="kbd">Space</span> 로도 다시 도전</div>
       </div>
     </div>
   </main>
@@ -1148,6 +1173,7 @@
     const endDesc = document.getElementById('endDesc');
     const startButton = document.getElementById('startButton');
     const restartButton = document.getElementById('restartButton');
+    const homeButton = document.getElementById('homeButton');
     const monsterTable = document.getElementById('monsterTable');
     const comboToast = document.getElementById('comboToast');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
@@ -1404,6 +1430,18 @@
       damageDoguri(`${monster.name}의 공격!`);
     }
 
+    function goToStart() {
+      cancelAnimationFrame(animationId);
+      gameState = 'start';
+      monsters = [];
+      activeMonsterId = null;
+      monsterLayer.innerHTML = '';
+      endOverlay.classList.add('hidden');
+      startOverlay.classList.remove('hidden');
+      updateKeyboardHint();
+      setMessage('키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.');
+    }
+
     function pressProgressButton() {
       if (!startOverlay.classList.contains('hidden')) {
         resetGame();
@@ -1469,6 +1507,7 @@
 
       target.progress += 1;
       target.remaining = Math.min(target.attackTime, target.remaining + 0.07); // 정확한 입력 보너스 약간
+      animateMonsterHit(target);
       renderMonsterWord(target);
       updateMonsterElement(target);
       updateKeyboardHint();
@@ -1531,6 +1570,13 @@
       sword.classList.add('slash');
     }
 
+    function animateMonsterHit(monster) {
+      if (!monster || !monster.el) return;
+      monster.el.classList.remove('hit');
+      void monster.el.offsetWidth;
+      monster.el.classList.add('hit');
+    }
+
     function showToast(text) {
       comboToast.textContent = text;
       comboToast.classList.remove('show');
@@ -1568,6 +1614,7 @@
 
     startButton.addEventListener('click', resetGame);
     restartButton.addEventListener('click', resetGame);
+    homeButton.addEventListener('click', goToStart);
     window.addEventListener('keydown', handleKeydown, { passive: false });
 
     renderAlphabetKeyboard();
