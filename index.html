@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>던전앤도구리</title>
+  <style>
+    :root {
+      --bg: #151515;
+      --gold: #ffd166;
+      --red: #ff5a6d;
+      --heart: #ff526b;
+      --empty-heart: #3b3b3b;
+      --text: #f8f1dc;
+      --muted: #9a9a9a;
+      --good: #68e0a8;
+      --panel: rgba(28, 28, 28, .82);
+      --panel-line: rgba(255, 255, 255, .16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #070707;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      user-select: none;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    #game {
+      position: relative;
+      width: min(100vw, 1180px);
+      height: min(100vh, 720px);
+      min-height: 560px;
+      overflow: hidden;
+      background: var(--bg);
+      border: 1px solid rgba(255,255,255,.1);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      isolation: isolate;
+    }
+
+    .title {
+      position: absolute;
+      z-index: 20;
+      left: 24px;
+      top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-shadow: 0 3px 0 rgba(0,0,0,.45);
+      pointer-events: none;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -1.2px;
+    }
+
+    .title small {
+      color: #cabdda;
+      font-size: 13px;
+      letter-spacing: .2px;
+    }
+
+    .dungeon {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(210, 210, 210, .10), transparent 22%),
+        linear-gradient(#242424 0%, #151515 44%, #080808 100%);
+    }
+
+    .ceiling, .floor, .left-wall, .right-wall, .back-wall {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .back-wall {
+      top: 15%;
+      left: 22%;
+      right: 22%;
+      bottom: 42%;
+      border: 3px solid rgba(255,255,255,.06);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px) 0 0/58px 58px,
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0/58px 58px,
+        linear-gradient(180deg, #303030, #1a1a1a);
+      box-shadow: inset 0 0 90px rgba(0,0,0,.55), 0 0 120px rgba(0,0,0,.55);
+      clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+    }
+
+    .ceiling {
+      bottom: 54%;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 2px, transparent 2px 92px),
+        linear-gradient(180deg, #2e2e2e, #151515);
+      clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%);
+      opacity: .86;
+    }
+
+    .floor {
+      top: 45%;
+      background:
+        linear-gradient(90deg, transparent 0 49%, rgba(255,255,255,.08) 49.5% 50.5%, transparent 51%),
+        repeating-conic-gradient(from 45deg at 50% 0%, rgba(255,255,255,.035) 0 25%, transparent 0 50%) 0 0/140px 140px,
+        linear-gradient(180deg, #202020, #070707 76%);
+      clip-path: polygon(28% 0, 72% 0, 100% 100%, 0 100%);
+      box-shadow: inset 0 80px 120px rgba(0,0,0,.38);
+    }
+
+    .left-wall {
+      right: 50%;
+      background:
+        repeating-linear-gradient(18deg, rgba(255,255,255,.04) 0 2px, transparent 2px 58px),
+        linear-gradient(90deg, #303030, #161616);
+      clip-path: polygon(0 0, 100% 38%, 100% 100%, 0 100%);
+      opacity: .78;
+    }
+
+    .right-wall {
+      left: 50%;
+      background:
+        repeating-linear-gradient(-18deg, rgba(255,255,255,.04) 0 2px, transparent 2px 58px),
+        linear-gradient(270deg, #343434, #161616);
+      clip-path: polygon(0 38%, 100% 0, 100% 100%, 0 100%);
+      opacity: .78;
+    }
+
+    .torch {
+      position: absolute;
+      width: 48px;
+      height: 86px;
+      top: 23%;
+      z-index: 4;
+      filter: drop-shadow(0 0 18px rgba(255,146,55,.6));
+    }
+
+    .torch.left { left: 15%; }
+    .torch.right { right: 15%; transform: scaleX(-1); }
+
+    .torch::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 38px;
+      width: 16px;
+      height: 46px;
+      border-radius: 9px;
+      background: linear-gradient(#6b3b20, #2f1b14);
+      transform: rotate(12deg);
+    }
+
+    .torch::after {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 0;
+      width: 30px;
+      height: 46px;
+      border-radius: 50% 50% 45% 45%;
+      background:
+        radial-gradient(circle at 50% 65%, #fff3a1 0 18%, transparent 20%),
+        radial-gradient(circle at 50% 52%, #ffb13d 0 38%, transparent 40%),
+        radial-gradient(circle at 50% 45%, #ff5c2d 0 58%, transparent 60%);
+      animation: flame .22s infinite alternate ease-in-out;
+      transform-origin: 50% 100%;
+    }
+
+    @keyframes flame {
+      from { transform: scale(.95, 1.08) rotate(-3deg); filter: brightness(1); }
+      to { transform: scale(1.06, .94) rotate(4deg); filter: brightness(1.22); }
+    }
+
+    #monsterLayer {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+    }
+
+    .monster {
+      --x: 0px;
+      --y: 43%;
+      --scale: 1;
+      position: absolute;
+      left: calc(50% + var(--x));
+      top: var(--y);
+      width: 178px;
+      height: 220px;
+      transform: translate(-50%, -50%) scale(var(--scale));
+      transform-origin: 50% 50%;
+      display: grid;
+      justify-items: center;
+      animation: monsterIn .24s cubic-bezier(.2, 1.3, .45, 1) both;
+      filter: drop-shadow(0 24px 22px rgba(0,0,0,.52));
+    }
+
+    .monster.lane-left { --x: -260px; --scale: 1; }
+    .monster.lane-mid { --x: 0px; --scale: 1; }
+    .monster.lane-right { --x: 260px; --scale: 1; }
+
+    .monster.active .monster-body {
+      outline: 3px solid rgba(255, 209, 102, .72);
+      box-shadow: 0 0 38px rgba(255, 209, 102, .28), inset 0 -24px 38px rgba(0,0,0,.18);
+    }
+
+    .monster.attack {
+      animation: monsterAttack .28s ease-in-out both;
+    }
+
+    .monster.dead {
+      animation: monsterDead .22s ease-in both;
+    }
+
+    @keyframes monsterIn {
+      from { opacity: 0; transform: translate(-50%, -50%) translateY(30px) scale(calc(var(--scale) * .72)); }
+      to { opacity: 1; transform: translate(-50%, -50%) translateY(0) scale(var(--scale)); }
+    }
+
+
+    @keyframes monsterAttack {
+      0% { translate: 0 0; filter: drop-shadow(0 24px 22px rgba(0,0,0,.52)); }
+      48% { translate: 0 60px; filter: drop-shadow(0 10px 12px rgba(0,0,0,.65)) brightness(1.25); }
+      100% { translate: 0 0; }
+    }
+
+    @keyframes monsterDead {
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-38px) scale(calc(var(--scale) * .55)) rotate(8deg); filter: blur(2px); }
+    }
+
+    .nameplate {
+      position: absolute;
+      top: -72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-width: 250px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      white-space: nowrap;
+    }
+
+    .word {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      color: #fff7de;
+      text-shadow: 0 2px 0 #000;
+    }
+
+    .word .done {
+      color: #4e4853;
+      text-shadow: none;
+    }
+
+    .word .space {
+      display: inline-block;
+      width: .45em;
+    }
+
+    .timer-ring {
+      position: relative;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: conic-gradient(var(--red) 0deg, rgba(255,255,255,.13) 0deg);
+      box-shadow: inset 0 0 0 3px rgba(0,0,0,.48), 0 0 16px rgba(255,90,109,.2);
+    }
+
+    .timer-ring::after {
+      content: attr(data-time);
+      position: absolute;
+      inset: 6px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #14101a;
+      color: #fff1d1;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .monster-body {
+      position: relative;
+      width: 136px;
+      height: 150px;
+      margin-top: 42px;
+      border-radius: 46% 46% 38% 38%;
+      background:
+        radial-gradient(circle at 36% 34%, rgba(255,255,255,.22) 0 6px, transparent 7px),
+        radial-gradient(circle at 64% 34%, rgba(255,255,255,.22) 0 6px, transparent 7px),
+        linear-gradient(160deg, var(--monster-a), var(--monster-b));
+      border: 3px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 -24px 38px rgba(0,0,0,.18);
+    }
+
+    .monster-body::before,
+    .monster-body::after {
+      content: "";
+      position: absolute;
+      top: 52px;
+      width: 31px;
+      height: 44px;
+      border-radius: 16px;
+      background: linear-gradient(160deg, var(--monster-a), var(--monster-b));
+      border: 2px solid rgba(255,255,255,.1);
+      z-index: -1;
+    }
+
+    .monster-body::before { left: -18px; rotate: 18deg; }
+    .monster-body::after { right: -18px; rotate: -18deg; }
+
+    .eye {
+      position: absolute;
+      top: 45px;
+      width: 20px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff4ce;
+      box-shadow: 0 0 12px rgba(255, 244, 206, .45);
+    }
+
+    .eye.left { left: 34px; }
+    .eye.right { right: 34px; }
+    .eye::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background: #151018;
+    }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 83px;
+      width: 42px;
+      height: 18px;
+      translate: -50% 0;
+      border-radius: 0 0 18px 18px;
+      background: #1a0e14;
+      border-bottom: 3px solid rgba(255,255,255,.16);
+    }
+
+    .horn {
+      position: absolute;
+      top: -12px;
+      width: 28px;
+      height: 35px;
+      background: #f5d9a6;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,.25));
+    }
+
+    .horn.left { left: 18px; rotate: -18deg; }
+    .horn.right { right: 18px; rotate: 18deg; }
+
+    .enemy-lv {
+      position: absolute;
+      left: 50%;
+      bottom: 7px;
+      translate: -50% 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #21131c;
+      background: rgba(255, 241, 190, .88);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    #sword {
+      position: absolute;
+      z-index: 14;
+      right: 78px;
+      bottom: 132px;
+      width: 210px;
+      height: 300px;
+      transform-origin: 78% 86%;
+      transform: rotate(-24deg) translate(10px, 12px);
+      filter: drop-shadow(0 28px 18px rgba(0,0,0,.55));
+      pointer-events: none;
+    }
+
+    #sword.slash {
+      animation: slash .16s cubic-bezier(.15, .9, .2, 1) both;
+    }
+
+    @keyframes slash {
+      0% { transform: rotate(-24deg) translate(10px, 12px); }
+      42% { transform: rotate(-60deg) translate(-32px, -16px) scale(1.06); filter: drop-shadow(0 28px 18px rgba(0,0,0,.55)) brightness(1.4); }
+      100% { transform: rotate(-24deg) translate(10px, 12px); }
+    }
+
+    .blade {
+      position: absolute;
+      left: 80px;
+      top: 0;
+      width: 34px;
+      height: 226px;
+      background: linear-gradient(90deg, #b9c2cf, #ffffff 38%, #7e8a9a 64%, #dbe4ef);
+      clip-path: polygon(50% 0, 100% 16%, 78% 100%, 22% 100%, 0 16%);
+      border-radius: 18px 18px 8px 8px;
+    }
+
+    .guard {
+      position: absolute;
+      left: 43px;
+      top: 204px;
+      width: 110px;
+      height: 24px;
+      border-radius: 14px;
+      background: linear-gradient(#ffd166, #9b6333);
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,.22);
+    }
+
+    .handle {
+      position: absolute;
+      left: 82px;
+      top: 220px;
+      width: 32px;
+      height: 78px;
+      border-radius: 15px;
+      background: repeating-linear-gradient(180deg, #4c2d22 0 10px, #2a1816 10px 20px);
+      border: 3px solid #1c1010;
+    }
+
+    .pommel {
+      position: absolute;
+      left: 72px;
+      top: 285px;
+      width: 52px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(#ffd166, #8c552f);
+    }
+
+    #hud {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+      z-index: 18;
+      min-height: 208px;
+      padding: 14px 22px 16px;
+      display: grid;
+      grid-template-columns: 116px minmax(0, 1fr) 220px;
+      grid-template-rows: auto auto;
+      gap: 10px 16px;
+      align-items: center;
+      background:
+        linear-gradient(180deg, rgba(8,6,10,0), rgba(8,6,10,.45) 0%),
+        linear-gradient(180deg, rgba(36,25,43,.94), rgba(15,11,18,.98));
+      border-top: 2px solid rgba(255,255,255,.14);
+      box-shadow: 0 -18px 40px rgba(0,0,0,.38);
+    }
+
+    #portrait {
+      position: relative;
+      width: 104px;
+      height: 104px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffdca8, #d9904c);
+      border: 4px solid rgba(255,255,255,.18);
+      overflow: hidden;
+      box-shadow: inset 0 -12px 22px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.35);
+    }
+
+    #portrait.hit {
+      animation: portraitHit .24s ease both;
+    }
+
+    @keyframes portraitHit {
+      0%, 100% { transform: translateX(0); filter: none; }
+      20% { transform: translateX(-7px); filter: brightness(1.8) saturate(1.4); }
+      45% { transform: translateX(8px); }
+      70% { transform: translateX(-4px); }
+    }
+
+    #portrait::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 26px;
+      height: 28px;
+      border-radius: 60% 50% 30% 50%;
+      background: #8a512c;
+      box-shadow: 42px 0 0 #8a512c;
+    }
+
+    .doguri-face {
+      position: absolute;
+      left: 50%;
+      bottom: 5px;
+      width: 76px;
+      height: 70px;
+      translate: -50% 0;
+      border-radius: 42% 42% 38% 38%;
+      background: #f5b873;
+      box-shadow: inset 0 -8px 0 rgba(126,72,39,.22);
+    }
+
+    .doguri-face::before,
+    .doguri-face::after {
+      content: "";
+      position: absolute;
+      top: 24px;
+      width: 10px;
+      height: 14px;
+      border-radius: 50%;
+      background: #25130f;
+    }
+
+    .doguri-face::before { left: 21px; }
+    .doguri-face::after { right: 21px; }
+
+    .doguri-nose {
+      position: absolute;
+      left: 50%;
+      top: 42px;
+      width: 24px;
+      height: 15px;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: #fff0cf;
+    }
+
+    .doguri-nose::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 4px;
+      width: 8px;
+      height: 6px;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: #25130f;
+    }
+
+    .blood-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      pointer-events: none;
+      background: radial-gradient(circle, transparent 35%, rgba(255, 30, 55, .34));
+      opacity: 0;
+    }
+
+    .blood-flash.show {
+      animation: blood .22s ease both;
+    }
+
+    @keyframes blood {
+      0% { opacity: 0; }
+      35% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .hud-main {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    #hearts {
+      display: flex;
+      gap: 8px;
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 3px 0 rgba(0,0,0,.35));
+    }
+
+    .heart.full { color: var(--heart); }
+    .heart.empty { color: var(--empty-heart); }
+
+    .level-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: min(380px, 100%);
+    }
+
+    #levelText {
+      min-width: 72px;
+      font-weight: 900;
+      color: #fff6d7;
+    }
+
+    .exp-bar {
+      position: relative;
+      height: 18px;
+      flex: 1;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    #expFill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #68e0a8, #ffd166);
+      transition: width .25s ease;
+    }
+
+    #expText {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #161017;
+      text-shadow: 0 1px 0 rgba(255,255,255,.32);
+    }
+
+    #message {
+      min-height: 24px;
+      color: #cfc3dc;
+      font-size: 14px;
+    }
+
+    .hud-side {
+      justify-self: end;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      color: #cfc3dc;
+      font-size: 13px;
+    }
+
+    #alphaKeyboard {
+      grid-column: 1 / -1;
+      width: min(720px, 100%);
+      justify-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      align-items: center;
+      padding-top: 2px;
+      transform: translateY(-12px);
+    }
+
+    .alpha-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .alpha-row:nth-child(2) { padding-left: 22px; }
+    .alpha-row:nth-child(3) { padding-left: 46px; }
+
+    .alpha-key {
+      width: clamp(30px, 4.5vw, 44px);
+      height: 34px;
+      padding: 0;
+      border-radius: 10px;
+      color: #261821;
+      background: linear-gradient(#fff1d1, #d5c1a0);
+      font-size: 13px;
+      font-weight: 950;
+      line-height: 1;
+      box-shadow: 0 4px 0 #776557, 0 9px 16px rgba(0,0,0,.28);
+      touch-action: manipulation;
+    }
+
+    .alpha-key:active {
+      translate: 0 3px;
+      box-shadow: 0 1px 0 #776557, 0 5px 10px rgba(0,0,0,.28);
+    }
+
+    .score {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff6d7;
+    }
+
+    .kbd {
+      padding: 2px 7px;
+      border-radius: 6px;
+      color: #211823;
+      background: #fff1d1;
+      font-weight: 900;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(220, 220, 220, .11), transparent 28%),
+        rgba(7, 7, 7, .72);
+      backdrop-filter: blur(3px);
+    }
+
+    .overlay.hidden { display: none; }
+
+    .modal {
+      width: min(560px, 92vw);
+      padding: 30px 28px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(48,48,48,.96), rgba(18,18,18,.98));
+      border: 1px solid rgba(255,255,255,.17);
+      box-shadow: 0 24px 80px rgba(0,0,0,.58);
+      text-align: center;
+    }
+
+    .modal h2 {
+      margin: 0 0 12px;
+      font-size: 44px;
+      letter-spacing: -1.6px;
+    }
+
+    .modal p {
+      margin: 0 auto 18px;
+      max-width: 430px;
+      color: #d0d0d0;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    #startOverlay {
+      padding: 0;
+      background:
+        radial-gradient(circle at 50% 36%, rgba(255,255,255,.12), transparent 24%),
+        linear-gradient(180deg, #303030 0%, #171717 48%, #070707 100%);
+      backdrop-filter: none;
+    }
+
+    #startOverlay .modal {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      padding: clamp(26px, 5vw, 58px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(14px, 2.6vh, 24px);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0/64px 64px,
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0/64px 64px,
+        radial-gradient(circle at 50% 46%, rgba(255,255,255,.10), transparent 32%),
+        linear-gradient(180deg, #2b2b2b, #111);
+      border: 0;
+      box-shadow: inset 0 0 120px rgba(0,0,0,.72);
+    }
+
+    .start-copy {
+      text-align: center;
+      text-shadow: 0 5px 0 rgba(0,0,0,.45);
+    }
+
+    #startOverlay .modal h2 {
+      margin: 0;
+      font-size: clamp(46px, 8vw, 82px);
+      line-height: .95;
+      letter-spacing: -2.2px;
+    }
+
+    .start-version {
+      margin-top: 9px;
+      color: #c7c7c7;
+      font-size: clamp(13px, 1.8vw, 17px);
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+
+    .dungeon-entrance {
+      position: relative;
+      width: min(510px, 74vw);
+      height: min(300px, 36vh);
+      min-height: 220px;
+      margin: 2px 0 4px;
+      filter: drop-shadow(0 28px 28px rgba(0,0,0,.55));
+    }
+
+    .dungeon-entrance::before {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 18%;
+      height: 58%;
+      border: 4px solid rgba(255,255,255,.13);
+      border-radius: 24px 24px 8px 8px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px) 0 0/52px 42px,
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/52px 42px,
+        linear-gradient(180deg, #4a4a4a, #252525);
+      box-shadow: inset 0 -24px 38px rgba(0,0,0,.32);
+    }
+
+    .entrance-tower {
+      position: absolute;
+      bottom: 18%;
+      width: 23%;
+      height: 78%;
+      border: 4px solid rgba(255,255,255,.13);
+      border-radius: 14px 14px 6px 6px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px) 0 0/38px 36px,
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/38px 36px,
+        linear-gradient(180deg, #555, #292929);
+      box-shadow: inset 0 -24px 34px rgba(0,0,0,.32);
+    }
+
+    .entrance-tower::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      right: -4px;
+      top: -22px;
+      height: 28px;
+      background:
+        linear-gradient(90deg, #5b5b5b 0 18%, transparent 18% 28%, #5b5b5b 28% 46%, transparent 46% 56%, #5b5b5b 56% 74%, transparent 74% 84%, #5b5b5b 84% 100%);
+      border: 4px solid rgba(255,255,255,.13);
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .entrance-tower.left { left: 0; }
+    .entrance-tower.right { right: 0; }
+
+    .entrance-gate {
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      width: 43%;
+      height: 76%;
+      translate: -50% 0;
+      border: 12px solid #555;
+      border-bottom-width: 8px;
+      border-radius: 50% 50% 10px 10px / 42% 42% 10px 10px;
+      background:
+        radial-gradient(circle at 50% 68%, rgba(255,255,255,.10), transparent 28%),
+        linear-gradient(180deg, #101010, #020202);
+      box-shadow:
+        inset 0 0 46px rgba(0,0,0,.85),
+        0 0 0 4px rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+
+    .entrance-gate::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -18%;
+      width: 68%;
+      height: 58%;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.16), transparent 66%);
+      opacity: .55;
+    }
+
+    .entrance-path {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 62%;
+      height: 32%;
+      translate: -50% 0;
+      clip-path: polygon(33% 0, 67% 0, 100% 100%, 0 100%);
+      background:
+        linear-gradient(90deg, transparent 0 49%, rgba(255,255,255,.08) 49.5% 50.5%, transparent 51%),
+        linear-gradient(180deg, #242424, #090909);
+      border-top: 2px solid rgba(255,255,255,.12);
+      opacity: .95;
+    }
+
+    .start-hint, .button-hint {
+      color: #bcbcbc;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .monster-table {
+      max-height: 170px;
+      overflow: auto;
+      margin: 16px 0 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,.16);
+      text-align: left;
+    }
+
+    .monster-table div {
+      display: grid;
+      grid-template-columns: 50px 1fr 70px;
+      gap: 8px;
+      padding: 7px 12px;
+      color: #e8e8e8;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .monster-table div:last-child { border-bottom: 0; }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 28px;
+      color: #21131c;
+      background: linear-gradient(#ffe29b, #f5a936);
+      font-size: 18px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 7px 0 #8e5929, 0 18px 34px rgba(0,0,0,.36);
+    }
+
+    button:active {
+      translate: 0 5px;
+      box-shadow: 0 2px 0 #8e5929, 0 8px 20px rgba(0,0,0,.36);
+    }
+
+    #comboToast {
+      position: absolute;
+      z-index: 22;
+      top: 96px;
+      left: 50%;
+      translate: -50% 0;
+      padding: 8px 16px;
+      border-radius: 999px;
+      color: #21131c;
+      background: rgba(255, 209, 102, .94);
+      font-weight: 950;
+      opacity: 0;
+      transform: translateY(8px) scale(.96);
+      pointer-events: none;
+    }
+
+    #comboToast.show {
+      animation: toast .75s ease both;
+    }
+
+    @keyframes toast {
+      0% { opacity: 0; transform: translateY(8px) scale(.96); }
+      18% { opacity: 1; transform: translateY(0) scale(1); }
+      82% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(.96); }
+    }
+
+    .shake {
+      animation: screenShake .18s ease both;
+    }
+
+    @keyframes screenShake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      45% { transform: translateX(8px); }
+      70% { transform: translateX(-4px); }
+    }
+
+    @media (max-width: 760px) {
+      #game {
+        height: 100vh;
+        min-height: 540px;
+        border: 0;
+      }
+
+      .title h1 { font-size: 25px; }
+      .title small { font-size: 11px; }
+      .monster { width: 150px; }
+      .monster.lane-left { --x: -150px; --scale: 1; }
+      .monster.lane-mid { --x: 0px; --scale: 1; }
+      .monster.lane-right { --x: 150px; --scale: 1; }
+      .nameplate { min-width: 190px; top: -64px; gap: 7px; padding: 8px 10px; }
+      .word { font-size: 15px; }
+      .timer-ring { width: 30px; height: 30px; }
+      #sword { right: 10px; bottom: 162px; scale: .72; }
+      #hud { grid-template-columns: 82px 1fr; min-height: 222px; padding: 10px 10px 12px; gap: 8px 10px; bottom: 44px; }
+      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -24px; }
+      .hud-main { translate: 0 -24px; }
+      .doguri-face { width: 58px; height: 54px; }
+      .hud-side { display: none; }
+      #hearts { font-size: 23px; }
+      .level-box { min-width: 0; width: 100%; }
+      #levelText { min-width: 58px; font-size: 13px; }
+      #message { font-size: 12px; }
+      #alphaKeyboard { gap: 5px; transform: translateY(-16px); }
+      .alpha-row { gap: 4px; }
+      .alpha-row:nth-child(2) { padding-left: 16px; }
+      .alpha-row:nth-child(3) { padding-left: 32px; }
+      .alpha-key { width: clamp(25px, 8vw, 34px); height: 30px; border-radius: 8px; font-size: 12px; }
+      .modal h2 { font-size: 34px; }
+      .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
+      .start-hint, .button-hint { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game" aria-label="던전앤도구리 타이핑 게임">
+    <section class="dungeon" aria-hidden="true">
+      <div class="ceiling"></div>
+      <div class="left-wall"></div>
+      <div class="right-wall"></div>
+      <div class="back-wall"></div>
+      <div class="floor"></div>
+      <div class="torch left"></div>
+      <div class="torch right"></div>
+    </section>
+
+    <div class="title">
+      <h1>던전앤도구리</h1>
+      <small>Typing Dungeon · v0.1</small>
+    </div>
+
+    <div id="monsterLayer"></div>
+    <div id="comboToast"></div>
+
+    <div id="sword" aria-hidden="true">
+      <div class="blade"></div>
+      <div class="guard"></div>
+      <div class="handle"></div>
+      <div class="pommel"></div>
+    </div>
+
+    <section id="hud">
+      <div id="portrait" aria-label="도구리 초상화">
+        <div class="doguri-face"><div class="doguri-nose"></div></div>
+      </div>
+      <div class="hud-main">
+        <div class="stats-row">
+          <div id="hearts" aria-label="생명력"></div>
+          <div class="level-box">
+            <div id="levelText">Lv. 1</div>
+            <div class="exp-bar" aria-label="경험치">
+              <div id="expFill"></div>
+              <div id="expText">0 / 100</div>
+            </div>
+          </div>
+        </div>
+        <div id="message">키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.</div>
+      </div>
+      <div class="hud-side">
+        <div class="score">처치 <span id="killCount">0</span></div>
+        <div>입력: <span class="kbd">A-Z</span> / 하단 버튼</div>
+        <div>최대 몬스터 3마리</div>
+      </div>
+      <div id="alphaKeyboard" aria-label="알파벳 입력 버튼"></div>
+    </section>
+
+    <div class="blood-flash" id="bloodFlash"></div>
+
+    <div class="overlay" id="startOverlay">
+      <div class="modal start-screen">
+        <div class="start-copy">
+          <h2>던전앤도구리</h2>
+          <div class="start-version">버전 0.1</div>
+        </div>
+        <div class="dungeon-entrance" aria-hidden="true">
+          <div class="entrance-tower left"></div>
+          <div class="entrance-tower right"></div>
+          <div class="entrance-gate"></div>
+          <div class="entrance-path"></div>
+        </div>
+        <button id="startButton">시작</button>
+        <div class="start-hint"><span class="kbd">Space</span> 로도 시작</div>
+      </div>
+    </div>
+
+    <div class="overlay hidden" id="endOverlay">
+      <div class="modal">
+        <h2 id="endTitle">게임 오버</h2>
+        <p id="endDesc">도구리가 던전 바닥과 친해졌습니다.</p>
+        <button id="restartButton">다시 도전</button>
+        <div class="button-hint"><span class="kbd">Space</span> 로도 진행</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const MONSTER_DATA = [
+      { level: 1, name: 'Rat', attackTime: 4.0, colors: ['#7a7080', '#3d3545'] },
+      { level: 2, name: 'Wolf', attackTime: 4.2, colors: ['#6d82a3', '#344259'] },
+      { level: 3, name: 'Ghoul', attackTime: 4.4, colors: ['#85a27d', '#40543b'] },
+      { level: 4, name: 'Goblin', attackTime: 4.7, colors: ['#78c26b', '#32743f'] },
+      { level: 5, name: 'Specter', attackTime: 5.0, colors: ['#8bd0e7', '#3d678d'] },
+      { level: 6, name: 'Skeleton', attackTime: 5.3, colors: ['#d9d1ba', '#827665'] },
+      { level: 7, name: 'Dire Troll', attackTime: 5.7, colors: ['#b7865d', '#65402d'] },
+      { level: 8, name: 'Stone Golem', attackTime: 6.0, colors: ['#9096a0', '#545a63'] },
+      { level: 9, name: 'Shadow Mimic', attackTime: 6.3, colors: ['#7b5ab8', '#2b2348'] },
+      { level: 10, name: 'Dark Beholder', attackTime: 6.6, colors: ['#bd5f86', '#512540'] },
+      { level: 11, name: 'Mad Mind Flayer', attackTime: 7.0, colors: ['#c379d6', '#55316d'] },
+      { level: 12, name: 'Ancient Red Dragon', attackTime: 7.5, colors: ['#e35b45', '#741c19'] },
+    ];
+
+    const LANES = ['lane-left', 'lane-mid', 'lane-right'];
+    const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+    const BASE_MAX_HP = 3;
+    const MAX_MONSTERS = 3;
+
+    const game = document.getElementById('game');
+    const monsterLayer = document.getElementById('monsterLayer');
+    const heartsEl = document.getElementById('hearts');
+    const levelText = document.getElementById('levelText');
+    const expFill = document.getElementById('expFill');
+    const expText = document.getElementById('expText');
+    const messageEl = document.getElementById('message');
+    const killCountEl = document.getElementById('killCount');
+    const portrait = document.getElementById('portrait');
+    const sword = document.getElementById('sword');
+    const bloodFlash = document.getElementById('bloodFlash');
+    const startOverlay = document.getElementById('startOverlay');
+    const endOverlay = document.getElementById('endOverlay');
+    const endTitle = document.getElementById('endTitle');
+    const endDesc = document.getElementById('endDesc');
+    const startButton = document.getElementById('startButton');
+    const restartButton = document.getElementById('restartButton');
+    const monsterTable = document.getElementById('monsterTable');
+    const comboToast = document.getElementById('comboToast');
+    const alphaKeyboard = document.getElementById('alphaKeyboard');
+
+    let player;
+    let monsters;
+    let activeMonsterId;
+    let lastTime;
+    let spawnTimer;
+    let nextMonsterId;
+    let gameState;
+    let elapsed;
+    let animationId;
+
+    function normalizeName(name) {
+      return name.toLowerCase().replace(/\s+/g, '');
+    }
+
+    function expNeeded(level) {
+      // 레벨이 오를수록 필요 경험치가 지수함수처럼 더 빠르게 증가합니다.
+      return Math.floor(140 * Math.pow(1.35, level - 1));
+    }
+
+    function expReward(monsterLevel) {
+      return 34 + monsterLevel * 13;
+    }
+
+    function renderMonsterTable() {
+      if (!monsterTable) return;
+      monsterTable.innerHTML = MONSTER_DATA.map(m => `
+        <div><b>Lv.${m.level}</b><span>${m.name}</span><span>${m.attackTime.toFixed(1)}초</span></div>
+      `).join('');
+    }
+
+    function renderAlphabetKeyboard() {
+      if (!alphaKeyboard) return;
+      alphaKeyboard.innerHTML = KEYBOARD_ROWS.map(row => `
+        <div class="alpha-row">
+          ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
+        </div>
+      `).join('');
+    }
+
+    function handleAlphabetButton(char) {
+      if (gameState !== 'playing') return;
+      animateSword();
+      typeCharacter(char);
+    }
+
+    function resetGame() {
+      cancelAnimationFrame(animationId);
+      player = {
+        hp: BASE_MAX_HP,
+        maxHp: BASE_MAX_HP,
+        level: 1,
+        exp: 0,
+        kills: 0,
+      };
+      monsters = [];
+      activeMonsterId = null;
+      lastTime = performance.now();
+      spawnTimer = 0.2;
+      nextMonsterId = 1;
+      gameState = 'playing';
+      elapsed = 0;
+      monsterLayer.innerHTML = '';
+      endOverlay.classList.add('hidden');
+      startOverlay.classList.add('hidden');
+      setMessage('첫 몬스터가 다가옵니다. 키보드나 하단 버튼으로 이름을 입력하세요!');
+      renderHud();
+      loop(lastTime);
+    }
+
+    function renderHud() {
+      heartsEl.innerHTML = '';
+      for (let i = 0; i < player.maxHp; i++) {
+        const heart = document.createElement('span');
+        heart.className = `heart ${i < player.hp ? 'full' : 'empty'}`;
+        heart.textContent = i < player.hp ? '♥' : '♡';
+        heartsEl.appendChild(heart);
+      }
+
+      const need = expNeeded(player.level);
+      const pct = Math.min(100, (player.exp / need) * 100);
+      levelText.textContent = `Lv. ${player.level}`;
+      expFill.style.width = `${pct}%`;
+      expText.textContent = `${player.exp} / ${need}`;
+      killCountEl.textContent = player.kills;
+    }
+
+    function setMessage(text) {
+      messageEl.textContent = text;
+    }
+
+    function loop(now) {
+      if (gameState !== 'playing') return;
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+      elapsed += dt;
+
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        trySpawnMonster();
+        spawnTimer = getSpawnInterval();
+      }
+
+      for (const monster of [...monsters]) {
+        monster.remaining -= dt;
+        if (monster.remaining <= 0) {
+          monsterAttack(monster);
+        }
+        updateMonsterElement(monster);
+      }
+
+      animationId = requestAnimationFrame(loop);
+    }
+
+    function getSpawnInterval() {
+      // 기본 3초에서 시작해서 플레이 시간과 레벨에 따라 조금씩 빨라집니다.
+      const speedUp = elapsed * 0.018 + (player.level - 1) * 0.08;
+      return Math.max(1.15, 3.0 - speedUp);
+    }
+
+    function getRandomMonsterData() {
+      const maxLevel = Math.min(12, player.level + 1);
+      const minLevel = Math.max(1, player.level - 2);
+      const candidates = MONSTER_DATA.filter(m => m.level >= minLevel && m.level <= maxLevel);
+
+      // 도구리보다 1 높은 몬스터가 가끔 확실히 섞이도록 보정합니다.
+      if (player.level < 12 && Math.random() < 0.35) {
+        return MONSTER_DATA[player.level];
+      }
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    function trySpawnMonster() {
+      if (monsters.length >= MAX_MONSTERS) return;
+      const usedLanes = new Set(monsters.map(m => m.lane));
+      const freeLanes = LANES.filter(lane => !usedLanes.has(lane));
+      if (!freeLanes.length) return;
+
+      const lane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+      const data = getRandomMonsterData();
+      spawnMonster(data, lane);
+    }
+
+    function spawnMonster(data, lane) {
+      const monster = {
+        id: nextMonsterId++,
+        level: data.level,
+        name: data.name,
+        normalized: normalizeName(data.name),
+        attackTime: data.attackTime,
+        remaining: data.attackTime,
+        progress: 0,
+        lane,
+        colors: data.colors,
+      };
+
+      const el = document.createElement('div');
+      el.className = `monster ${lane}`;
+      el.dataset.id = monster.id;
+      el.style.setProperty('--monster-a', data.colors[0]);
+      el.style.setProperty('--monster-b', data.colors[1]);
+      el.innerHTML = `
+        <div class="nameplate">
+          <div class="word"></div>
+          <div class="timer-ring" data-time="${monster.remaining.toFixed(1)}"></div>
+        </div>
+        <div class="monster-body">
+          <div class="horn left"></div>
+          <div class="horn right"></div>
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="mouth"></div>
+          <div class="enemy-lv">Lv.${monster.level}</div>
+        </div>
+      `;
+      monster.el = el;
+      monster.wordEl = el.querySelector('.word');
+      monster.timerEl = el.querySelector('.timer-ring');
+      monsterLayer.appendChild(el);
+      monsters.push(monster);
+      renderMonsterWord(monster);
+      updateMonsterElement(monster);
+    }
+
+    function renderMonsterWord(monster) {
+      let normalizedIndex = 0;
+      let html = '';
+      for (const ch of monster.name) {
+        if (ch === ' ') {
+          const done = monster.progress > normalizedIndex;
+          html += `<span class="space ${done ? 'done' : ''}">&nbsp;</span>`;
+        } else {
+          const done = normalizedIndex < monster.progress;
+          html += `<span class="${done ? 'done' : ''}">${ch}</span>`;
+          normalizedIndex++;
+        }
+      }
+      monster.wordEl.innerHTML = html;
+    }
+
+    function updateMonsterElement(monster) {
+      const ratio = Math.max(0, Math.min(1, monster.remaining / monster.attackTime));
+      const used = 1 - ratio;
+      const deg = used * 360;
+      const dangerColor = used > .72 ? '#ff5a6d' : used > .45 ? '#ffd166' : '#68e0a8';
+      monster.timerEl.style.background = `conic-gradient(${dangerColor} ${deg}deg, rgba(255,255,255,.13) ${deg}deg)`;
+      monster.timerEl.dataset.time = Math.max(0, monster.remaining).toFixed(1);
+      monster.el.classList.toggle('active', monster.id === activeMonsterId);
+    }
+
+    function monsterAttack(monster) {
+      monster.remaining = monster.attackTime;
+      monster.el.classList.remove('attack');
+      void monster.el.offsetWidth;
+      monster.el.classList.add('attack');
+      damageDoguri(`${monster.name}의 공격!`);
+    }
+
+    function pressProgressButton() {
+      if (!startOverlay.classList.contains('hidden')) {
+        resetGame();
+        return true;
+      }
+      if (!endOverlay.classList.contains('hidden')) {
+        resetGame();
+        return true;
+      }
+      return false;
+    }
+
+    function handleKeydown(e) {
+      if (gameState !== 'playing') {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          pressProgressButton();
+        }
+        return;
+      }
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        animateSword();
+        return;
+      }
+
+      if (e.key.length !== 1) return;
+      const char = e.key.toLowerCase();
+      if (!/^[a-z]$/.test(char)) return;
+      e.preventDefault();
+
+      animateSword();
+      typeCharacter(char);
+    }
+
+    function typeCharacter(char) {
+      if (!monsters.length) {
+        damageDoguri('허공을 베었습니다. 아직 몬스터가 없습니다!');
+        return;
+      }
+
+      let target = monsters.find(m => m.id === activeMonsterId);
+      if (target && target.normalized[target.progress] !== char) {
+        damageDoguri(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
+        return;
+      }
+
+      if (!target) {
+        const matching = monsters
+          .filter(m => m.normalized[m.progress] === char)
+          .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
+        target = matching[0];
+        if (!target) {
+          damageDoguri('오타! 몬스터 이름과 맞지 않습니다.');
+          return;
+        }
+        activeMonsterId = target.id;
+      }
+
+      target.progress += 1;
+      target.remaining = Math.min(target.attackTime, target.remaining + 0.07); // 정확한 입력 보너스 약간
+      renderMonsterWord(target);
+      updateMonsterElement(target);
+
+      if (target.progress >= target.normalized.length) {
+        killMonster(target);
+      }
+    }
+
+    function killMonster(monster) {
+      player.kills += 1;
+      const gained = expReward(monster.level);
+      player.exp += gained;
+      setMessage(`${monster.name} 처치!`);
+
+      monster.el.classList.add('dead');
+      monsters = monsters.filter(m => m.id !== monster.id);
+      if (activeMonsterId === monster.id) activeMonsterId = null;
+      setTimeout(() => monster.el.remove(), 220);
+
+      if (monster.level === 12) {
+        winGame();
+        return;
+      }
+
+      while (player.exp >= expNeeded(player.level) && player.level < 12) {
+        player.exp -= expNeeded(player.level);
+        player.level += 1;
+        player.maxHp += 1;
+        player.hp = player.maxHp;
+        showToast(`LEVEL UP! Lv.${player.level}`);
+        setMessage(`레벨 업! 도구리 Lv.${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`);
+      }
+      renderHud();
+    }
+
+    function damageDoguri(reason) {
+      if (gameState !== 'playing') return;
+      player.hp = Math.max(0, player.hp - 1);
+      renderHud();
+      setMessage(reason);
+
+      portrait.classList.remove('hit');
+      bloodFlash.classList.remove('show');
+      game.classList.remove('shake');
+      void portrait.offsetWidth;
+      portrait.classList.add('hit');
+      bloodFlash.classList.add('show');
+      game.classList.add('shake');
+
+      if (player.hp <= 0) {
+        gameOver();
+      }
+    }
+
+    function animateSword() {
+      sword.classList.remove('slash');
+      void sword.offsetWidth;
+      sword.classList.add('slash');
+    }
+
+    function showToast(text) {
+      comboToast.textContent = text;
+      comboToast.classList.remove('show');
+      void comboToast.offsetWidth;
+      comboToast.classList.add('show');
+    }
+
+    function gameOver() {
+      gameState = 'gameover';
+      cancelAnimationFrame(animationId);
+      endTitle.textContent = '게임 오버';
+      endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
+      endOverlay.classList.remove('hidden');
+    }
+
+    function winGame() {
+      gameState = 'clear';
+      cancelAnimationFrame(animationId);
+      renderHud();
+      endTitle.textContent = '게임 클리어!';
+      endDesc.innerHTML = `Ancient Red Dragon을 처치했습니다!<br />도구리가 던전의 키보드 왕이 되었습니다.`;
+      endOverlay.classList.remove('hidden');
+    }
+
+    if (alphaKeyboard) {
+      alphaKeyboard.addEventListener('pointerdown', (e) => {
+        const button = e.target.closest('.alpha-key');
+        if (!button) return;
+        e.preventDefault();
+        handleAlphabetButton(button.dataset.key);
+      });
+    }
+
+    startButton.addEventListener('click', resetGame);
+    restartButton.addEventListener('click', resetGame);
+    window.addEventListener('keydown', handleKeydown, { passive: false });
+
+    renderAlphabetKeyboard();
+    renderMonsterTable();
+    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, level: 1, exp: 0, kills: 0 };
+    renderHud();
+  </script>
+</body>
+</html>
