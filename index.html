@@ -694,6 +694,12 @@
       box-shadow: 0 4px 0 #776557, 0 9px 16px rgba(0,0,0,.28);
       touch-action: manipulation;
     }
+    .alpha-key.next-key {
+      background: linear-gradient(#fff59d, #ffbf47);
+      box-shadow: 0 4px 0 #9c6a22, 0 0 0 3px rgba(255, 209, 102, .42), 0 10px 20px rgba(0,0,0,.34);
+      transform: translateY(-2px) scale(1.06);
+    }
+
 
     .alpha-key:active {
       translate: 0 3px;
@@ -997,23 +1003,26 @@
       .title h1 { font-size: 25px; }
       .title small { font-size: 11px; }
       .monster { width: 150px; }
-      .monster.lane-left { --x: -150px; --scale: .82; }
-      .monster.lane-mid { --x: 0px; --scale: .82; }
-      .monster.lane-right { --x: 150px; --scale: .82; }
+      .monster.lane-left { --x: -150px; --scale: .76; }
+      .monster.lane-mid { --x: 0px; --scale: .76; }
+      .monster.lane-right { --x: 150px; --scale: .76; }
       .nameplate { min-width: 190px; top: -64px; gap: 7px; padding: 8px 10px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
       #sword { right: 10px; bottom: 162px; scale: .72; }
       #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 16px 10px 12px; gap: 8px 10px; bottom: 44px; }
-      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -24px; }
-      .hud-main { translate: 0 -24px; }
+      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -18px; }
+      .hud-main { translate: 0 -18px; gap: 5px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
       #hearts { font-size: 23px; }
-      .level-box { min-width: 0; width: 100%; }
+      .stats-row { gap: 6px; }
+      .level-box { min-width: 0; width: 100%; gap: 6px; }
+      #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
+
       #levelText { min-width: 58px; font-size: 13px; }
-      #message { font-size: 12px; }
-      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
+      #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
+      #alphaKeyboard { display: flex; gap: 3px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 24px; }
@@ -1077,7 +1086,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.12</div>
+          <div class="start-version">버전 0.13</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1209,6 +1218,7 @@
       startOverlay.classList.add('hidden');
       setMessage('첫 몬스터가 다가옵니다. 키보드나 하단 버튼으로 이름을 입력하세요!');
       renderHud();
+      updateKeyboardHint();
       loop(lastTime);
     }
 
@@ -1247,6 +1257,24 @@
       }
 
       setMessage(`${reason} 모든 몬스터의 공격 준비 시간이 ${TYPO_TIME_PENALTY.toFixed(1)}초 줄었습니다.`);
+    }
+
+    function updateKeyboardHint() {
+      if (!alphaKeyboard) return;
+
+      const keys = alphaKeyboard.querySelectorAll('.alpha-key');
+      keys.forEach(key => key.classList.remove('next-key'));
+
+      if (gameState !== 'playing') return;
+
+      const target = monsters.find(m => m.id === activeMonsterId);
+      if (!target) return;
+
+      const nextChar = target.normalized[target.progress];
+      if (!nextChar) return;
+
+      const nextKey = alphaKeyboard.querySelector(`.alpha-key[data-key="${nextChar}"]`);
+      if (nextKey) nextKey.classList.add('next-key');
     }
 
     function loop(now) {
@@ -1415,12 +1443,14 @@
     function typeCharacter(char) {
       if (!monsters.length) {
         applyTypoPenalty('허공을 베었습니다. 아직 몬스터가 없습니다!');
+        updateKeyboardHint();
         return;
       }
 
       let target = monsters.find(m => m.id === activeMonsterId);
       if (target && target.normalized[target.progress] !== char) {
         applyTypoPenalty(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
+        updateKeyboardHint();
         return;
       }
 
@@ -1431,6 +1461,7 @@
         target = matching[0];
         if (!target) {
           applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
+          updateKeyboardHint();
           return;
         }
         activeMonsterId = target.id;
@@ -1440,6 +1471,7 @@
       target.remaining = Math.min(target.attackTime, target.remaining + 0.07); // 정확한 입력 보너스 약간
       renderMonsterWord(target);
       updateMonsterElement(target);
+      updateKeyboardHint();
 
       if (target.progress >= target.normalized.length) {
         killMonster(target);
@@ -1455,6 +1487,7 @@
       monster.el.classList.add('dead');
       monsters = monsters.filter(m => m.id !== monster.id);
       if (activeMonsterId === monster.id) activeMonsterId = null;
+      updateKeyboardHint();
       setTimeout(() => monster.el.remove(), 220);
 
       if (monster.level === 12) {
@@ -1511,6 +1544,7 @@
       endTitle.textContent = '게임 오버';
       endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
       endOverlay.classList.remove('hidden');
+      updateKeyboardHint();
     }
 
     function winGame() {
@@ -1520,6 +1554,7 @@
       endTitle.textContent = '게임 클리어!';
       endDesc.innerHTML = `Ancient Red Dragon을 처치했습니다!<br />도구리가 던전의 키보드 왕이 되었습니다.`;
       endOverlay.classList.remove('hidden');
+      updateKeyboardHint();
     }
 
     if (alphaKeyboard) {
