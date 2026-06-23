@@ -463,7 +463,7 @@
       min-height: 208px;
       padding: 14px 22px 16px;
       display: grid;
-      grid-template-columns: 116px minmax(0, 1fr) 220px;
+      grid-template-columns: 116px minmax(0, 1fr);
       grid-template-rows: auto auto;
       gap: 10px 16px;
       align-items: center;
@@ -651,7 +651,7 @@
 
     .hud-side {
       justify-self: end;
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 8px;
       align-items: flex-end;
@@ -997,14 +997,14 @@
       .title h1 { font-size: 25px; }
       .title small { font-size: 11px; }
       .monster { width: 150px; }
-      .monster.lane-left { --x: -150px; --scale: 1; }
-      .monster.lane-mid { --x: 0px; --scale: 1; }
-      .monster.lane-right { --x: 150px; --scale: 1; }
+      .monster.lane-left { --x: -150px; --scale: .82; }
+      .monster.lane-mid { --x: 0px; --scale: .82; }
+      .monster.lane-right { --x: 150px; --scale: .82; }
       .nameplate { min-width: 190px; top: -64px; gap: 7px; padding: 8px 10px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
       #sword { right: 10px; bottom: 162px; scale: .72; }
-      #hud { grid-template-columns: 82px 1fr; min-height: 222px; padding: 10px 10px 12px; gap: 8px 10px; bottom: 44px; }
+      #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 16px 10px 12px; gap: 8px 10px; bottom: 44px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -24px; }
       .hud-main { translate: 0 -24px; }
       .doguri-face { width: 58px; height: 54px; }
@@ -1014,10 +1014,10 @@
       #levelText { min-width: 58px; font-size: 13px; }
       #message { font-size: 12px; }
       #alphaKeyboard { gap: 5px; transform: translateY(-16px); }
-      .alpha-row { gap: 4px; }
-      .alpha-row:nth-child(2) { padding-left: 16px; }
-      .alpha-row:nth-child(3) { padding-left: 32px; }
-      .alpha-key { width: clamp(25px, 8vw, 34px); height: 30px; border-radius: 8px; font-size: 12px; }
+      .alpha-row { gap: 3px; }
+      .alpha-row:nth-child(2) { padding-left: 12px; }
+      .alpha-row:nth-child(3) { padding-left: 24px; }
+      .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
       .modal h2 { font-size: 34px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
@@ -1068,11 +1068,6 @@
         </div>
         <div id="message">키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.</div>
       </div>
-      <div class="hud-side">
-        <div class="score">처치 <span id="killCount">0</span></div>
-        <div>입력: <span class="kbd">A-Z</span> / 하단 버튼</div>
-        <div>최대 몬스터 3마리</div>
-      </div>
       <div id="alphaKeyboard" aria-label="알파벳 입력 버튼"></div>
     </section>
 
@@ -1082,7 +1077,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.1</div>
+          <div class="start-version">버전 0.11</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1230,7 +1225,7 @@
       levelText.textContent = `Lv. ${player.level}`;
       expFill.style.width = `${pct}%`;
       expText.textContent = `${player.exp} / ${need}`;
-      killCountEl.textContent = player.kills;
+      if (killCountEl) killCountEl.textContent = player.kills;
     }
 
     function setMessage(text) {
