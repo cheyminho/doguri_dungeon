@@ -663,7 +663,7 @@
       grid-column: 1 / -1;
       width: min(720px, 100%);
       justify-self: center;
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 7px;
       align-items: center;
@@ -1013,7 +1013,7 @@
       .level-box { min-width: 0; width: 100%; }
       #levelText { min-width: 58px; font-size: 13px; }
       #message { font-size: 12px; }
-      #alphaKeyboard { gap: 5px; transform: translateY(-16px); }
+      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 24px; }
@@ -1077,7 +1077,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.11</div>
+          <div class="start-version">버전 0.12</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1120,6 +1120,7 @@
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     const BASE_MAX_HP = 3;
     const MAX_MONSTERS = 3;
+    const TYPO_TIME_PENALTY = 0.5;
 
     const game = document.getElementById('game');
     const monsterLayer = document.getElementById('monsterLayer');
@@ -1230,6 +1231,22 @@
 
     function setMessage(text) {
       messageEl.textContent = text;
+    }
+
+    function applyTypoPenalty(reason) {
+      if (gameState !== 'playing') return;
+
+      if (!monsters.length) {
+        setMessage(reason);
+        return;
+      }
+
+      for (const monster of monsters) {
+        monster.remaining = Math.max(0, monster.remaining - TYPO_TIME_PENALTY);
+        updateMonsterElement(monster);
+      }
+
+      setMessage(`${reason} 모든 몬스터의 공격 준비 시간이 ${TYPO_TIME_PENALTY.toFixed(1)}초 줄었습니다.`);
     }
 
     function loop(now) {
@@ -1397,13 +1414,13 @@
 
     function typeCharacter(char) {
       if (!monsters.length) {
-        damageDoguri('허공을 베었습니다. 아직 몬스터가 없습니다!');
+        applyTypoPenalty('허공을 베었습니다. 아직 몬스터가 없습니다!');
         return;
       }
 
       let target = monsters.find(m => m.id === activeMonsterId);
       if (target && target.normalized[target.progress] !== char) {
-        damageDoguri(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
+        applyTypoPenalty(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
         return;
       }
 
@@ -1413,7 +1430,7 @@
           .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
         target = matching[0];
         if (!target) {
-          damageDoguri('오타! 몬스터 이름과 맞지 않습니다.');
+          applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
           return;
         }
         activeMonsterId = target.id;
