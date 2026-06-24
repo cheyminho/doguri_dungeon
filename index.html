@@ -49,11 +49,11 @@
     }
 
     .title {
+      display: none !important;
       position: absolute;
       z-index: 20;
       left: 24px;
       top: 20px;
-      display: flex;
       flex-direction: column;
       gap: 4px;
       text-shadow: 0 3px 0 rgba(0,0,0,.45);
@@ -224,39 +224,26 @@
     .monster-hit-slash {
       position: absolute;
       z-index: 6;
-      left: 50%;
-      top: 56%;
-      width: 154px;
-      height: 74px;
+      left: calc(50% + var(--slash-offset-x, 0px));
+      top: calc(52% + var(--slash-offset-y, 0px));
+      width: 190px;
+      height: 56px;
       pointer-events: none;
       translate: -50% -50%;
-      transform: rotate(-18deg);
       visibility: hidden;
     }
 
-    .monster-hit-slash::before,
-    .monster-hit-slash::after {
+    .monster-hit-slash::before {
       content: "";
       position: absolute;
-      left: 0;
-      right: 0;
-      height: 12px;
+      left: 6px;
+      right: 6px;
+      top: 24px;
+      height: 6px;
       border-radius: 999px;
-      background: linear-gradient(90deg, transparent 0%, #fff8d6 18%, #ffffff 50%, #ffd166 78%, transparent 100%);
-      box-shadow: 0 0 14px rgba(255, 241, 190, .95), 0 0 28px rgba(255, 209, 102, .72);
-      opacity: 1;
-    }
-
-    .monster-hit-slash::before {
-      top: 18px;
-    }
-
-    .monster-hit-slash::after {
-      top: 40px;
-      width: 72%;
-      left: 17%;
-      height: 8px;
-      filter: brightness(1.1);
+      background: linear-gradient(90deg, transparent 0%, #fff8d6 12%, #ffffff 48%, #ffd166 84%, transparent 100%);
+      transform: rotate(calc(-28deg + var(--slash-rotate, 0deg)));
+      transform-origin: 50% 50%;
     }
 
     .monster.hit .monster-hit-slash {
@@ -287,13 +274,20 @@
     }
 
     @keyframes monsterSlashTrail {
-      0% { visibility: visible; transform: translate(-34px, 18px) rotate(0deg) scale(.72, .82); filter: brightness(1.2); }
-      85% { visibility: visible; transform: translate(10px, -4px) rotate(0deg) scale(1.04, .96); filter: brightness(1.55); }
-      100% { visibility: hidden; transform: translate(22px, -10px) rotate(0deg) scale(.96, .9); filter: brightness(1.15); }
+      0% { visibility: visible; transform: translate(-40px, 18px) scale(.88, .96); }
+      85% { visibility: visible; transform: translate(10px, -6px) scale(1.08, 1.02); }
+      100% { visibility: hidden; transform: translate(28px, -14px) scale(.98, .94); }
+    }
+
+    @keyframes resultPop {
+      0% { opacity: 0; transform: translate(-50%, calc(var(--stack-offset) + 6px)) scale(.96); }
+      8% { opacity: 1; transform: translate(-50%, var(--stack-offset)) scale(1); }
+      17% { opacity: 1; transform: translate(-50%, var(--stack-offset)) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, var(--stack-offset)) scale(.98); }
     }
 
     @keyframes monsterDead {
-      to { opacity: 0; transform: translate(-50%, -50%) translateY(-38px) scale(calc(var(--scale) * .55)) rotate(8deg); filter: blur(2px); }
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-38px) scale(calc(var(--scale) * .55)); filter: blur(2px); }
     }
 
     .nameplate {
@@ -312,6 +306,38 @@
       backdrop-filter: none;
       white-space: nowrap;
     }
+
+    .monster-results {
+      position: absolute;
+      left: 50%;
+      top: -20px;
+      translate: -50% 0;
+      width: 180px;
+      pointer-events: none;
+    }
+
+    .monster-result {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      translate: -50% 0;
+      font-size: 14px;
+      font-weight: 950;
+      letter-spacing: .03em;
+      text-shadow: 0 2px 0 rgba(0,0,0,.65);
+      white-space: nowrap;
+      --stack-offset: 0px;
+    }
+
+    .monster-result.show {
+      animation: resultPop 1s ease-out both;
+    }
+
+    .monster-result.perfect { color: #ffe88e; }
+    .monster-result.great { color: #ffd166; }
+    .monster-result.good { color: #68e0a8; }
+    .monster-result.bad { color: #cfc3dc; }
+    .monster-result.miss { color: #ff8e9b; }
 
     .word {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -443,6 +469,77 @@
       font-weight: 900;
     }
 
+
+    #guardShield {
+      position: absolute;
+      z-index: 14;
+      left: 60px;
+      bottom: 126px;
+      width: 190px;
+      height: 250px;
+      transform-origin: 30% 80%;
+      transform: rotate(16deg) translate(-10px, 10px);
+      filter: drop-shadow(0 28px 18px rgba(0,0,0,.5));
+      pointer-events: none;
+      transition: transform .12s ease-out, filter .12s ease-out;
+    }
+
+    #guardShield.holding {
+      transform: rotate(3deg) translate(6px, -10px) scale(1.03);
+      filter: drop-shadow(0 32px 20px rgba(0,0,0,.56)) brightness(1.08);
+    }
+
+    #guardShield.block {
+      animation: shieldBlock .18s ease-out both;
+    }
+
+    @keyframes shieldBlock {
+      0% { transform: rotate(3deg) translate(6px, -10px) scale(1.03); }
+      45% { transform: rotate(-4deg) translate(16px, -20px) scale(1.08); }
+      100% { transform: rotate(3deg) translate(6px, -10px) scale(1.03); }
+    }
+
+    .guardshield-back {
+      position: absolute;
+      inset: 18px 36px 28px;
+      clip-path: polygon(50% 0, 95% 16%, 89% 71%, 50% 100%, 11% 71%, 5% 16%);
+      background: linear-gradient(180deg, #49546a, #21293a);
+      border-radius: 24px;
+    }
+
+    .guardshield-face {
+      position: absolute;
+      inset: 28px 46px 40px;
+      clip-path: polygon(50% 0, 93% 17%, 87% 70%, 50% 100%, 13% 70%, 7% 17%);
+      background: linear-gradient(180deg, #d4e6ff, #87a2c8 36%, #506a94 100%);
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.38), inset 0 -14px 20px rgba(0,0,0,.22);
+      border-radius: 20px;
+    }
+
+    .guardshield-boss {
+      position: absolute;
+      left: 50%;
+      top: 104px;
+      width: 40px;
+      height: 40px;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ffffff, #b7cae9 40%, #486489 100%);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.08);
+    }
+
+    .guardshield-stripe {
+      position: absolute;
+      left: 50%;
+      top: 56px;
+      width: 22px;
+      height: 132px;
+      translate: -50% 0;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.18));
+      opacity: .56;
+    }
+
     #sword {
       position: absolute;
       z-index: 14;
@@ -516,7 +613,7 @@
       bottom: 24px;
       z-index: 18;
       min-height: 208px;
-      padding: 14px 22px 16px;
+      padding: 24px 22px 16px;
       display: grid;
       grid-template-columns: 116px minmax(0, 1fr);
       grid-template-rows: auto auto;
@@ -527,6 +624,14 @@
         linear-gradient(180deg, rgba(36,25,43,.94), rgba(15,11,18,.98));
       border-top: 2px solid rgba(255,255,255,.14);
       box-shadow: 0 -18px 40px rgba(0,0,0,.38);
+    }
+
+    .portrait-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 104px;
+      align-self: center;
     }
 
     #portrait {
@@ -625,6 +730,10 @@
       animation: blood .22s ease both;
     }
 
+    .blood-flash.blocked {
+      background: radial-gradient(circle, transparent 35%, rgba(90, 165, 255, .34));
+    }
+
     @keyframes blood {
       0% { opacity: 0; }
       35% { opacity: 1; }
@@ -656,27 +765,62 @@
     .heart.full { color: var(--heart); }
     .heart.empty { color: var(--empty-heart); }
 
-    .level-box {
+    #shields {
       display: flex;
       align-items: center;
-      gap: 10px;
-      min-width: min(380px, 100%);
+      gap: 4px;
+      font-size: 24px;
+      line-height: 1;
+      filter: drop-shadow(0 3px 0 rgba(0,0,0,.28));
+    }
+
+    .shield-charge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .shield-charge.full {
+      color: inherit;
+    }
+
+    .level-box {
+      display: none;
     }
 
     #levelText {
-      min-width: 72px;
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      z-index: 2;
+      min-width: 0;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(21, 16, 23, .82);
+      border: 1px solid rgba(255,255,255,.14);
+      font-size: 12px;
       font-weight: 900;
+      line-height: 1;
       color: #fff6d7;
+      box-shadow: 0 3px 8px rgba(0,0,0,.25);
     }
 
     .exp-bar {
-      position: relative;
-      height: 18px;
-      flex: 1;
-      border-radius: 999px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -2px;
+      height: 6px;
+      width: 100%;
+      flex: none;
+      border-radius: 0;
       overflow: hidden;
       background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.16);
+      border: 0;
+      border-top: 1px solid rgba(255,255,255,.18);
+      border-bottom: 1px solid rgba(0,0,0,.28);
+      z-index: 3;
     }
 
     #expFill {
@@ -688,14 +832,7 @@
     }
 
     #expText {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: 11px;
-      font-weight: 900;
-      color: #161017;
-      text-shadow: 0 1px 0 rgba(255,255,255,.32);
+      display: none;
     }
 
     #message {
@@ -734,7 +871,7 @@
     }
 
     .alpha-row:nth-child(2) { padding-left: 22px; }
-    .alpha-row:nth-child(3) { padding-left: 46px; }
+    .alpha-row:nth-child(3) { padding-left: 18px; }
 
     .alpha-key {
       width: clamp(30px, 4.5vw, 44px);
@@ -1062,11 +1199,22 @@
       animation: screenShake .18s ease both;
     }
 
+    .block-shake {
+      animation: blockShake .26s ease both;
+    }
+
     @keyframes screenShake {
       0%,100% { transform: translateX(0); }
       20% { transform: translateX(-7px); }
       45% { transform: translateX(8px); }
       70% { transform: translateX(-4px); }
+    }
+
+    @keyframes blockShake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      45% { transform: translateX(5px); }
+      70% { transform: translateX(-3px); }
     }
 
     @media (max-width: 760px) {
@@ -1076,32 +1224,43 @@
         border: 0;
       }
 
+      .dungeon {
+        transform: translateY(-24px) scale(1.04);
+        transform-origin: 50% 0;
+      }
+
       .title h1 { font-size: 25px; }
       .title small { font-size: 11px; }
-      .monster { width: 150px; }
-      .monster.lane-left { --x: -150px; --scale: .76; }
+      .monster { --y: 39%; width: 150px; }
+      .monster.lane-left { --x: -130px; --scale: .76; }
       .monster.lane-mid { --x: 0px; --scale: .76; }
-      .monster.lane-right { --x: 150px; --scale: .76; }
+      .monster.lane-right { --x: 130px; --scale: .76; }
       .nameplate { min-width: 190px; top: -64px; gap: 7px; padding: 8px 10px; }
+      .monster-results { top: -18px; width: 160px; }
+      .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
+      #guardShield { left: 0px; bottom: 154px; scale: .68; }
       #sword { right: 10px; bottom: 162px; scale: .72; }
-      #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 16px 10px 12px; gap: 8px 10px; bottom: 44px; }
-      #portrait { width: 78px; height: 78px; border-radius: 19px; translate: 0 -10px; }
+      #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
+      .portrait-panel { width: 78px; translate: 0 -10px; }
+      #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
       #hearts { font-size: 23px; }
+      #shields { gap: 5px; font-size: 20px; }
       .stats-row { gap: 6px; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
       #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
 
-      #levelText { min-width: 58px; font-size: 13px; }
+      #levelText { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 11px; }
+      .exp-bar { height: 5px; }
       #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
-      .alpha-row:nth-child(3) { padding-left: 24px; }
+      .alpha-row:nth-child(3) { padding-left: 8px; }
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
       .modal h2 { font-size: 34px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
@@ -1123,11 +1282,18 @@
 
     <div class="title">
       <h1>던전앤도구리</h1>
-      <small>버전 0.15</small>
+      <small>버전 0.2</small>
     </div>
 
     <div id="monsterLayer"></div>
     <div id="comboToast"></div>
+
+    <div id="guardShield" aria-hidden="true">
+      <div class="guardshield-back"></div>
+      <div class="guardshield-face"></div>
+      <div class="guardshield-stripe"></div>
+      <div class="guardshield-boss"></div>
+    </div>
 
     <div id="sword" aria-hidden="true">
       <div class="blade"></div>
@@ -1137,19 +1303,20 @@
     </div>
 
     <section id="hud">
-      <div id="portrait" aria-label="도구리 초상화">
-        <div class="doguri-face"><div class="doguri-nose"></div></div>
+      <div class="exp-bar" aria-label="경험치">
+        <div id="expFill"></div>
+        <div id="expText">0 / 100</div>
+      </div>
+      <div class="portrait-panel">
+        <div id="portrait" aria-label="도구리 초상화">
+          <div class="doguri-face"><div class="doguri-nose"></div></div>
+          <div id="levelText">Lv. 1</div>
+        </div>
       </div>
       <div class="hud-main">
         <div class="stats-row">
           <div id="hearts" aria-label="생명력"></div>
-          <div class="level-box">
-            <div id="levelText">Lv. 1</div>
-            <div class="exp-bar" aria-label="경험치">
-              <div id="expFill"></div>
-              <div id="expText">0 / 100</div>
-            </div>
-          </div>
+          <div id="shields" aria-label="방패 능력"></div>
         </div>
         <div id="message">키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.</div>
       </div>
@@ -1162,7 +1329,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.15</div>
+          <div class="start-version">버전 0.2</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1207,18 +1374,22 @@
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     const BASE_MAX_HP = 3;
+    const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
     const TYPO_TIME_PENALTY = 0.5;
+    const INPUT_RESULT_THRESHOLDS = { perfect: 0.2, great: 0.5, good: 3.0 };
 
     const game = document.getElementById('game');
     const monsterLayer = document.getElementById('monsterLayer');
     const heartsEl = document.getElementById('hearts');
+    const shieldsEl = document.getElementById('shields');
     const levelText = document.getElementById('levelText');
     const expFill = document.getElementById('expFill');
     const expText = document.getElementById('expText');
     const messageEl = document.getElementById('message');
     const killCountEl = document.getElementById('killCount');
     const portrait = document.getElementById('portrait');
+    const guardShield = document.getElementById('guardShield');
     const sword = document.getElementById('sword');
     const bloodFlash = document.getElementById('bloodFlash');
     const startOverlay = document.getElementById('startOverlay');
@@ -1241,6 +1412,11 @@
     let gameState;
     let elapsed;
     let animationId;
+    let lastInputTime;
+    let isBlocking = false;
+    let progressKeyArmed = true;
+    let dragonSpawned = false;
+    let shieldBlockTimeout = null;
 
     function normalizeName(name) {
       return name.toLowerCase().replace(/\s+/g, '');
@@ -1264,11 +1440,25 @@
 
     function renderAlphabetKeyboard() {
       if (!alphaKeyboard) return;
-      alphaKeyboard.innerHTML = KEYBOARD_ROWS.map(row => `
-        <div class="alpha-row">
-          ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
-        </div>
-      `).join('');
+      alphaKeyboard.innerHTML = KEYBOARD_ROWS.map((row, index) => {
+        const shieldButton = index === 2
+          ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="방어">🛡️</button>`
+          : '';
+        return `
+          <div class="alpha-row">
+            ${shieldButton}
+            ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateShieldButtonState() {
+      if (!alphaKeyboard) return;
+      const shieldButton = alphaKeyboard.querySelector('.shield-key');
+      if (!shieldButton) return;
+      const enabled = gameState === 'playing' && player && player.shields > 0;
+      shieldButton.classList.toggle('disabled', !enabled);
     }
 
     function handleAlphabetButton(char) {
@@ -1282,6 +1472,8 @@
       player = {
         hp: BASE_MAX_HP,
         maxHp: BASE_MAX_HP,
+        shields: BASE_MAX_SHIELDS,
+        maxShields: BASE_MAX_SHIELDS,
         level: 1,
         exp: 0,
         kills: 0,
@@ -1291,9 +1483,18 @@
       lastTime = performance.now();
       spawnTimer = 0.2;
       nextMonsterId = 1;
+      dragonSpawned = false;
       gameState = 'playing';
+      progressKeyArmed = true;
+      isBlocking = false;
+      guardShield.classList.remove('holding', 'block');
+      if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       elapsed = 0;
+      lastInputTime = performance.now() / 1000;
       monsterLayer.innerHTML = '';
+      isBlocking = false;
+      guardShield.classList.remove('holding', 'block');
+      if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.add('hidden');
       setMessage('첫 몬스터가 다가옵니다. 키보드나 하단 버튼으로 이름을 입력하세요!');
@@ -1307,9 +1508,18 @@
       for (let i = 0; i < player.maxHp; i++) {
         const heart = document.createElement('span');
         heart.className = `heart ${i < player.hp ? 'full' : 'empty'}`;
-        heart.textContent = i < player.hp ? '♥' : '♡';
+        heart.textContent = i < player.hp ? '❤️' : '🤍';
         heartsEl.appendChild(heart);
       }
+
+      shieldsEl.innerHTML = '';
+      for (let i = 0; i < player.shields; i++) {
+        const shield = document.createElement('span');
+        shield.className = 'shield-charge full';
+        shield.textContent = '🛡️';
+        shieldsEl.appendChild(shield);
+      }
+      guardShield.style.display = player.shields > 0 ? '' : 'none';
 
       const need = expNeeded(player.level);
       const pct = Math.min(100, (player.exp / need) * 100);
@@ -1317,19 +1527,111 @@
       expFill.style.width = `${pct}%`;
       expText.textContent = `${player.exp} / ${need}`;
       if (killCountEl) killCountEl.textContent = player.kills;
+      updateShieldButtonState();
     }
 
     function setMessage(text) {
       messageEl.textContent = text;
     }
 
+
+    function setBlocking(nextState) {
+      const canBlock = gameState === 'playing' && player && player.shields > 0;
+      isBlocking = !!nextState && canBlock;
+      if (!isBlocking) {
+        guardShield.classList.remove('block');
+        if (shieldBlockTimeout) {
+          clearTimeout(shieldBlockTimeout);
+          shieldBlockTimeout = null;
+        }
+      }
+      guardShield.classList.toggle('holding', isBlocking);
+      updateShieldButtonState();
+    }
+
+    function animateShieldBlock() {
+      if (shieldBlockTimeout) {
+        clearTimeout(shieldBlockTimeout);
+        shieldBlockTimeout = null;
+      }
+      guardShield.classList.remove('block');
+      void guardShield.offsetWidth;
+      guardShield.classList.add('block');
+      shieldBlockTimeout = setTimeout(() => {
+        guardShield.classList.remove('block');
+        shieldBlockTimeout = null;
+      }, 190);
+    }
+
+
+    function animateBlockFeedback() {
+      portrait.classList.remove('hit');
+      bloodFlash.classList.remove('show', 'blocked');
+      game.classList.remove('shake', 'block-shake');
+      void portrait.offsetWidth;
+      portrait.classList.add('hit');
+      bloodFlash.classList.add('blocked', 'show');
+      game.classList.add('block-shake');
+    }
+
+    function getInputDelta() {
+      const now = performance.now() / 1000;
+      const delta = lastInputTime == null ? Infinity : now - lastInputTime;
+      lastInputTime = now;
+      return delta;
+    }
+
+    function getResultLabel(delta) {
+      if (delta <= INPUT_RESULT_THRESHOLDS.perfect) return { text: 'Perfect', className: 'perfect' };
+      if (delta <= INPUT_RESULT_THRESHOLDS.great) return { text: 'Great', className: 'great' };
+      if (delta <= INPUT_RESULT_THRESHOLDS.good) return { text: 'Good', className: 'good' };
+      return { text: 'Bad', className: 'bad' };
+    }
+
+    function showMonsterResult(monster, text, className = '') {
+      if (!monster || !monster.resultsEl) return;
+
+      const activeResults = [...monster.resultsEl.querySelectorAll('.monster-result')];
+      activeResults.forEach((item, index) => {
+        const offset = -(index + 1) * 18;
+        item.style.setProperty('--stack-offset', `${offset}px`);
+      });
+
+      const resultEl = document.createElement('div');
+      resultEl.className = `monster-result ${className}`.trim();
+      resultEl.textContent = text;
+      resultEl.style.setProperty('--stack-offset', '0px');
+      monster.resultsEl.appendChild(resultEl);
+      void resultEl.offsetWidth;
+      resultEl.classList.add('show');
+
+      setTimeout(() => {
+        resultEl.remove();
+      }, 1000);
+    }
+
+    function showMissOnRelevantMonsters() {
+      if (!monsters.length) return;
+      const untouched = monsters.every(monster => monster.progress === 0);
+      if (untouched) {
+        monsters.forEach(monster => showMonsterResult(monster, 'Miss', 'miss'));
+        return;
+      }
+      const target = monsters.find(monster => monster.id === activeMonsterId);
+      if (target) showMonsterResult(target, 'Miss', 'miss');
+    }
+
     function applyTypoPenalty(reason) {
       if (gameState !== 'playing') return;
+
+      getInputDelta();
 
       if (!monsters.length) {
         setMessage(reason);
         return;
       }
+
+      showMissOnRelevantMonsters();
 
       for (const monster of monsters) {
         monster.remaining = Math.max(0, monster.remaining - TYPO_TIME_PENALTY);
@@ -1399,6 +1701,7 @@
     }
 
     function trySpawnMonster() {
+      if (dragonSpawned) return;
       if (monsters.length >= MAX_MONSTERS) return;
       const usedLanes = new Set(monsters.map(m => m.lane));
       const freeLanes = LANES.filter(lane => !usedLanes.has(lane));
@@ -1410,6 +1713,10 @@
     }
 
     function spawnMonster(data, lane) {
+      if (data.name === 'Ancient Red Dragon') {
+        dragonSpawned = true;
+      }
+
       const monster = {
         id: nextMonsterId++,
         level: data.level,
@@ -1429,6 +1736,7 @@
       el.style.setProperty('--monster-b', data.colors[1]);
       el.innerHTML = `
         <div class="nameplate">
+          <div class="monster-results"></div>
           <div class="word"></div>
           <div class="timer-ring" data-time="${monster.remaining.toFixed(1)}"></div>
         </div>
@@ -1444,6 +1752,7 @@
       `;
       monster.el = el;
       monster.wordEl = el.querySelector('.word');
+      monster.resultsEl = el.querySelector('.monster-results');
       monster.timerEl = el.querySelector('.timer-ring');
       monsterLayer.appendChild(el);
       monsters.push(monster);
@@ -1482,22 +1791,44 @@
       monster.el.classList.remove('attack');
       void monster.el.offsetWidth;
       monster.el.classList.add('attack');
+
+      if (isBlocking && player.shields > 0) {
+        player.shields = Math.max(0, player.shields - 1);
+        renderHud();
+        animateShieldBlock();
+        animateBlockFeedback();
+        setMessage(`${monster.name}의 공격을 방어했습니다!`);
+        if (player.shields <= 0) setBlocking(false);
+        return;
+      }
+
       damageDoguri(`${monster.name}의 공격!`);
     }
 
     function goToStart() {
       cancelAnimationFrame(animationId);
       gameState = 'start';
+      progressKeyArmed = true;
       monsters = [];
       activeMonsterId = null;
       monsterLayer.innerHTML = '';
+      isBlocking = false;
+      guardShield.classList.remove('holding', 'block');
+      if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.remove('hidden');
       updateKeyboardHint();
+      lastInputTime = null;
       setMessage('키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.');
     }
 
+    function lockProgressInputUntilRelease() {
+      progressKeyArmed = false;
+    }
+
     function pressProgressButton() {
+      if (!progressKeyArmed) return false;
+
       if (!startOverlay.classList.contains('hidden')) {
         resetGame();
         return true;
@@ -1520,7 +1851,12 @@
 
       if (e.key === ' ') {
         e.preventDefault();
-        animateSword();
+        if (e.repeat) return;
+        if (player.shields <= 0) {
+          setMessage('방패 능력이 없어 방어할 수 없습니다.');
+          return;
+        }
+        setBlocking(true);
         return;
       }
 
@@ -1531,6 +1867,19 @@
 
       animateSword();
       typeCharacter(char);
+    }
+
+    function handleKeyup(e) {
+      if (e.key === ' ' || e.key === 'Enter') {
+        progressKeyArmed = true;
+      }
+
+      if (gameState !== 'playing') return;
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        setBlocking(false);
+      }
     }
 
     function typeCharacter(char) {
@@ -1560,9 +1909,12 @@
         activeMonsterId = target.id;
       }
 
+      const inputDelta = getInputDelta();
+      const inputResult = getResultLabel(inputDelta);
       target.progress += 1;
       target.remaining = Math.min(target.attackTime, target.remaining + 0.1); // 정확한 입력 보너스
       animateMonsterHit(target);
+      showMonsterResult(target, inputResult.text, inputResult.className);
       renderMonsterWord(target);
       updateMonsterElement(target);
       updateKeyboardHint();
@@ -1607,8 +1959,8 @@
       setMessage(reason);
 
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show');
-      game.classList.remove('shake');
+      bloodFlash.classList.remove('show', 'blocked');
+      game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
       bloodFlash.classList.add('show');
@@ -1627,6 +1979,12 @@
 
     function animateMonsterHit(monster) {
       if (!monster || !monster.el) return;
+      const offsetX = Math.round((Math.random() * 36) - 18);
+      const offsetY = Math.round((Math.random() * 28) - 14);
+      const rotate = Math.round((Math.random() * 14) - 7);
+      monster.el.style.setProperty('--slash-offset-x', `${offsetX}px`);
+      monster.el.style.setProperty('--slash-offset-y', `${offsetY}px`);
+      monster.el.style.setProperty('--slash-rotate', `${rotate}deg`);
       monster.el.classList.remove('hit');
       void monster.el.offsetWidth;
       monster.el.classList.add('hit');
@@ -1641,6 +1999,8 @@
 
     function gameOver() {
       gameState = 'gameover';
+      setBlocking(false);
+      lockProgressInputUntilRelease();
       cancelAnimationFrame(animationId);
       endTitle.textContent = '게임 오버';
       endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
@@ -1650,6 +2010,8 @@
 
     function winGame() {
       gameState = 'clear';
+      setBlocking(false);
+      lockProgressInputUntilRelease();
       cancelAnimationFrame(animationId);
       renderHud();
       endTitle.textContent = '게임 클리어!';
@@ -1663,18 +2025,46 @@
         const button = e.target.closest('.alpha-key');
         if (!button) return;
         e.preventDefault();
+
+        if (button.dataset.action === 'shield') {
+          if (gameState !== 'playing') return;
+          if (player.shields <= 0) {
+            setMessage('방패 능력이 없어 방어할 수 없습니다.');
+            updateShieldButtonState();
+            return;
+          }
+          setBlocking(true);
+          return;
+        }
+
         handleAlphabetButton(button.dataset.key);
       });
+
+      const releaseShieldButton = (e) => {
+        const button = e.target.closest('.shield-key');
+        if (!button) return;
+        if (gameState !== 'playing') return;
+        setBlocking(false);
+      };
+
+      alphaKeyboard.addEventListener('pointerup', releaseShieldButton);
+      alphaKeyboard.addEventListener('pointercancel', releaseShieldButton);
+      alphaKeyboard.addEventListener('pointerleave', (e) => {
+        if (e.target.closest && e.target.closest('.shield-key')) {
+          if (gameState === 'playing') setBlocking(false);
+        }
+      }, true);
     }
 
     startButton.addEventListener('click', resetGame);
     restartButton.addEventListener('click', resetGame);
     homeButton.addEventListener('click', goToStart);
     window.addEventListener('keydown', handleKeydown, { passive: false });
+    window.addEventListener('keyup', handleKeyup, { passive: false });
 
     renderAlphabetKeyboard();
     renderMonsterTable();
-    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, level: 1, exp: 0, kills: 0 };
+    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, level: 1, exp: 0, kills: 0 };
     renderHud();
   </script>
 </body>
