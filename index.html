@@ -601,8 +601,8 @@
       min-height: 208px;
       padding: 24px 22px 16px;
       display: grid;
-      grid-template-columns: 116px minmax(0, 1fr);
-      grid-template-rows: auto auto;
+      grid-template-columns: 116px minmax(0, 1fr) 84px;
+      grid-template-rows: auto auto auto;
       gap: 10px 16px;
       align-items: center;
       background:
@@ -613,6 +613,8 @@
     }
 
     .portrait-panel {
+      grid-column: 1;
+      grid-row: 1 / span 2;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -731,19 +733,21 @@
     }
 
     .hud-main {
+      grid-column: 2;
+      grid-row: 1 / span 2;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       gap: 11px;
       min-width: 0;
-      padding-right: 104px;
+      align-self: center;
     }
 
     .stats-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
-      padding-right: 104px;
+      flex-wrap: nowrap;
     }
 
     #hearts {
@@ -779,9 +783,10 @@
 
 
     #potionSlot {
-      position: absolute;
-      right: 16px;
-      top: 74px;
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      justify-self: end;
+      align-self: center;
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -866,8 +871,8 @@
     }
 
     #message {
+      width: 100%;
       height: 56px;
-      max-width: calc(100% - 104px);
       display: flex;
       align-items: flex-start;
       color: #cfc3dc;
@@ -1258,8 +1263,10 @@
 
     @keyframes dodgeShake {
       0%,100% { transform: translateX(0); }
-      25% { transform: translateX(-3px); }
-      60% { transform: translateX(3px); }
+      16% { transform: translateX(-8px); }
+      36% { transform: translateX(10px); }
+      58% { transform: translateX(-7px); }
+      78% { transform: translateX(6px); }
     }
 
     @media (max-width: 760px) {
@@ -1285,24 +1292,24 @@
       .timer-ring { width: 30px; height: 30px; }
       #guardShield { left: 0px; bottom: 178px; scale: .68; }
       #sword { right: 10px; bottom: 186px; scale: .72; }
-      #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
+      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
-      .hud-main { translate: 0 -10px; gap: 5px; padding-right: 86px; }
+      .hud-main { translate: 0 -10px; gap: 5px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
       #hearts { gap: 2px; font-size: 23px; }
       #shields { gap: 3px; font-size: 20px; }
-      #potionSlot { right: 10px; top: 86px; gap: 0; min-width: 0; padding: 0; }
+      #potionSlot { justify-self: end; align-self: center; gap: 0; min-width: 0; padding: 0; }
       #potionIcon { font-size: 54px; }
       #potionHotkey { display: inline-flex; font-size: 11px; }
-      .stats-row { gap: 4px; padding-right: 86px; }
+      .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 12px; height: 48px; line-height: 1.8; max-width: calc(100% - 86px); }
+      #message { font-size: 12px; width: 100%; height: 48px; line-height: 1.8; max-width: none; }
 
       #levelText { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 11px; }
       .exp-bar { height: 5px; }
-      #message { font-size: 12px; height: 48px; line-height: 1.8; max-width: calc(100% - 86px); }
+      #message { font-size: 12px; width: 100%; height: 48px; line-height: 1.8; max-width: none; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
@@ -1361,13 +1368,13 @@
         <div class="stats-row">
           <div id="hearts" aria-label="생명력"></div>
           <div id="shields" aria-label="방패 능력"></div>
-          <button id="potionSlot" type="button" aria-label="사과 사용">
-            <span id="potionIcon">🍎</span>
-            <span id="potionHotkey" class="kbd">Ctrl</span>
-          </button>
         </div>
         <div id="message">몬스터 이름을 입력해 처치하세요!<br><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</div>
       </div>
+      <button id="potionSlot" type="button" aria-label="사과 사용">
+        <span id="potionIcon">🍎</span>
+        <span id="potionHotkey" class="kbd">Ctrl</span>
+      </button>
       <div id="alphaKeyboard" aria-label="알파벳 입력 버튼"></div>
     </section>
 
@@ -1377,7 +1384,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.24</div>
+          <div class="start-version">버전 0.25</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1566,6 +1573,7 @@
         .sort((a, b) => a.remaining - b.remaining)[0];
 
       if (!target) {
+        animateDodgeFailFeedback();
         setMessage('회피 실패! 공격 타이밍이 아닙니다.');
         return;
       }
@@ -1700,6 +1708,13 @@
       void game.offsetWidth;
       portrait.classList.add('hit');
       bloodFlash.classList.add('dodged', 'show');
+      game.classList.add('dodge-shake');
+    }
+
+    function animateDodgeFailFeedback() {
+      bloodFlash.classList.remove('show', 'blocked', 'dodged');
+      game.classList.remove('shake', 'block-shake', 'dodge-shake');
+      void game.offsetWidth;
       game.classList.add('dodge-shake');
     }
 
