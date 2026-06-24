@@ -752,7 +752,7 @@
 
     #hearts {
       display: flex;
-      gap: 2px;
+      gap: 1px;
       font-size: 28px;
       line-height: 1;
       filter: drop-shadow(0 3px 0 rgba(0,0,0,.35));
@@ -760,11 +760,13 @@
 
     .heart.full { color: var(--heart); }
     .heart.empty { color: var(--empty-heart); }
+    .heart + .heart { margin-left: -4px; }
 
     #shields {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 1px;
+      margin-left: -7px;
       font-size: 24px;
       line-height: 1;
       filter: drop-shadow(0 3px 0 rgba(0,0,0,.28));
@@ -777,6 +779,10 @@
       line-height: 1;
     }
 
+    .shield-charge + .shield-charge {
+      margin-left: -4px;
+    }
+
     .shield-charge.full {
       color: inherit;
     }
@@ -787,6 +793,7 @@
       grid-row: 1 / span 2;
       justify-self: end;
       align-self: center;
+      transform: translateY(-6px);
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -805,7 +812,7 @@
     }
 
     #potionSlot:active {
-      transform: translateY(2px);
+      transform: translateY(-4px);
     }
 
     #potionIcon {
@@ -873,12 +880,15 @@
     #message {
       width: 100%;
       height: 56px;
-      display: flex;
-      align-items: flex-start;
+      display: block;
       color: #cfc3dc;
       font-size: 14px;
-      line-height: 1.95;
+      line-height: 2.05;
       white-space: normal;
+    }
+
+    .message-line {
+      display: block;
     }
 
     .hud-side {
@@ -1298,18 +1308,18 @@
       .hud-main { translate: 0 -10px; gap: 5px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
-      #hearts { gap: 2px; font-size: 23px; }
-      #shields { gap: 3px; font-size: 20px; }
-      #potionSlot { justify-self: end; align-self: center; gap: 0; min-width: 0; padding: 0; }
+      #hearts { gap: 1px; font-size: 23px; }
+      #shields { gap: 1px; margin-left: -6px; font-size: 20px; }
+      #potionSlot { justify-self: end; align-self: center; transform: translateY(-8px); gap: 0; min-width: 0; padding: 0; }
       #potionIcon { font-size: 54px; }
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 12px; width: 100%; height: 48px; line-height: 1.8; max-width: none; }
+      #message { font-size: 12px; width: 100%; height: 48px; line-height: 2.0; max-width: none; }
 
       #levelText { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 11px; }
       .exp-bar { height: 5px; }
-      #message { font-size: 12px; width: 100%; height: 48px; line-height: 1.8; max-width: none; }
+      #message { font-size: 12px; width: 100%; height: 48px; line-height: 2.0; max-width: none; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
@@ -1369,7 +1379,7 @@
           <div id="hearts" aria-label="생명력"></div>
           <div id="shields" aria-label="방패 능력"></div>
         </div>
-        <div id="message">몬스터 이름을 입력해 처치하세요!<br><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</div>
+        <div id="message"><span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span></div>
       </div>
       <button id="potionSlot" type="button" aria-label="사과 사용">
         <span id="potionIcon">🍎</span>
@@ -1384,7 +1394,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.25</div>
+          <div class="start-version">버전 0.26</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1620,7 +1630,7 @@
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.add('hidden');
-      setMessage('몬스터 이름을 입력해 처치하세요!<br><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!');
+      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
       renderHud();
       updateKeyboardHint();
       loop(lastTime);
@@ -1963,7 +1973,7 @@
       startOverlay.classList.remove('hidden');
       updateKeyboardHint();
       lastInputTime = null;
-      setMessage('몬스터 이름을 입력해 처치하세요!<br><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!');
+      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
     }
 
     function lockProgressInputUntilRelease() {
