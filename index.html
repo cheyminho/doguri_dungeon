@@ -771,6 +771,29 @@
       color: inherit;
     }
 
+
+    #potionSlot {
+      margin-left: auto;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 70px;
+      padding: 2px 6px;
+      filter: drop-shadow(0 3px 0 rgba(0,0,0,.2));
+    }
+
+    #potionIcon {
+      font-size: 66px;
+      line-height: .9;
+    }
+
+    #potionHotkey {
+      font-size: 12px;
+      line-height: 1;
+    }
+
     .level-box {
       display: none;
     }
@@ -813,7 +836,7 @@
       height: 100%;
       width: 0%;
       border-radius: inherit;
-      background: linear-gradient(90deg, #68e0a8, #ffd166);
+      background: #68e0a8;
       transition: width .25s ease;
     }
 
@@ -1224,8 +1247,8 @@
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
-      #guardShield { left: 0px; bottom: 154px; scale: .68; }
-      #sword { right: 10px; bottom: 162px; scale: .72; }
+      #guardShield { left: 0px; bottom: 178px; scale: .68; }
+      #sword { right: 10px; bottom: 186px; scale: .72; }
       #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
@@ -1234,6 +1257,9 @@
       .hud-side { display: none; }
       #hearts { font-size: 23px; }
       #shields { gap: 5px; font-size: 20px; }
+      #potionSlot { gap: 3px; min-width: 54px; padding: 0; }
+      #potionIcon { font-size: 54px; }
+      #potionHotkey { font-size: 11px; }
       .stats-row { gap: 6px; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
       #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
@@ -1247,6 +1273,7 @@
       .alpha-row:nth-child(3) { padding-left: 8px; }
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
       .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
+      .potion-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
@@ -1298,6 +1325,10 @@
         <div class="stats-row">
           <div id="hearts" aria-label="생명력"></div>
           <div id="shields" aria-label="방패 능력"></div>
+          <div id="potionSlot" aria-label="사과">
+            <span id="potionIcon">🍎</span>
+            <span id="potionHotkey" class="kbd">Ctrl</span>
+          </div>
         </div>
         <div id="message">키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.</div>
       </div>
@@ -1310,7 +1341,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.21</div>
+          <div class="start-version">버전 0.22</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1364,6 +1395,9 @@
     const monsterLayer = document.getElementById('monsterLayer');
     const heartsEl = document.getElementById('hearts');
     const shieldsEl = document.getElementById('shields');
+    const potionSlot = document.getElementById('potionSlot');
+    const potionIcon = document.getElementById('potionIcon');
+    const potionHotkey = document.getElementById('potionHotkey');
     const levelText = document.getElementById('levelText');
     const expFill = document.getElementById('expFill');
     const expText = document.getElementById('expText');
@@ -1425,27 +1459,47 @@
         const shieldButton = index === 2
           ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="막기">막기</button>`
           : '';
+        const potionButton = index === 2
+          ? `<button type="button" class="alpha-key potion-key" data-action="potion" aria-label="사과">사과</button>`
+          : '';
         return `
           <div class="alpha-row">
             ${shieldButton}
             ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
+            ${potionButton}
           </div>
         `;
       }).join('');
     }
 
-    function updateShieldButtonState() {
+    function updateActionButtonStates() {
       if (!alphaKeyboard) return;
       const shieldButton = alphaKeyboard.querySelector('.shield-key');
-      if (!shieldButton) return;
-      const enabled = gameState === 'playing' && player && player.shields > 0;
-      shieldButton.classList.toggle('disabled', !enabled);
+      const potionButton = alphaKeyboard.querySelector('.potion-key');
+      const shieldEnabled = gameState === 'playing' && player && player.shields > 0;
+      const potionEnabled = gameState === 'playing' && player && player.potions > 0;
+      if (shieldButton) shieldButton.classList.toggle('disabled', !shieldEnabled);
+      if (potionButton) potionButton.classList.toggle('disabled', !potionEnabled);
     }
 
     function handleAlphabetButton(char) {
       if (gameState !== 'playing') return;
       animateSword();
       typeCharacter(char);
+    }
+
+
+    function usePotion() {
+      if (gameState !== 'playing') return;
+      if (!player || player.potions <= 0) {
+        setMessage('사과가 없습니다.');
+        updateActionButtonStates();
+        return;
+      }
+      player.potions = Math.max(0, player.potions - 1);
+      player.hp = player.maxHp;
+      renderHud();
+      setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
     function resetGame() {
@@ -1455,6 +1509,7 @@
         maxHp: BASE_MAX_HP,
         shields: BASE_MAX_SHIELDS,
         maxShields: BASE_MAX_SHIELDS,
+        potions: 1,
         level: 1,
         exp: 0,
         kills: 0,
@@ -1502,13 +1557,16 @@
       }
       guardShield.style.display = player.shields > 0 ? '' : 'none';
 
+      potionIcon.textContent = '🍎';
+      potionSlot.style.display = player.potions > 0 ? 'inline-flex' : 'none';
+
       const need = expNeeded(player.level);
       const pct = Math.min(100, (player.exp / need) * 100);
       levelText.textContent = `Lv. ${player.level}`;
       expFill.style.width = `${pct}%`;
       expText.textContent = `${player.exp} / ${need}`;
       if (killCountEl) killCountEl.textContent = player.kills;
-      updateShieldButtonState();
+      updateActionButtonStates();
     }
 
     function setMessage(text) {
@@ -1527,7 +1585,7 @@
         }
       }
       guardShield.classList.toggle('holding', isBlocking);
-      updateShieldButtonState();
+      updateActionButtonStates();
     }
 
     function animateShieldBlock() {
@@ -1841,6 +1899,13 @@
         return;
       }
 
+      if (e.key === 'Control') {
+        e.preventDefault();
+        if (e.repeat) return;
+        usePotion();
+        return;
+      }
+
       if (e.key.length !== 1) return;
       const char = e.key.toLowerCase();
       if (!/^[a-z]$/.test(char)) return;
@@ -1853,6 +1918,9 @@
     function handleKeyup(e) {
       if (e.key === ' ' || e.key === 'Enter') {
         progressKeyArmed = true;
+      }
+      if (e.key === 'Control') {
+        e.preventDefault();
       }
 
       if (gameState !== 'playing') return;
@@ -2011,10 +2079,15 @@
           if (gameState !== 'playing') return;
           if (player.shields <= 0) {
             setMessage('방패 능력이 없어 방어할 수 없습니다.');
-            updateShieldButtonState();
+            updateActionButtonStates();
             return;
           }
           setBlocking(true);
+          return;
+        }
+
+        if (button.dataset.action === 'potion') {
+          usePotion();
           return;
         }
 
@@ -2045,7 +2118,7 @@
 
     renderAlphabetKeyboard();
     renderMonsterTable();
-    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, level: 1, exp: 0, kills: 0 };
+    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
     renderHud();
   </script>
 </body>
