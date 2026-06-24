@@ -720,6 +720,10 @@
       background: radial-gradient(circle, transparent 35%, rgba(90, 165, 255, .34));
     }
 
+    .blood-flash.dodged {
+      background: radial-gradient(circle, transparent 35%, rgba(72, 220, 138, .34));
+    }
+
     @keyframes blood {
       0% { opacity: 0; }
       35% { opacity: 1; }
@@ -731,13 +735,16 @@
       flex-direction: column;
       gap: 11px;
       min-width: 0;
+      padding-right: 92px;
     }
 
     .stats-row {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 14px;
       flex-wrap: wrap;
+      padding-right: 92px;
     }
 
     #hearts {
@@ -773,15 +780,28 @@
 
 
     #potionSlot {
-      margin-left: auto;
+      position: absolute;
+      right: 0;
+      top: 12px;
       display: inline-flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      min-width: 70px;
-      padding: 2px 6px;
-      filter: drop-shadow(0 3px 0 rgba(0,0,0,.2));
+      gap: 0;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      filter: none;
+      box-shadow: none;
+      touch-action: manipulation;
+    }
+
+    #potionSlot:active {
+      transform: translateY(2px);
     }
 
     #potionIcon {
@@ -790,6 +810,7 @@
     }
 
     #potionHotkey {
+      display: inline-flex;
       font-size: 12px;
       line-height: 1;
     }
@@ -1252,15 +1273,15 @@
       #hud { grid-template-columns: 82px 1fr; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
-      .hud-main { translate: 0 -10px; gap: 5px; }
+      .hud-main { translate: 0 -10px; gap: 5px; padding-right: 62px; }
       .doguri-face { width: 58px; height: 54px; }
       .hud-side { display: none; }
       #hearts { font-size: 23px; }
       #shields { gap: 5px; font-size: 20px; }
-      #potionSlot { gap: 3px; min-width: 54px; padding: 0; }
+      #potionSlot { right: 0; top: 16px; gap: 0; min-width: 0; padding: 0; }
       #potionIcon { font-size: 54px; }
-      #potionHotkey { font-size: 11px; }
-      .stats-row { gap: 6px; }
+      #potionHotkey { display: inline-flex; font-size: 11px; }
+      .stats-row { gap: 6px; padding-right: 62px; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
       #message { font-size: 12px; min-height: 18px; line-height: 1.25; }
 
@@ -1273,7 +1294,7 @@
       .alpha-row:nth-child(3) { padding-left: 8px; }
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
       .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
-      .potion-key { width: 44px; min-width: 44px; font-size: 12px; }
+      .dodge-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
@@ -1325,12 +1346,12 @@
         <div class="stats-row">
           <div id="hearts" aria-label="생명력"></div>
           <div id="shields" aria-label="방패 능력"></div>
-          <div id="potionSlot" aria-label="사과">
+          <button id="potionSlot" type="button" aria-label="사과 사용">
             <span id="potionIcon">🍎</span>
             <span id="potionHotkey" class="kbd">Ctrl</span>
-          </div>
+          </button>
         </div>
-        <div id="message">키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.</div>
+        <div id="message">몬스터 이름을 입력해 처치하세요!<br>스페이스바로 방어하고, 피격 직전에 Tab 키로 회피할 수 있습니다.</div>
       </div>
       <div id="alphaKeyboard" aria-label="알파벳 입력 버튼"></div>
     </section>
@@ -1341,7 +1362,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.22</div>
+          <div class="start-version">버전 0.23</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1389,6 +1410,8 @@
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
     const TYPO_TIME_PENALTY = 0.5;
+    const DODGE_WINDOW = 1.0;
+    const DODGE_COOLDOWN = 1.0;
     const INPUT_RESULT_THRESHOLDS = { perfect: 0.2, great: 0.5, good: 3.0 };
 
     const game = document.getElementById('game');
@@ -1431,6 +1454,8 @@
     let isBlocking = false;
     let progressKeyArmed = true;
     let dragonSpawned = false;
+    let dodgeCooldownUntil = 0;
+    let dodgeCooldownTimer = null;
     let shieldBlockTimeout = null;
 
     function normalizeName(name) {
@@ -1459,14 +1484,14 @@
         const shieldButton = index === 2
           ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="막기">막기</button>`
           : '';
-        const potionButton = index === 2
-          ? `<button type="button" class="alpha-key potion-key" data-action="potion" aria-label="사과">사과</button>`
+        const dodgeButton = index === 2
+          ? `<button type="button" class="alpha-key dodge-key" data-action="dodge" aria-label="회피">회피</button>`
           : '';
         return `
           <div class="alpha-row">
             ${shieldButton}
             ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
-            ${potionButton}
+            ${dodgeButton}
           </div>
         `;
       }).join('');
@@ -1475,11 +1500,12 @@
     function updateActionButtonStates() {
       if (!alphaKeyboard) return;
       const shieldButton = alphaKeyboard.querySelector('.shield-key');
-      const potionButton = alphaKeyboard.querySelector('.potion-key');
+      const dodgeButton = alphaKeyboard.querySelector('.dodge-key');
+      const now = performance.now() / 1000;
       const shieldEnabled = gameState === 'playing' && player && player.shields > 0;
-      const potionEnabled = gameState === 'playing' && player && player.potions > 0;
+      const dodgeEnabled = gameState === 'playing' && now >= dodgeCooldownUntil;
       if (shieldButton) shieldButton.classList.toggle('disabled', !shieldEnabled);
-      if (potionButton) potionButton.classList.toggle('disabled', !potionEnabled);
+      if (dodgeButton) dodgeButton.classList.toggle('disabled', !dodgeEnabled);
     }
 
     function handleAlphabetButton(char) {
@@ -1502,6 +1528,42 @@
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
+    function useDodge() {
+      if (gameState !== 'playing') return;
+
+      const now = performance.now() / 1000;
+      if (now < dodgeCooldownUntil) {
+        updateActionButtonStates();
+        return;
+      }
+
+      dodgeCooldownUntil = now + DODGE_COOLDOWN;
+      updateActionButtonStates();
+
+      if (dodgeCooldownTimer) clearTimeout(dodgeCooldownTimer);
+      dodgeCooldownTimer = setTimeout(() => {
+        updateActionButtonStates();
+        dodgeCooldownTimer = null;
+      }, Math.ceil(DODGE_COOLDOWN * 1000));
+
+      const target = monsters
+        .filter(monster => monster.remaining > 0 && monster.remaining <= DODGE_WINDOW)
+        .sort((a, b) => a.remaining - b.remaining)[0];
+
+      if (!target) {
+        setMessage('회피 실패! 공격 타이밍이 아닙니다.');
+        return;
+      }
+
+      target.remaining = target.attackTime;
+      target.el.classList.remove('attack');
+      void target.el.offsetWidth;
+      target.el.classList.add('attack');
+      animateDodgeFeedback();
+      updateMonsterElement(target);
+      setMessage(`${target.name}의 공격을 회피했습니다!`);
+    }
+
     function resetGame() {
       cancelAnimationFrame(animationId);
       player = {
@@ -1520,6 +1582,8 @@
       spawnTimer = 0.2;
       nextMonsterId = 1;
       dragonSpawned = false;
+      dodgeCooldownUntil = 0;
+      if (dodgeCooldownTimer) { clearTimeout(dodgeCooldownTimer); dodgeCooldownTimer = null; }
       gameState = 'playing';
       progressKeyArmed = true;
       isBlocking = false;
@@ -1533,7 +1597,7 @@
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.add('hidden');
-      setMessage('첫 몬스터가 다가옵니다. 키보드나 하단 버튼으로 이름을 입력하세요!');
+      setMessage('몬스터 이름을 입력해 처치하세요!<br>스페이스바로 방어하고, 피격 직전에 Tab 키로 회피할 수 있습니다.');
       renderHud();
       updateKeyboardHint();
       loop(lastTime);
@@ -1570,7 +1634,7 @@
     }
 
     function setMessage(text) {
-      messageEl.textContent = text;
+      messageEl.innerHTML = text;
     }
 
 
@@ -1605,12 +1669,21 @@
 
     function animateBlockFeedback() {
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked');
+      bloodFlash.classList.remove('show', 'blocked', 'dodged');
       game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
       bloodFlash.classList.add('blocked', 'show');
       game.classList.add('block-shake');
+    }
+
+    function animateDodgeFeedback() {
+      portrait.classList.remove('hit');
+      bloodFlash.classList.remove('show', 'blocked', 'dodged');
+      game.classList.remove('shake', 'block-shake');
+      void portrait.offsetWidth;
+      portrait.classList.add('hit');
+      bloodFlash.classList.add('dodged', 'show');
     }
 
     function getInputDelta() {
@@ -1777,7 +1850,7 @@
         <div class="nameplate">
           <div class="monster-results"></div>
           <div class="word"></div>
-          <div class="timer-ring" data-time="${monster.remaining.toFixed(1)}"></div>
+          <div class="timer-ring" data-time="${Math.max(0, Math.ceil(monster.remaining))}"></div>
         </div>
         <div class="monster-body">
           <div class="monster-hit-slash"></div>
@@ -1821,7 +1894,7 @@
       const deg = used * 360;
       const dangerColor = used > .72 ? '#ff5a6d' : used > .45 ? '#ffd166' : '#68e0a8';
       monster.timerEl.style.background = `conic-gradient(${dangerColor} ${deg}deg, rgba(255,255,255,.13) ${deg}deg)`;
-      monster.timerEl.dataset.time = Math.max(0, monster.remaining).toFixed(1);
+      monster.timerEl.dataset.time = String(Math.max(0, Math.ceil(monster.remaining)));
       monster.el.classList.toggle('active', monster.id === activeMonsterId);
     }
 
@@ -1858,7 +1931,7 @@
       startOverlay.classList.remove('hidden');
       updateKeyboardHint();
       lastInputTime = null;
-      setMessage('키보드나 하단 알파벳 버튼으로 몬스터 이름을 입력하세요. 진행 버튼은 Space로도 누를 수 있습니다.');
+      setMessage('몬스터 이름을 입력해 처치하세요!<br>스페이스바로 방어하고, 피격 직전에 Tab 키로 회피할 수 있습니다.');
     }
 
     function lockProgressInputUntilRelease() {
@@ -1906,6 +1979,13 @@
         return;
       }
 
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        if (e.repeat) return;
+        useDodge();
+        return;
+      }
+
       if (e.key.length !== 1) return;
       const char = e.key.toLowerCase();
       if (!/^[a-z]$/.test(char)) return;
@@ -1919,7 +1999,7 @@
       if (e.key === ' ' || e.key === 'Enter') {
         progressKeyArmed = true;
       }
-      if (e.key === 'Control') {
+      if (e.key === 'Control' || e.key === 'Tab') {
         e.preventDefault();
       }
 
@@ -2008,7 +2088,7 @@
       setMessage(reason);
 
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked');
+      bloodFlash.classList.remove('show', 'blocked', 'dodged');
       game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
@@ -2086,8 +2166,8 @@
           return;
         }
 
-        if (button.dataset.action === 'potion') {
-          usePotion();
+        if (button.dataset.action === 'dodge') {
+          useDodge();
           return;
         }
 
@@ -2110,6 +2190,10 @@
       }, true);
     }
 
+    potionSlot.addEventListener('click', (e) => {
+      e.preventDefault();
+      usePotion();
+    });
     startButton.addEventListener('click', resetGame);
     restartButton.addEventListener('click', resetGame);
     homeButton.addEventListener('click', goToStart);
