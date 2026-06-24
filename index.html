@@ -28,12 +28,23 @@
       background: #070707;
       color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-user-select: none;
       user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      overscroll-behavior: none;
     }
 
     body {
       display: grid;
       place-items: center;
+    }
+
+    #game, button, div, span, p, h1, h2, h3, small {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
     }
 
     #game {
@@ -48,31 +59,6 @@
       isolation: isolate;
     }
 
-    .title {
-      display: none !important;
-      position: absolute;
-      z-index: 20;
-      left: 24px;
-      top: 20px;
-      flex-direction: column;
-      gap: 4px;
-      text-shadow: 0 3px 0 rgba(0,0,0,.45);
-      pointer-events: none;
-    }
-
-    .title h1 {
-      margin: 0;
-      font-size: 32px;
-      line-height: 1;
-      letter-spacing: -1.2px;
-    }
-
-    .title small {
-      color: #c7c7c7;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: .14em;
-    }
 
     .dungeon {
       position: absolute;
@@ -1229,8 +1215,6 @@
         transform-origin: 50% 0;
       }
 
-      .title h1 { font-size: 25px; }
-      .title small { font-size: 11px; }
       .monster { --y: 39%; width: 150px; }
       .monster.lane-left { --x: -130px; --scale: .76; }
       .monster.lane-mid { --x: 0px; --scale: .76; }
@@ -1262,6 +1246,7 @@
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 8px; }
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
+      .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
@@ -1280,10 +1265,6 @@
       <div class="torch right"></div>
     </section>
 
-    <div class="title">
-      <h1>던전앤도구리</h1>
-      <small>버전 0.2</small>
-    </div>
 
     <div id="monsterLayer"></div>
     <div id="comboToast"></div>
@@ -1329,7 +1310,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.2</div>
+          <div class="start-version">버전 0.21</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1442,7 +1423,7 @@
       if (!alphaKeyboard) return;
       alphaKeyboard.innerHTML = KEYBOARD_ROWS.map((row, index) => {
         const shieldButton = index === 2
-          ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="방어">🛡️</button>`
+          ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="막기">막기</button>`
           : '';
         return `
           <div class="alpha-row">
