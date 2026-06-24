@@ -237,8 +237,54 @@
       animation: monsterSlashTrail .18s ease-out both;
     }
 
+    .defeat-burst {
+      position: absolute;
+      z-index: 8;
+      left: 50%;
+      top: 58%;
+      width: 110px;
+      height: 72px;
+      translate: -50% -50%;
+      transform-origin: 50% 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .defeat-burst span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--dust-size, 24px);
+      height: var(--dust-size, 24px);
+      margin-left: calc(var(--dust-size, 24px) * -0.5);
+      margin-top: calc(var(--dust-size, 24px) * -0.5);
+      border-radius: 999px;
+      background: radial-gradient(circle at 35% 35%, rgba(230,222,210,.68), rgba(152,140,124,.92) 42%, rgba(82,72,62,.92) 100%);
+      filter: blur(2px);
+      opacity: 0;
+      transform: translate(0, 0) scale(.25);
+    }
+
+    .defeat-burst span:nth-child(1) { --dust-size: 30px; --dust-x: -24px; --dust-y: -8px; }
+    .defeat-burst span:nth-child(2) { --dust-size: 34px; --dust-x: -10px; --dust-y: -18px; }
+    .defeat-burst span:nth-child(3) { --dust-size: 28px; --dust-x: 10px; --dust-y: -14px; }
+    .defeat-burst span:nth-child(4) { --dust-size: 32px; --dust-x: 28px; --dust-y: -4px; }
+    .defeat-burst span:nth-child(5) { --dust-size: 36px; --dust-x: -28px; --dust-y: 10px; }
+    .defeat-burst span:nth-child(6) { --dust-size: 38px; --dust-x: -4px; --dust-y: 12px; }
+    .defeat-burst span:nth-child(7) { --dust-size: 30px; --dust-x: 18px; --dust-y: 14px; }
+    .defeat-burst span:nth-child(8) { --dust-size: 24px; --dust-x: 34px; --dust-y: 10px; }
+
     .monster.dead {
-      animation: monsterDead .22s ease-in both;
+      animation: monsterDead .38s ease-in both;
+    }
+
+    .monster.dead .defeat-burst {
+      opacity: 1;
+      transform: scale(3);
+    }
+
+    .monster.dead .defeat-burst span {
+      animation: defeatDust .42s ease-out both;
     }
 
     @keyframes monsterIn {
@@ -265,6 +311,12 @@
       100% { visibility: hidden; transform: translate(28px, -14px) scale(.98, .94); }
     }
 
+    @keyframes defeatDust {
+      0% { opacity: 0; transform: translate(0, 0) scale(.25); }
+      22% { opacity: .92; }
+      100% { opacity: 0; transform: translate(var(--dust-x), var(--dust-y)) scale(1.28); }
+    }
+
     @keyframes resultPop {
       0% { opacity: 0; transform: translate(-50%, calc(var(--stack-offset) + 6px)) scale(.96); }
       8% { opacity: 1; transform: translate(-50%, var(--stack-offset)) scale(1); }
@@ -273,7 +325,7 @@
     }
 
     @keyframes monsterDead {
-      to { opacity: 0; transform: translate(-50%, -50%) translateY(-38px) scale(calc(var(--scale) * .55)); filter: blur(2px); }
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(calc(var(--scale) * .42)); filter: blur(4px) brightness(.9); }
     }
 
     .nameplate {
@@ -759,7 +811,7 @@
     }
 
     .heart.full { color: var(--heart); }
-    .heart.empty { color: var(--empty-heart); }
+    .heart.empty { color: var(--empty-heart); opacity: .2; }
     .heart + .heart { margin-left: -4px; }
 
     #shields {
@@ -885,10 +937,19 @@
       font-size: 14px;
       line-height: 2.05;
       white-space: normal;
+      overflow: hidden;
     }
 
     .message-line {
       display: block;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+    }
+
+    #message .kbd {
+      padding: 1px 5px;
+      border-radius: 5px;
+      font-size: .92em;
     }
 
     .hud-side {
@@ -946,6 +1007,21 @@
     .alpha-key:active {
       translate: 0 3px;
       box-shadow: 0 1px 0 #776557, 0 5px 10px rgba(0,0,0,.28);
+    }
+
+    .alpha-key.disabled,
+    .alpha-key:disabled {
+      opacity: .48;
+      filter: grayscale(.5);
+      cursor: default;
+      transform: none;
+      box-shadow: 0 2px 0 #66584d, 0 5px 10px rgba(0,0,0,.2);
+    }
+
+    .shield-key,
+    .dodge-key {
+      min-width: 52px;
+      font-size: 12px;
     }
 
     .score {
@@ -1158,7 +1234,9 @@
     }
 
     .button-hint {
-      margin-top: 16px;
+      margin-top: 14px;
+      width: fit-content;
+      align-self: center;
     }
 
     .monster-table {
@@ -1202,10 +1280,18 @@
     }
 
     .end-actions {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto auto;
       justify-content: center;
+      align-items: start;
       gap: 14px;
       margin-top: 4px;
+    }
+
+    .end-action-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .secondary-button {
@@ -1315,11 +1401,13 @@
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 12px; width: 100%; height: 48px; line-height: 2.0; max-width: none; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
+      #message .kbd { padding: 1px 4px; font-size: .9em; }
 
       #levelText { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 11px; }
       .exp-bar { height: 5px; }
-      #message { font-size: 12px; width: 100%; height: 48px; line-height: 2.0; max-width: none; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
+      #message .kbd { padding: 1px 4px; font-size: .9em; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
@@ -1394,7 +1482,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.26</div>
+          <div class="start-version">버전 0.27</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <div class="entrance-tower left"></div>
@@ -1412,10 +1500,14 @@
         <h2 id="endTitle">게임 오버</h2>
         <p id="endDesc">도구리가 던전 바닥과 친해졌습니다.</p>
         <div class="end-actions">
-          <button id="restartButton">다시 도전</button>
-          <button id="homeButton" class="secondary-button">시작 화면</button>
+          <div class="end-action-col">
+            <button id="restartButton">다시 도전</button>
+            <div class="button-hint"><span class="kbd">Space</span></div>
+          </div>
+          <div class="end-action-col">
+            <button id="homeButton" class="secondary-button">시작 화면</button>
+          </div>
         </div>
-        <div class="button-hint"><span class="kbd">Space</span> 로도 다시 도전</div>
       </div>
     </div>
   </main>
@@ -1514,7 +1606,7 @@
       if (!alphaKeyboard) return;
       alphaKeyboard.innerHTML = KEYBOARD_ROWS.map((row, index) => {
         const shieldButton = index === 2
-          ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="막기">막기</button>`
+          ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="방어">방어</button>`
           : '';
         const dodgeButton = index === 2
           ? `<button type="button" class="alpha-key dodge-key" data-action="dodge" aria-label="회피">회피</button>`
@@ -1535,9 +1627,19 @@
       const dodgeButton = alphaKeyboard.querySelector('.dodge-key');
       const now = performance.now() / 1000;
       const shieldEnabled = gameState === 'playing' && player && player.shields > 0;
-      const dodgeEnabled = gameState === 'playing' && now >= dodgeCooldownUntil;
-      if (shieldButton) shieldButton.classList.toggle('disabled', !shieldEnabled);
-      if (dodgeButton) dodgeButton.classList.toggle('disabled', !dodgeEnabled);
+      const cooldownRemaining = Math.max(0, dodgeCooldownUntil - now);
+      const dodgeEnabled = gameState === 'playing' && cooldownRemaining <= 0;
+      if (shieldButton) {
+        shieldButton.classList.toggle('disabled', !shieldEnabled);
+        shieldButton.disabled = !shieldEnabled;
+        shieldButton.textContent = '방어';
+      }
+      if (dodgeButton) {
+        dodgeButton.classList.toggle('disabled', !dodgeEnabled);
+        dodgeButton.disabled = !dodgeEnabled;
+        dodgeButton.textContent = dodgeEnabled ? '회피' : `${cooldownRemaining.toFixed(1)}초`;
+        dodgeButton.setAttribute('aria-label', dodgeEnabled ? '회피' : `회피 쿨타임 ${cooldownRemaining.toFixed(1)}초`);
+      }
     }
 
     function handleAlphabetButton(char) {
@@ -1572,11 +1674,15 @@
       dodgeCooldownUntil = now + DODGE_COOLDOWN;
       updateActionButtonStates();
 
-      if (dodgeCooldownTimer) clearTimeout(dodgeCooldownTimer);
-      dodgeCooldownTimer = setTimeout(() => {
+      if (dodgeCooldownTimer) clearInterval(dodgeCooldownTimer);
+      dodgeCooldownTimer = setInterval(() => {
         updateActionButtonStates();
-        dodgeCooldownTimer = null;
-      }, Math.ceil(DODGE_COOLDOWN * 1000));
+        if (performance.now() / 1000 >= dodgeCooldownUntil) {
+          clearInterval(dodgeCooldownTimer);
+          dodgeCooldownTimer = null;
+          updateActionButtonStates();
+        }
+      }, 100);
 
       const target = monsters
         .filter(monster => monster.remaining > 0 && monster.remaining <= DODGE_WINDOW)
@@ -1616,7 +1722,7 @@
       nextMonsterId = 1;
       dragonSpawned = false;
       dodgeCooldownUntil = 0;
-      if (dodgeCooldownTimer) { clearTimeout(dodgeCooldownTimer); dodgeCooldownTimer = null; }
+      if (dodgeCooldownTimer) { clearInterval(dodgeCooldownTimer); dodgeCooldownTimer = null; }
       gameState = 'playing';
       progressKeyArmed = true;
       isBlocking = false;
@@ -1896,6 +2002,10 @@
         </div>
         <div class="monster-body">
           <div class="monster-hit-slash"></div>
+          <div class="defeat-burst" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
           <div class="horn left"></div>
           <div class="horn right"></div>
           <div class="eye left"></div>
@@ -2105,7 +2215,7 @@
       monsters = monsters.filter(m => m.id !== monster.id);
       if (activeMonsterId === monster.id) activeMonsterId = null;
       updateKeyboardHint();
-      setTimeout(() => monster.el.remove(), 220);
+      setTimeout(() => monster.el.remove(), 440);
 
       if (monster.level === 12) {
         winGame();
