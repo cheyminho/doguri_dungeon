@@ -592,7 +592,7 @@
     #sword {
       position: absolute;
       z-index: 14;
-      right: 78px;
+      right: 58px;
       bottom: 132px;
       width: 210px;
       height: 300px;
@@ -1470,7 +1470,7 @@
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
       #guardShield { left: 0px; bottom: 178px; scale: .68; }
-      #sword { right: 10px; bottom: 186px; scale: .72; }
+      #sword { right: -4px; bottom: 186px; scale: .72; }
       #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
@@ -1573,7 +1573,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.33</div>
+          <div class="start-version">버전 0.34</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -2536,6 +2536,7 @@
       setFloorMessage();
       renderStageHud();
       updateKeyboardHint();
+      updateActionButtonStates();
       loop(lastTime);
     }
 
