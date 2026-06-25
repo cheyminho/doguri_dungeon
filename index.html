@@ -237,7 +237,7 @@
       position: absolute;
       z-index: 6;
       left: calc(50% + var(--slash-offset-x, 0px));
-      top: calc(52% + var(--slash-offset-y, 0px));
+      top: calc(52% + var(--slash-offset-y, 0px) + var(--hit-effect-offset-y, 0px));
       width: 190px;
       height: 56px;
       pointer-events: none;
@@ -370,6 +370,10 @@
       box-shadow: none;
       backdrop-filter: none;
       white-space: nowrap;
+    }
+
+    .monster.level-low {
+      --hit-effect-offset-y: 30px;
     }
 
     .monster.level-low .nameplate {
@@ -1478,7 +1482,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.35</div>
+          <div class="start-version">버전 0.36</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
