@@ -1453,14 +1453,14 @@
       #floorProgressText { margin-top: 5px; font-size: 14px; }
 
       .dungeon {
-        bottom: 260px;
+        bottom: 280px;
         transform: none;
         transform-origin: 50% 0;
-        background-size: 100% auto;
-        background-position: center -36px;
+        background-size: auto 100%;
+        background-position: center bottom;
       }
 
-      .monster { --y: 39%; width: 150px; }
+      .monster { --y: 36%; width: 150px; }
       .monster.lane-left { --x: -130px; --scale: .76; }
       .monster.lane-mid { --x: 0px; --scale: .76; }
       .monster.lane-right { --x: 130px; --scale: .76; }
@@ -1471,7 +1471,7 @@
       .timer-ring { width: 30px; height: 30px; }
       #guardShield { left: 0px; bottom: 178px; scale: .68; }
       #sword { right: 10px; bottom: 186px; scale: .72; }
-      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 0; }
+      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 0; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
@@ -1573,7 +1573,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.3</div>
+          <div class="start-version">버전 0.31</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
