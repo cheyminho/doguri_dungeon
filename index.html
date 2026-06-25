@@ -1573,7 +1573,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.32</div>
+          <div class="start-version">버전 0.33</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -2276,6 +2276,11 @@
         return;
       }
 
+      if (monster.level === 12) {
+        damageDoguri(`${monster.name}의 치명적인 공격!`, player.hp);
+        return;
+      }
+
       damageDoguri(`${monster.name}의 공격!`);
     }
 
@@ -2534,9 +2539,9 @@
       loop(lastTime);
     }
 
-    function damageDoguri(reason) {
+    function damageDoguri(reason, amount = 1) {
       if (gameState !== 'playing') return;
-      player.hp = Math.max(0, player.hp - 1);
+      player.hp = Math.max(0, player.hp - amount);
       renderHud();
       setMessage(reason);
 
