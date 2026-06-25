@@ -62,11 +62,21 @@
 
     .dungeon {
       position: absolute;
-      inset: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 208px;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(210, 210, 210, .10), transparent 22%),
-        linear-gradient(#242424 0%, #151515 44%, #080808 100%);
+      background: #151515 url("dungeon_bg.png") center -36px / 100% auto no-repeat;
+    }
+
+    .dungeon .ceiling,
+    .dungeon .floor,
+    .dungeon .left-wall,
+    .dungeon .right-wall,
+    .dungeon .back-wall,
+    .dungeon .torch {
+      display: none;
     }
 
     .ceiling, .floor, .left-wall, .right-wall, .back-wall {
@@ -193,6 +203,7 @@
       justify-items: center;
       animation: monsterIn .24s cubic-bezier(.2, 1.3, .45, 1) both;
       filter: drop-shadow(0 24px 22px rgba(0,0,0,.52));
+      transition: left .16s ease-out, top .16s ease-out;
     }
 
     .monster.lane-left { --x: -260px; --scale: 1; }
@@ -648,7 +659,7 @@
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 24px;
+      bottom: 0;
       z-index: 18;
       min-height: 208px;
       padding: 24px 22px 16px;
@@ -864,7 +875,7 @@
     }
 
     #potionSlot:active {
-      transform: translateY(-4px);
+      scale: .94;
     }
 
     #potionIcon {
@@ -990,23 +1001,24 @@
       padding: 0;
       border-radius: 10px;
       color: #261821;
-      background: linear-gradient(#fff1d1, #d5c1a0);
+      background: #fff1d1;
       font-size: 13px;
       font-weight: 950;
       line-height: 1;
-      box-shadow: 0 4px 0 #776557, 0 9px 16px rgba(0,0,0,.28);
+      box-shadow: none;
       touch-action: manipulation;
+      transition: scale .08s ease, transform .08s ease;
     }
     .alpha-key.next-key {
-      background: linear-gradient(#fff59d, #ffbf47);
-      box-shadow: 0 4px 0 #9c6a22, 0 0 0 3px rgba(255, 209, 102, .42), 0 10px 20px rgba(0,0,0,.34);
+      background: #fff59d;
+      box-shadow: none;
       transform: translateY(-2px) scale(1.06);
     }
 
 
     .alpha-key:active {
-      translate: 0 3px;
-      box-shadow: 0 1px 0 #776557, 0 5px 10px rgba(0,0,0,.28);
+      scale: .94;
+      box-shadow: none;
     }
 
     .alpha-key.disabled,
@@ -1015,7 +1027,7 @@
       filter: grayscale(.5);
       cursor: default;
       transform: none;
-      box-shadow: 0 2px 0 #66584d, 0 5px 10px rgba(0,0,0,.2);
+      box-shadow: none;
     }
 
     .shield-key,
@@ -1079,9 +1091,7 @@
 
     #startOverlay {
       padding: 0;
-      background:
-        radial-gradient(circle at 50% 36%, rgba(255,255,255,.12), transparent 24%),
-        linear-gradient(180deg, #303030 0%, #171717 48%, #070707 100%);
+      background: #fcf9f2;
       backdrop-filter: none;
     }
 
@@ -1095,22 +1105,20 @@
       align-items: center;
       justify-content: center;
       gap: clamp(14px, 2.6vh, 24px);
-      background:
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0/64px 64px,
-        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0/64px 64px,
-        radial-gradient(circle at 50% 46%, rgba(255,255,255,.10), transparent 32%),
-        linear-gradient(180deg, #2b2b2b, #111);
+      background: #fcf9f2;
       border: 0;
-      box-shadow: inset 0 0 120px rgba(0,0,0,.72);
+      box-shadow: none;
     }
 
     .start-copy {
       text-align: center;
-      text-shadow: 0 5px 0 rgba(0,0,0,.45);
+      color: #000;
+      text-shadow: none;
     }
 
     #startOverlay .modal h2 {
       margin: 0;
+      color: #000;
       font-size: clamp(46px, 8vw, 82px);
       line-height: .95;
       letter-spacing: -2.2px;
@@ -1118,7 +1126,7 @@
 
     .start-version {
       margin-top: 9px;
-      color: #c7c7c7;
+      color: #000;
       font-size: clamp(13px, 1.8vw, 17px);
       font-weight: 800;
       letter-spacing: .14em;
@@ -1126,27 +1134,26 @@
 
     .dungeon-entrance {
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: min(510px, 74vw);
       height: min(300px, 36vh);
       min-height: 220px;
       margin: 2px 0 4px;
-      filter: drop-shadow(0 28px 28px rgba(0,0,0,.55));
+      filter: none;
     }
 
     .dungeon-entrance::before {
-      content: "";
-      position: absolute;
-      left: 10%;
-      right: 10%;
-      bottom: 18%;
-      height: 58%;
-      border: 4px solid rgba(255,255,255,.13);
-      border-radius: 24px 24px 8px 8px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px) 0 0/52px 42px,
-        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px) 0 0/52px 42px,
-        linear-gradient(180deg, #4a4a4a, #252525);
-      box-shadow: inset 0 -24px 38px rgba(0,0,0,.32);
+      content: none;
+    }
+
+    .start-gate-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
     }
 
     .entrance-tower {
@@ -1233,6 +1240,45 @@
       font-weight: 700;
     }
 
+    #startOverlay .start-hint {
+      width: 100%;
+      margin-top: -8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+      text-align: center;
+      text-shadow: none;
+      transform: translateY(-6px);
+    }
+
+    #startOverlay .start-hint .kbd {
+      color: #fff;
+      background: #000;
+      text-shadow: none;
+    }
+
+    .cheat-toggle {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 3;
+      padding: 9px 14px;
+      border: 1px solid #000;
+      border-radius: 999px;
+      color: #000;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      box-shadow: none;
+    }
+
+    .cheat-toggle.active {
+      color: #fff;
+      background: #000;
+    }
+
     .button-hint {
       margin-top: 14px;
       width: fit-content;
@@ -1267,16 +1313,17 @@
       border-radius: 999px;
       padding: 14px 28px;
       color: #21131c;
-      background: linear-gradient(#ffe29b, #f5a936);
+      background: #ffe29b;
       font-size: 18px;
       font-weight: 950;
       cursor: pointer;
-      box-shadow: 0 7px 0 #8e5929, 0 18px 34px rgba(0,0,0,.36);
+      box-shadow: none;
+      transition: scale .08s ease, transform .08s ease;
     }
 
     button:active {
-      translate: 0 5px;
-      box-shadow: 0 2px 0 #8e5929, 0 8px 20px rgba(0,0,0,.36);
+      scale: .96;
+      box-shadow: none;
     }
 
     .end-actions {
@@ -1296,12 +1343,12 @@
 
     .secondary-button {
       color: #f8f1dc;
-      background: linear-gradient(#565656, #2d2d2d);
-      box-shadow: 0 7px 0 #171717, 0 18px 34px rgba(0,0,0,.36);
+      background: #565656;
+      box-shadow: none;
     }
 
     .secondary-button:active {
-      box-shadow: 0 2px 0 #171717, 0 8px 20px rgba(0,0,0,.36);
+      box-shadow: none;
     }
 
     #comboToast {
@@ -1318,6 +1365,35 @@
       opacity: 0;
       transform: translateY(8px) scale(.96);
       pointer-events: none;
+    }
+
+
+
+    #stageHud {
+      position: absolute;
+      z-index: 21;
+      left: 28px;
+      top: 24px;
+      pointer-events: none;
+      text-align: left;
+      text-shadow: 0 4px 0 rgba(0,0,0,.55), 0 8px 20px rgba(0,0,0,.45);
+    }
+
+    #floorText {
+      font-size: clamp(34px, 5vw, 58px);
+      font-weight: 950;
+      line-height: .95;
+      letter-spacing: -0.05em;
+      color: #fff6d7;
+    }
+
+    #floorProgressText {
+      margin-top: 8px;
+      font-size: clamp(15px, 2.2vw, 22px);
+      font-weight: 900;
+      line-height: 1;
+      color: #fff6d7;
+      letter-spacing: -0.02em;
     }
 
     #comboToast.show {
@@ -1372,9 +1448,16 @@
         border: 0;
       }
 
+      #stageHud { left: 14px; top: 14px; }
+      #floorText { font-size: 34px; }
+      #floorProgressText { margin-top: 5px; font-size: 14px; }
+
       .dungeon {
-        transform: translateY(-24px) scale(1.04);
+        bottom: 260px;
+        transform: none;
         transform-origin: 50% 0;
+        background-size: 100% auto;
+        background-position: center -36px;
       }
 
       .monster { --y: 39%; width: 150px; }
@@ -1388,7 +1471,7 @@
       .timer-ring { width: 30px; height: 30px; }
       #guardShield { left: 0px; bottom: 178px; scale: .68; }
       #sword { right: 10px; bottom: 186px; scale: .72; }
-      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 44px; }
+      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 260px; padding: 24px 10px 12px; gap: 8px 10px; bottom: 0; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
@@ -1397,6 +1480,7 @@
       #hearts { gap: 1px; font-size: 23px; }
       #shields { gap: 1px; margin-left: -6px; font-size: 20px; }
       #potionSlot { justify-self: end; align-self: center; transform: translateY(-8px); gap: 0; min-width: 0; padding: 0; }
+      #potionSlot:active { scale: .94; }
       #potionIcon { font-size: 54px; }
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
@@ -1416,6 +1500,7 @@
       .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
       .dodge-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
+      .cheat-toggle { top: 12px; right: 12px; padding: 8px 12px; font-size: 11px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
     }
@@ -1436,6 +1521,11 @@
 
     <div id="monsterLayer"></div>
     <div id="comboToast"></div>
+
+    <div id="stageHud" aria-label="스테이지 진행도">
+      <div id="floorText">지하 1층</div>
+      <div id="floorProgressText">0%</div>
+    </div>
 
     <div id="guardShield" aria-hidden="true">
       <div class="guardshield-back"></div>
@@ -1479,19 +1569,17 @@
     <div class="blood-flash" id="bloodFlash"></div>
 
     <div class="overlay" id="startOverlay">
+      <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.27</div>
+          <div class="start-version">버전 0.3</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
-          <div class="entrance-tower left"></div>
-          <div class="entrance-tower right"></div>
-          <div class="entrance-gate"></div>
-          <div class="entrance-path"></div>
+          <img class="start-gate-image" src="gate.png" alt="" />
         </div>
         <button id="startButton">입장</button>
-        <div class="start-hint"><span class="kbd">Space</span> 로도 시작</div>
+        <div class="start-hint"><span class="kbd">Space</span></div>
       </div>
     </div>
 
@@ -1506,6 +1594,7 @@
           </div>
           <div class="end-action-col">
             <button id="homeButton" class="secondary-button">시작 화면</button>
+            <div class="button-hint home-hint"><span class="kbd">ESC</span></div>
           </div>
         </div>
       </div>
@@ -1515,17 +1604,18 @@
   <script>
     const MONSTER_DATA = [
       { level: 1, name: 'Rat', attackTime: 4.0, colors: ['#7a7080', '#3d3545'] },
-      { level: 2, name: 'Wolf', attackTime: 4.2, colors: ['#6d82a3', '#344259'] },
-      { level: 3, name: 'Ghoul', attackTime: 4.4, colors: ['#85a27d', '#40543b'] },
+      { level: 2, name: 'Toad', attackTime: 4.2, colors: ['#6d82a3', '#344259'] },
+      { level: 3, name: 'Slime', attackTime: 4.4, colors: ['#85a27d', '#40543b'] },
       { level: 4, name: 'Goblin', attackTime: 4.7, colors: ['#78c26b', '#32743f'] },
-      { level: 5, name: 'Specter', attackTime: 5.0, colors: ['#8bd0e7', '#3d678d'] },
-      { level: 6, name: 'Skeleton', attackTime: 5.3, colors: ['#d9d1ba', '#827665'] },
+      { level: 5, name: 'Cyclops', attackTime: 5.0, colors: ['#8bd0e7', '#3d678d'] },
+      { level: 6, name: 'Basilisk', attackTime: 5.3, colors: ['#d9d1ba', '#827665'] },
       { level: 7, name: 'Dire Troll', attackTime: 5.7, colors: ['#b7865d', '#65402d'] },
-      { level: 8, name: 'Stone Golem', attackTime: 6.0, colors: ['#9096a0', '#545a63'] },
-      { level: 9, name: 'Shadow Mimic', attackTime: 6.3, colors: ['#7b5ab8', '#2b2348'] },
-      { level: 10, name: 'Dark Beholder', attackTime: 6.6, colors: ['#bd5f86', '#512540'] },
-      { level: 11, name: 'Mad Mind Flayer', attackTime: 7.0, colors: ['#c379d6', '#55316d'] },
+      { level: 8, name: 'Magma Golem', attackTime: 6.0, colors: ['#9096a0', '#545a63'] },
+      { level: 9, name: 'Hungry Mimic', attackTime: 6.3, colors: ['#7b5ab8', '#2b2348'] },
+      { level: 10, name: 'Void Beholder', attackTime: 6.6, colors: ['#bd5f86', '#512540'] },
+      { level: 11, name: 'Elder Lich King', attackTime: 7.0, colors: ['#c379d6', '#55316d'] },
       { level: 12, name: 'Ancient Red Dragon', attackTime: 7.5, colors: ['#e35b45', '#741c19'] },
+      { level: 13, name: 'Fire', attackTime: 2.0, colors: ['#ffb347', '#d92f1f'] },
     ];
 
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
@@ -1537,6 +1627,16 @@
     const DODGE_WINDOW = 0.5;
     const DODGE_COOLDOWN = 1.0;
     const INPUT_RESULT_THRESHOLDS = { perfect: 0.2, great: 0.5, good: 3.0 };
+    const FLOOR_CONFIGS = {
+      1: { quota: 5, levels: [1, 2, 3] },
+      2: { quota: 5, levels: [3, 4, 5] },
+      3: { quota: 7, levels: [5, 6, 7] },
+      4: { quota: 7, levels: [7, 8, 9] },
+      5: { quota: 9, levels: [9, 10], firstBossLevel: 11, bossSpawnNumber: 6 },
+      6: { quota: 6, levels: [13], waveMode: 'fireDragon' },
+    };
+    const MAX_FLOOR = 6;
+
 
     const game = document.getElementById('game');
     const monsterLayer = document.getElementById('monsterLayer');
@@ -1559,10 +1659,13 @@
     const endTitle = document.getElementById('endTitle');
     const endDesc = document.getElementById('endDesc');
     const startButton = document.getElementById('startButton');
+    const cheatToggle = document.getElementById('cheatToggle');
     const restartButton = document.getElementById('restartButton');
     const homeButton = document.getElementById('homeButton');
     const monsterTable = document.getElementById('monsterTable');
     const comboToast = document.getElementById('comboToast');
+    const floorText = document.getElementById('floorText');
+    const floorProgressText = document.getElementById('floorProgressText');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
 
     let player;
@@ -1578,9 +1681,16 @@
     let isBlocking = false;
     let progressKeyArmed = true;
     let dragonSpawned = false;
+    let currentFloor = 1;
+    let floorSpawned = 0;
+    let floorKills = 0;
+    let floorFirstBossSpawned = false;
+    let stageProgressReady = false;
+    let stageProgressDelayTimeout = null;
     let dodgeCooldownUntil = 0;
     let dodgeCooldownTimer = null;
     let shieldBlockTimeout = null;
+    let cheatCodeEnabled = false;
 
     function normalizeName(name) {
       return name.toLowerCase().replace(/\s+/g, '');
@@ -1703,7 +1813,9 @@
       setMessage(`${target.name}의 공격을 회피했습니다!`);
     }
 
-    function resetGame() {
+    function resetGame(startFloor = 1) {
+      const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
+      const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
       cancelAnimationFrame(animationId);
       player = {
         hp: BASE_MAX_HP,
@@ -1721,7 +1833,13 @@
       spawnTimer = 0.2;
       nextMonsterId = 1;
       dragonSpawned = false;
+      currentFloor = initialFloor;
+      floorSpawned = 0;
+      floorKills = 0;
+      floorFirstBossSpawned = false;
       dodgeCooldownUntil = 0;
+      stageProgressReady = false;
+      if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       if (dodgeCooldownTimer) { clearInterval(dodgeCooldownTimer); dodgeCooldownTimer = null; }
       gameState = 'playing';
       progressKeyArmed = true;
@@ -1736,7 +1854,7 @@
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.add('hidden');
-      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
+      setFloorMessage();
       renderHud();
       updateKeyboardHint();
       loop(lastTime);
@@ -1769,11 +1887,28 @@
       expFill.style.width = `${pct}%`;
       expText.textContent = `${player.exp} / ${need}`;
       if (killCountEl) killCountEl.textContent = player.kills;
+      renderStageHud();
       updateActionButtonStates();
     }
 
     function setMessage(text) {
       messageEl.innerHTML = text;
+    }
+
+    function renderStageHud() {
+      const config = FLOOR_CONFIGS[currentFloor];
+      const total = config ? config.quota : 1;
+      const progress = Math.min(100, Math.floor((floorKills / total) * 100));
+      if (floorText) floorText.textContent = `지하 ${currentFloor}층`;
+      if (floorProgressText) floorProgressText.textContent = `${progress}%`;
+    }
+
+    function setFloorMessage() {
+      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
+    }
+
+    function getMonsterDataByLevel(level) {
+      return MONSTER_DATA.find(monster => monster.level === level);
     }
 
 
@@ -1949,27 +2084,81 @@
     }
 
     function getRandomMonsterData() {
-      const maxLevel = Math.min(12, player.level + 1);
-      const minLevel = Math.max(1, player.level - 2);
-      const candidates = MONSTER_DATA.filter(m => m.level >= minLevel && m.level <= maxLevel);
+      const config = FLOOR_CONFIGS[currentFloor];
+      if (!config) return MONSTER_DATA[0];
 
-      // 도구리보다 1 높은 몬스터가 가끔 확실히 섞이도록 보정합니다.
-      if (player.level < 12 && Math.random() < 0.35) {
-        return MONSTER_DATA[player.level];
+      const bossSpawnNumber = config.bossSpawnNumber || 1;
+      const isBossSpawnTurn = floorSpawned + 1 >= bossSpawnNumber;
+      if (config.firstBossLevel && !floorFirstBossSpawned && isBossSpawnTurn) {
+        return getMonsterDataByLevel(config.firstBossLevel);
       }
+
+      const candidates = MONSTER_DATA.filter(monster => config.levels.includes(monster.level));
       return candidates[Math.floor(Math.random() * candidates.length)];
     }
 
-    function trySpawnMonster() {
-      if (dragonSpawned) return;
-      if (monsters.length >= MAX_MONSTERS) return;
-      const usedLanes = new Set(monsters.map(m => m.lane));
+    function getSpawnLaneForData(data) {
+      const config = FLOOR_CONFIGS[currentFloor];
+      const usedLanes = new Set(monsters.map(monster => monster.lane));
       const freeLanes = LANES.filter(lane => !usedLanes.has(lane));
-      if (!freeLanes.length) return;
+      if (!freeLanes.length) return null;
 
-      const lane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+      if (config && config.firstBossLevel === data.level && !floorFirstBossSpawned && freeLanes.includes('lane-mid')) {
+        return 'lane-mid';
+      }
+
+      return freeLanes[Math.floor(Math.random() * freeLanes.length)];
+    }
+
+    function trySpawnMonster() {
+      const config = FLOOR_CONFIGS[currentFloor];
+      if (!config) return;
+
+      if (config.waveMode === 'fireDragon') {
+        trySpawnFloor6Wave();
+        return;
+      }
+
+      if (monsters.length >= MAX_MONSTERS) return;
+      if (floorSpawned >= config.quota) return;
+
       const data = getRandomMonsterData();
+      if (!data) return;
+
+      const lane = getSpawnLaneForData(data);
+      if (!lane) return;
+
       spawnMonster(data, lane);
+      floorSpawned += 1;
+
+      if (config.firstBossLevel === data.level && !floorFirstBossSpawned) {
+        floorFirstBossSpawned = true;
+      }
+    }
+
+    function trySpawnFloor6Wave() {
+      if (currentFloor !== 6) return;
+      if (monsters.length > 0) return;
+
+      const fireData = getMonsterDataByLevel(13);
+      const dragonData = getMonsterDataByLevel(12);
+      if (!fireData || !dragonData) return;
+
+      if (floorSpawned === 0) {
+        spawnMonster(fireData, 'lane-left');
+        spawnMonster(fireData, 'lane-mid');
+        spawnMonster(fireData, 'lane-right');
+        floorSpawned = 3;
+        return;
+      }
+
+      if (floorSpawned === 3 && floorKills >= 3) {
+        spawnMonster(fireData, 'lane-left');
+        spawnMonster(dragonData, 'lane-mid');
+        spawnMonster(fireData, 'lane-right');
+        floorSpawned = 6;
+        floorFirstBossSpawned = true;
+      }
     }
 
     function spawnMonster(data, lane) {
@@ -2050,6 +2239,27 @@
       monster.el.classList.toggle('active', monster.id === activeMonsterId);
     }
 
+    function setMonsterLane(monster, lane) {
+      if (!monster || !monster.el || !lane || monster.lane === lane) return;
+      LANES.forEach(laneClass => monster.el.classList.remove(laneClass));
+      monster.lane = lane;
+      monster.el.classList.add(lane);
+    }
+
+    function swapLevel11MonsterLane(monster) {
+      if (!monster || monster.level !== 11 || !LANES.includes(monster.lane)) return;
+
+      const nextLanes = LANES.filter(lane => lane !== monster.lane);
+      if (!nextLanes.length) return;
+
+      const nextLane = nextLanes[Math.floor(Math.random() * nextLanes.length)];
+      const previousLane = monster.lane;
+      const otherMonster = monsters.find(item => item.id !== monster.id && item.lane === nextLane);
+
+      setMonsterLane(monster, nextLane);
+      if (otherMonster) setMonsterLane(otherMonster, previousLane);
+    }
+
     function monsterAttack(monster) {
       monster.remaining = monster.attackTime;
       monster.el.classList.remove('attack');
@@ -2073,6 +2283,8 @@
       cancelAnimationFrame(animationId);
       gameState = 'start';
       progressKeyArmed = true;
+      stageProgressReady = false;
+      if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       monsters = [];
       activeMonsterId = null;
       monsterLayer.innerHTML = '';
@@ -2081,13 +2293,25 @@
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
       startOverlay.classList.remove('hidden');
+      restartButton.textContent = '다시 도전';
       updateKeyboardHint();
       lastInputTime = null;
       setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
     }
 
-    function lockProgressInputUntilRelease() {
-      progressKeyArmed = false;
+
+    function updateCheatToggle() {
+      if (!cheatToggle) return;
+      cheatToggle.classList.toggle('active', cheatCodeEnabled);
+      cheatToggle.setAttribute('aria-pressed', String(cheatCodeEnabled));
+      cheatToggle.textContent = cheatCodeEnabled ? '치트 ON' : '치트 OFF';
+    }
+
+    function startFromCheatFloor(floor) {
+      if (!cheatCodeEnabled) return false;
+      if (!Number.isInteger(floor) || floor < 1 || floor > MAX_FLOOR) return false;
+      resetGame(floor);
+      return true;
     }
 
     function pressProgressButton() {
@@ -2098,7 +2322,12 @@
         return true;
       }
       if (!endOverlay.classList.contains('hidden')) {
-        resetGame();
+        if (gameState === 'stageclear') {
+          if (!stageProgressReady) return false;
+          startNextFloor();
+        } else {
+          resetGame();
+        }
         return true;
       }
       return false;
@@ -2106,6 +2335,21 @@
 
     function handleKeydown(e) {
       if (gameState !== 'playing') {
+        const startScreenVisible = !startOverlay.classList.contains('hidden');
+        const endScreenVisible = !endOverlay.classList.contains('hidden');
+
+        if (startScreenVisible && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
+          e.preventDefault();
+          startFromCheatFloor(Number(e.key));
+          return;
+        }
+
+        if (endScreenVisible && e.key === 'Escape' && gameState !== 'stageclear') {
+          e.preventDefault();
+          goToStart();
+          return;
+        }
+
         if (e.key === ' ' || e.key === 'Enter') {
           e.preventDefault();
           pressProgressButton();
@@ -2151,7 +2395,8 @@
       if (e.key === ' ' || e.key === 'Enter') {
         progressKeyArmed = true;
       }
-      if (e.key === 'Control' || e.key === 'Tab') {
+
+      if (e.key === 'Control' || e.key === 'Tab' || e.key === 'Escape') {
         e.preventDefault();
       }
 
@@ -2198,6 +2443,11 @@
       showMonsterResult(target, inputResult.text, inputResult.className);
       renderMonsterWord(target);
       updateMonsterElement(target);
+
+      if (target.level === 11 && target.progress < target.normalized.length) {
+        swapLevel11MonsterLane(target);
+      }
+
       updateKeyboardHint();
 
       if (target.progress >= target.normalized.length) {
@@ -2207,9 +2457,11 @@
 
     function killMonster(monster) {
       player.kills += 1;
+      floorKills += 1;
       const gained = expReward(monster.level);
       player.exp += gained;
       setMessage(`${monster.name} 처치!`);
+      renderStageHud();
 
       monster.el.classList.add('dead');
       monsters = monsters.filter(m => m.id !== monster.id);
@@ -2217,20 +2469,69 @@
       updateKeyboardHint();
       setTimeout(() => monster.el.remove(), 440);
 
-      if (monster.level === 12) {
-        winGame();
-        return;
-      }
-
       while (player.exp >= expNeeded(player.level) && player.level < 12) {
         player.exp -= expNeeded(player.level);
         player.level += 1;
         player.maxHp += 1;
         player.hp = player.maxHp;
-        showToast(`LEVEL UP! Lv.${player.level}`);
+        showToast('레벨업!');
         setMessage(`레벨 업! 도구리 Lv.${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`);
       }
       renderHud();
+      if (currentFloor === 6) trySpawnFloor6Wave();
+      checkFloorClear();
+    }
+
+    function checkFloorClear() {
+      const config = FLOOR_CONFIGS[currentFloor];
+      if (!config || gameState !== 'playing') return;
+      if (floorKills >= config.quota && floorSpawned >= config.quota && monsters.length === 0) {
+        if (currentFloor >= MAX_FLOOR) {
+          winGame();
+        } else {
+          stageClear();
+        }
+      }
+    }
+
+    function stageClear() {
+      gameState = 'stageclear';
+      setBlocking(false);
+      stageProgressReady = false;
+      if (stageProgressDelayTimeout) clearTimeout(stageProgressDelayTimeout);
+      stageProgressDelayTimeout = setTimeout(() => {
+        stageProgressReady = true;
+        stageProgressDelayTimeout = null;
+      }, 500);
+      cancelAnimationFrame(animationId);
+      endTitle.textContent = `지하 ${currentFloor}층 클리어!`;
+      endDesc.innerHTML = `지하 ${currentFloor}층의 몬스터를 모두 처치했습니다.<br /><b>Space</b>를 누르면 지하 ${currentFloor + 1}층으로 이동합니다.`;
+      restartButton.textContent = '다음 층';
+      const homeActionCol = homeButton.closest('.end-action-col');
+      if (homeActionCol) homeActionCol.style.display = 'none';
+      endOverlay.classList.remove('hidden');
+      updateKeyboardHint();
+    }
+
+    function startNextFloor() {
+      currentFloor += 1;
+      floorSpawned = 0;
+      floorKills = 0;
+      floorFirstBossSpawned = false;
+      monsters = [];
+      activeMonsterId = null;
+      monsterLayer.innerHTML = '';
+      spawnTimer = 0.2;
+      lastTime = performance.now();
+      gameState = 'playing';
+      progressKeyArmed = true;
+      stageProgressReady = false;
+      if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
+      endOverlay.classList.add('hidden');
+      setFloorMessage();
+      renderStageHud();
+      updateKeyboardHint();
+      loop(lastTime);
     }
 
     function damageDoguri(reason) {
@@ -2281,10 +2582,12 @@
     function gameOver() {
       gameState = 'gameover';
       setBlocking(false);
-      lockProgressInputUntilRelease();
       cancelAnimationFrame(animationId);
       endTitle.textContent = '게임 오버';
-      endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
+      endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />도달 층: <b>${currentFloor}층</b> · 처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
+      restartButton.textContent = '다시 도전';
+      const homeActionCol = homeButton.closest('.end-action-col');
+      if (homeActionCol) homeActionCol.style.display = 'flex';
       endOverlay.classList.remove('hidden');
       updateKeyboardHint();
     }
@@ -2292,11 +2595,13 @@
     function winGame() {
       gameState = 'clear';
       setBlocking(false);
-      lockProgressInputUntilRelease();
       cancelAnimationFrame(animationId);
       renderHud();
       endTitle.textContent = '게임 클리어!';
-      endDesc.innerHTML = `Ancient Red Dragon을 처치했습니다!<br />도구리가 던전의 키보드 왕이 되었습니다.`;
+      endDesc.innerHTML = `6층의 모든 몬스터를 처치했습니다!<br />도구리가 던전의 키보드 왕이 되었습니다.`;
+      restartButton.textContent = '다시 도전';
+      const homeActionCol = homeButton.closest('.end-action-col');
+      if (homeActionCol) homeActionCol.style.display = 'flex';
       endOverlay.classList.remove('hidden');
       updateKeyboardHint();
     }
@@ -2346,12 +2651,27 @@
       e.preventDefault();
       usePotion();
     });
-    startButton.addEventListener('click', resetGame);
-    restartButton.addEventListener('click', resetGame);
+    startButton.addEventListener('click', () => resetGame());
+    if (cheatToggle) {
+      cheatToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        cheatCodeEnabled = !cheatCodeEnabled;
+        updateCheatToggle();
+      });
+    }
+    restartButton.addEventListener('click', () => {
+      if (gameState === 'stageclear') {
+        if (!stageProgressReady) return;
+        startNextFloor();
+      } else {
+        resetGame();
+      }
+    });
     homeButton.addEventListener('click', goToStart);
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
 
+    updateCheatToggle();
     renderAlphabetKeyboard();
     renderMonsterTable();
     player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
