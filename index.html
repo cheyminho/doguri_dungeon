@@ -1479,7 +1479,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.37</div>
+          <div class="start-version">버전 0.38</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -2185,10 +2185,6 @@
       updateMonsterElement(monster);
     }
 
-    function getUntouchedMonsters() {
-      return monsters.length > 0 && monsters.every(monster => monster.progress === 0);
-    }
-
     function shouldHighlightNeededChar(monster, normalizedIndex) {
       if (normalizedIndex < monster.progress) return false;
 
@@ -2196,11 +2192,11 @@
         return monster.id === inputHintMode.monsterId && normalizedIndex === monster.progress;
       }
 
-      if (inputHintMode && inputHintMode.type === 'all-next') {
-        return normalizedIndex === monster.progress;
+      if (inputHintMode && inputHintMode.type === 'all-first') {
+        return normalizedIndex === 0;
       }
 
-      return getUntouchedMonsters() && normalizedIndex === 0;
+      return false;
     }
 
     function renderAllMonsterWords() {
@@ -2443,7 +2439,7 @@
           .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
         target = matching[0];
         if (!target) {
-          setInputHintMode({ type: 'all-next' });
+          setInputHintMode({ type: 'all-first' });
           applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
           updateKeyboardHint();
           return;
