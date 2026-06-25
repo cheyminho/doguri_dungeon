@@ -426,6 +426,11 @@
       text-shadow: none;
     }
 
+    .word .need-input {
+      color: #ff5a6d;
+      text-shadow: 0 2px 0 rgba(0,0,0,.75);
+    }
+
     .word .space {
       display: inline-block;
       width: .45em;
@@ -467,16 +472,7 @@
     }
 
     .enemy-lv {
-      position: absolute;
-      left: 50%;
-      bottom: 7px;
-      translate: -50% 0;
-      padding: 2px 8px;
-      border-radius: 999px;
-      color: #21131c;
-      background: rgba(255, 241, 190, .88);
-      font-size: 12px;
-      font-weight: 900;
+      display: none;
     }
 
 
@@ -572,6 +568,7 @@
 
     .portrait-panel {
       position: relative;
+      z-index: 10;
       grid-column: 1;
       grid-row: 1 / span 2;
       display: flex;
@@ -585,7 +582,7 @@
       position: absolute;
       left: 50%;
       top: -50px;
-      z-index: 5;
+      z-index: 30;
       min-width: 46px;
       padding: 7px 13px;
       border-radius: 15px;
@@ -1356,8 +1353,8 @@
         border: 0;
       }
 
-      #stageHud { left: 14px; top: 14px; }
-      #playTimeHud { right: 14px; top: 14px; font-size: 18px; }
+      #stageHud { left: 14px; top: 24px; }
+      #playTimeHud { right: 14px; top: 24px; font-size: 18px; }
       #floorText { font-size: 34px; }
       #floorProgressText { margin-top: 5px; font-size: 14px; }
 
@@ -1381,8 +1378,8 @@
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
-      #guardShield { left: 0px; bottom: 128px; scale: .7; }
-      #sword { right: -4px; bottom: 176px; scale: .7; }
+      #guardShield { left: 0px; bottom: 158px; scale: .7; }
+      #sword { right: -4px; bottom: 206px; scale: .7; }
       #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
       .portrait-panel { width: 78px; translate: 0 -10px; }
       .input-bubble { top: -41px; min-width: 40px; padding: 6px 11px; border-radius: 13px; font-size: 16px; }
@@ -1482,7 +1479,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.36</div>
+          <div class="start-version">버전 0.37</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -1588,6 +1585,7 @@
     let player;
     let monsters;
     let activeMonsterId;
+    let inputHintMode;
     let lastTime;
     let spawnTimer;
     let nextMonsterId;
@@ -1767,6 +1765,7 @@
       };
       monsters = [];
       activeMonsterId = null;
+      inputHintMode = null;
       lastTime = performance.now();
       spawnTimer = 0.2;
       nextMonsterId = 1;
@@ -2186,6 +2185,38 @@
       updateMonsterElement(monster);
     }
 
+    function getUntouchedMonsters() {
+      return monsters.length > 0 && monsters.every(monster => monster.progress === 0);
+    }
+
+    function shouldHighlightNeededChar(monster, normalizedIndex) {
+      if (normalizedIndex < monster.progress) return false;
+
+      if (inputHintMode && inputHintMode.type === 'active-next') {
+        return monster.id === inputHintMode.monsterId && normalizedIndex === monster.progress;
+      }
+
+      if (inputHintMode && inputHintMode.type === 'all-next') {
+        return normalizedIndex === monster.progress;
+      }
+
+      return getUntouchedMonsters() && normalizedIndex === 0;
+    }
+
+    function renderAllMonsterWords() {
+      monsters.forEach(monster => renderMonsterWord(monster));
+    }
+
+    function setInputHintMode(mode) {
+      inputHintMode = mode;
+      renderAllMonsterWords();
+    }
+
+    function clearInputHintMode() {
+      inputHintMode = null;
+      renderAllMonsterWords();
+    }
+
     function renderMonsterWord(monster) {
       let normalizedIndex = 0;
       let html = '';
@@ -2195,7 +2226,9 @@
           html += `<span class="space ${done ? 'done' : ''}">&nbsp;</span>`;
         } else {
           const done = normalizedIndex < monster.progress;
-          html += `<span class="${done ? 'done' : ''}">${ch}</span>`;
+          const needInput = shouldHighlightNeededChar(monster, normalizedIndex);
+          const classes = [done ? 'done' : '', needInput ? 'need-input' : ''].filter(Boolean).join(' ');
+          html += `<span class="${classes}">${ch}</span>`;
           normalizedIndex++;
         }
       }
@@ -2265,6 +2298,7 @@
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       monsters = [];
       activeMonsterId = null;
+      inputHintMode = null;
       monsterLayer.innerHTML = '';
       isBlocking = false;
       guardShield.classList.remove('holding', 'block');
@@ -2397,6 +2431,7 @@
 
       let target = monsters.find(m => m.id === activeMonsterId);
       if (target && target.normalized[target.progress] !== char) {
+        setInputHintMode({ type: 'active-next', monsterId: target.id });
         applyTypoPenalty(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
         updateKeyboardHint();
         return;
@@ -2408,6 +2443,7 @@
           .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
         target = matching[0];
         if (!target) {
+          setInputHintMode({ type: 'all-next' });
           applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
           updateKeyboardHint();
           return;
@@ -2415,13 +2451,14 @@
         activeMonsterId = target.id;
       }
 
+      inputHintMode = null;
       const inputDelta = getInputDelta();
       const inputResult = getResultLabel(inputDelta);
       target.progress += 1;
       target.remaining = Math.min(target.attackTime, target.remaining + 0.1); // 정확한 입력 보너스
       animateMonsterHit(target);
       showMonsterResult(target, inputResult.text, inputResult.className);
-      renderMonsterWord(target);
+      renderAllMonsterWords();
       updateMonsterElement(target);
 
       if (target.level === 11 && target.progress < target.normalized.length) {
@@ -2446,6 +2483,8 @@
       monster.el.classList.add('dead');
       monsters = monsters.filter(m => m.id !== monster.id);
       if (activeMonsterId === monster.id) activeMonsterId = null;
+      inputHintMode = null;
+      renderAllMonsterWords();
       updateKeyboardHint();
       setTimeout(() => monster.el.remove(), 440);
 
@@ -2500,6 +2539,7 @@
       floorFirstBossSpawned = false;
       monsters = [];
       activeMonsterId = null;
+      inputHintMode = null;
       monsterLayer.innerHTML = '';
       spawnTimer = 0.2;
       lastTime = performance.now();
