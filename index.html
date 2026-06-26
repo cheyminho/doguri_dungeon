@@ -332,7 +332,7 @@
 
     @keyframes monsterAttackBody {
       0%, 100% { transform: scale(1); }
-      48% { transform: scale(1.08); }
+      48% { transform: scale(1.18); }
     }
 
     @keyframes monsterHit {
@@ -475,7 +475,7 @@
       width: 270px;
       height: 270px;
       margin-top: 28px;
-      background-image: url('monsters.png');
+      background-image: var(--monster-sprite-image, url('monsters.png'));
       background-size: 400% 400%;
       background-position: var(--monster-sprite-x, 0%) var(--monster-sprite-y, 0%);
       background-repeat: no-repeat;
@@ -569,10 +569,9 @@
       grid-template-rows: auto auto auto;
       gap: 10px 16px;
       align-items: center;
-      background:
-        linear-gradient(180deg, rgba(8,6,10,0), rgba(8,6,10,.45) 0%),
-        linear-gradient(180deg, rgba(36,25,43,.94), rgba(15,11,18,.98));
-      border-top: 2px solid rgba(255,255,255,.14);
+      color: #fff6d7;
+      background: #222220;
+      border-top: 2px solid rgba(255, 246, 215, .12);
       box-shadow: 0 -18px 40px rgba(0,0,0,.38);
     }
 
@@ -637,11 +636,11 @@
       position: relative;
       width: 104px;
       height: 104px;
-      border-radius: 24px;
+      border-radius: 0;
       background: transparent;
-      border: 4px solid rgba(255,255,255,.18);
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      border: 0;
+      overflow: visible;
+      box-shadow: none;
     }
 
     #profileImage {
@@ -649,7 +648,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
       pointer-events: none;
     }
@@ -709,39 +708,48 @@
 
     #hearts {
       display: flex;
-      gap: 1px;
-      font-size: 28px;
+      align-items: center;
+      gap: 0;
       line-height: 1;
-      filter: drop-shadow(0 3px 0 rgba(0,0,0,.35));
+      filter: none;
     }
 
-    .heart.full { color: var(--heart); }
-    .heart.empty { color: var(--empty-heart); opacity: .2; }
-    .heart + .heart { margin-left: -4px; }
+    .heart-icon {
+      display: block;
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      pointer-events: none;
+    }
+
+    .heart-icon.empty {
+      opacity: .24;
+      filter: grayscale(1);
+    }
+
+    .heart-icon + .heart-icon { margin-left: -1px; }
 
     #shields {
       display: flex;
       align-items: center;
-      gap: 1px;
+      gap: 0;
       margin-left: -7px;
-      font-size: 24px;
       line-height: 1;
-      filter: drop-shadow(0 3px 0 rgba(0,0,0,.28));
+      filter: none;
     }
 
-    .shield-charge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
+    .shield-icon {
+      display: block;
+      width: 25px;
+      height: 25px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      pointer-events: none;
     }
 
-    .shield-charge + .shield-charge {
-      margin-left: -4px;
-    }
-
-    .shield-charge.full {
-      color: inherit;
+    .shield-icon + .shield-icon {
+      margin-left: -1px;
     }
 
 
@@ -797,12 +805,12 @@
     #levelText {
       width: 100%;
       color: #fff6d7;
-      font-size: 16px;
-      font-weight: 950;
+      font-size: 18px;
+      font-weight: 1000;
       line-height: 1;
       text-align: left;
-      letter-spacing: -0.02em;
-      text-shadow: 0 2px 0 rgba(0,0,0,.45);
+      letter-spacing: -0.03em;
+      text-shadow: none;
     }
 
     .exp-bar {
@@ -815,10 +823,9 @@
       flex: none;
       border-radius: 0;
       overflow: hidden;
-      background: rgba(255,255,255,.1);
+      background: #a39d8f;
       border: 0;
-      border-top: 1px solid rgba(255,255,255,.18);
-      border-bottom: 1px solid rgba(0,0,0,.28);
+      border-bottom: 1px solid rgba(34, 38, 24, .24);
       z-index: 3;
     }
 
@@ -838,11 +845,12 @@
       width: 100%;
       height: 56px;
       display: block;
-      color: #cfc3dc;
+      color: #fff6d7;
       font-size: 14px;
-      line-height: 2.05;
+      line-height: 1.74;
       white-space: normal;
       overflow: hidden;
+      transform: translateY(-5px);
     }
 
     .message-line {
@@ -863,7 +871,7 @@
       flex-direction: column;
       gap: 8px;
       align-items: flex-end;
-      color: #cfc3dc;
+      color: #fff6d7;
       font-size: 13px;
     }
 
@@ -893,9 +901,9 @@
       width: clamp(30px, 4.5vw, 44px);
       height: 34px;
       padding: 0;
-      border-radius: 10px;
-      color: #261821;
-      background: #fff1d1;
+      border-radius: 30px;
+      color: #2b2b2b;
+      background: #fff6d7;
       font-size: 13px;
       font-weight: 950;
       line-height: 1;
@@ -904,7 +912,7 @@
       transition: scale .08s ease, transform .08s ease;
     }
     .alpha-key.next-key {
-      background: #fff59d;
+      background: #fff6d7;
       box-shadow: none;
       transform: translateY(-2px) scale(1.06);
     }
@@ -933,14 +941,47 @@
       font-size: 18px;
       font-weight: 900;
       color: #fff6d7;
+      text-shadow: none;
     }
 
     .kbd {
       padding: 2px 7px;
       border-radius: 6px;
-      color: #211823;
-      background: #fff1d1;
+      color: #222220;
+      background: #fff6d7;
       font-weight: 900;
+    }
+
+    #hud button,
+    #hud .message-line,
+    #hud .score,
+    #hud #levelText,
+    #hud #potionHotkey,
+    #hud #alphaKeyboard .alpha-key {
+      color: #fff6d7;
+      text-shadow: none;
+    }
+
+    #hud #alphaKeyboard .alpha-key {
+      color: #2b2b2b;
+      background: #fff6d7;
+    }
+
+
+
+    #hud .kbd {
+      color: #222220;
+      background: #fff6d7;
+    }
+
+    #hud #potionHotkey.kbd {
+      color: #222220;
+      background: #fff6d7;
+    }
+
+    #hud,
+    #hud * {
+      text-shadow: none;
     }
 
     .overlay {
@@ -957,6 +998,92 @@
     }
 
     .overlay.hidden { display: none; }
+
+    #endOverlay,
+    #infoOverlay {
+      z-index: 130;
+    }
+
+    #endOverlay:not(.hidden):not(.closing) .modal,
+    #infoOverlay:not(.hidden):not(.closing) .modal {
+      animation: popupOpen .2s ease-in-out both;
+    }
+
+    #endOverlay.closing .modal,
+    #infoOverlay.closing .modal {
+      animation: popupClose .1s ease-in-out both;
+    }
+
+    @keyframes popupOpen {
+      0% { opacity: 0; transform: scale(.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes popupClose {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(.8); }
+    }
+
+    #endOverlay .modal,
+    #infoOverlay .modal {
+      position: relative;
+      z-index: 0;
+      margin: 20px 0;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      color: #000;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #endOverlay .modal::before,
+    #infoOverlay .modal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      box-sizing: border-box;
+      border: 126px solid transparent;
+      border-image-source: url("popupbg.png");
+      border-image-slice: 126 fill;
+      border-image-width: 126px;
+      border-image-repeat: stretch;
+      pointer-events: none;
+    }
+
+    #endOverlay .modal h2,
+    #endOverlay .modal p,
+    #endOverlay .modal .button-hint,
+    #endOverlay .modal .kbd,
+    #endOverlay .modal button,
+    #infoOverlay .modal h2,
+    #infoOverlay .modal p,
+    #infoOverlay .modal .button-hint,
+    #infoOverlay .modal .kbd,
+    #infoOverlay .modal button {
+      color: #000;
+      text-shadow: none;
+    }
+
+    #endOverlay .modal button,
+    #infoOverlay .modal button {
+      border-radius: 30px;
+      color: #21131c;
+      background: #ffe29b;
+    }
+
+    #endOverlay .modal .button-hint,
+    #infoOverlay .modal .button-hint {
+      margin-top: 11px;
+    }
+
+    #endOverlay .modal .button-hint .kbd,
+    #infoOverlay .modal .button-hint .kbd {
+      color: #fff;
+      background: #000;
+    }
 
     .modal {
       width: min(560px, 92vw);
@@ -1151,6 +1278,10 @@
       text-shadow: none;
     }
 
+    #startButton {
+      border-radius: 30px;
+    }
+
     .cheat-toggle {
       position: absolute;
       top: 18px;
@@ -1158,7 +1289,7 @@
       z-index: 3;
       padding: 9px 14px;
       border: 1px solid #000;
-      border-radius: 999px;
+      border-radius: 30px;
       color: #000;
       background: #fff;
       font-size: 12px;
@@ -1203,7 +1334,7 @@
     button {
       appearance: none;
       border: 0;
-      border-radius: 999px;
+      border-radius: 30px;
       padding: 14px 28px;
       color: #21131c;
       background: #ffe29b;
@@ -1289,6 +1420,10 @@
       letter-spacing: -0.02em;
     }
 
+    .is-lobby #floorProgressText {
+      display: none;
+    }
+
     #playTimeHud {
       position: absolute;
       z-index: 21;
@@ -1339,6 +1474,179 @@
     }
 
 
+
+
+    #lobbyDifficultyLayer {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #lobbyDifficultyLayer.hidden {
+      display: none;
+    }
+
+    #lobbyDifficultyButtons {
+      position: absolute;
+      left: var(--lobby-button-center-x, 50%);
+      top: calc(var(--lobby-button-center-y, 50%) + var(--lobby-button-offset-y, 0px));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+    }
+
+    #lobbyInfoButton {
+      position: absolute;
+      left: var(--lobby-info-center-x, 50%);
+      top: calc(var(--lobby-info-center-y, 50%) + var(--lobby-info-offset-y, 0px));
+      width: var(--lobby-info-size-scaled, 128px);
+      height: var(--lobby-info-size-scaled, 128px);
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: url('sign.png') center / 100% 100% no-repeat;
+      box-shadow: none;
+      filter: none;
+      transform: translate(-50%, -50%);
+      transition: none;
+      overflow: visible;
+      pointer-events: auto;
+      touch-action: manipulation;
+    }
+
+    #lobbyInfoButton:hover,
+    #lobbyInfoButton:active,
+    #lobbyInfoButton:focus {
+      scale: 1;
+      transform: translate(-50%, -50%);
+      box-shadow: none;
+      filter: none;
+    }
+
+    .lobby-difficulty-button {
+      position: relative;
+      display: block;
+      width: var(--lobby-button-width-scaled, 128px);
+      height: var(--lobby-button-height-scaled, 256px);
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 30px;
+      background: transparent;
+      box-shadow: none;
+      filter: none;
+      transform: none;
+      transition: none;
+      overflow: hidden;
+      font-size: 0;
+      line-height: 0;
+      touch-action: manipulation;
+    }
+
+    .lobby-difficulty-button + .lobby-difficulty-button {
+      margin-left: var(--lobby-button-gap, 0px);
+    }
+
+    .lobby-difficulty-button::before,
+    .lobby-difficulty-button::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-repeat: no-repeat;
+      background-size: 200% 100%;
+      pointer-events: none;
+    }
+
+    .lobby-difficulty-button::before {
+      z-index: 0;
+      background-position: 0 0;
+    }
+
+    .lobby-difficulty-button::after {
+      z-index: 1;
+      background-position: 100% 0;
+      opacity: 0;
+    }
+
+    .difficulty-hotkey {
+      display: none;
+    }
+
+    .lobby-difficulty-button.easy::before,
+    .lobby-difficulty-button.easy::after { background-image: url('gate_l.png'); }
+    .lobby-difficulty-button.normal::before,
+    .lobby-difficulty-button.normal::after { background-image: url('gate_c.png'); }
+    .lobby-difficulty-button.hard::before,
+    .lobby-difficulty-button.hard::after { background-image: url('gate_r.png'); }
+
+    .lobby-difficulty-button:hover,
+    .lobby-difficulty-button:active,
+    .lobby-difficulty-button.pressed {
+      scale: 1;
+      transform: none;
+      box-shadow: none;
+      filter: none;
+    }
+
+    .lobby-difficulty-button:hover::after,
+    .lobby-difficulty-button:active::after,
+    .lobby-difficulty-button.pressed::after {
+      animation: gateHoverPulse 1s cubic-bezier(.37, 0, .63, 1) infinite alternate;
+    }
+
+    @keyframes gateHoverPulse {
+      from { opacity: .5; }
+      to { opacity: .75; }
+    }
+
+    .lobby-difficulty-button:focus-visible {
+      outline: 2px solid rgba(255, 246, 215, .9);
+      outline-offset: 4px;
+    }
+
+
+    .is-lobby #guardShield,
+    .is-lobby #sword,
+    .is-lobby #playTimeHud {
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+
+    #screenFade {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .34s ease-in-out;
+    }
+
+    #screenFade.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     @media (max-width: 760px) {
       #game {
         height: 100vh;
@@ -1350,7 +1658,6 @@
       #playTimeHud { right: 14px; top: 24px; font-size: 18px; }
       #floorText { font-size: 34px; }
       #floorProgressText { margin-top: 5px; font-size: 14px; }
-
       .dungeon {
         bottom: 294px;
         transform: none;
@@ -1358,6 +1665,7 @@
         background-size: cover;
         background-position: center bottom;
       }
+
 
       .monster { --y: 36%; width: 225px; height: 300px; }
       .monster::after { top: 204px; width: 170px; height: 32px; filter: blur(8px); }
@@ -1379,26 +1687,28 @@
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
       .hud-side { display: none; }
-      #hearts { gap: 1px; font-size: 23px; }
-      #shields { gap: 1px; margin-left: -6px; font-size: 20px; }
+      #hearts { gap: 0; }
+      .heart-icon { width: 23px; height: 23px; }
+      #shields { gap: 0; margin-left: -6px; }
+      .shield-icon { width: 21px; height: 21px; }
       #potionSlot { justify-self: end; align-self: center; transform: translate(-8px, -18px); gap: 0; min-width: 0; padding: 0; }
       #potionSlot:active { scale: .94; }
       #potionIcon { width: 54px; height: 54px; }
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 1.68; max-width: none; overflow: hidden; }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
 
-      #levelText { font-size: 13px; }
+      #levelText { font-size: 14px; font-weight: 1000; }
       .exp-bar { height: 5px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 1.68; max-width: none; overflow: hidden; }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
-      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-16px); }
+      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-24px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 8px; }
-      .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
+      .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 30px; font-size: 13px; }
       .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .cheat-toggle { top: 12px; right: 12px; padding: 8px 12px; font-size: 11px; }
@@ -1430,6 +1740,18 @@
 
     <div id="playTimeHud" aria-label="플레이 타임">00:00.00</div>
 
+
+    <div id="lobbyDifficultyLayer" class="hidden" aria-label="난이도 선택">
+      <div id="lobbyDifficultyButtons">
+        <button type="button" class="lobby-difficulty-button easy" data-difficulty="easy" data-hotkey="1" aria-label="쉬움"><span class="sr-only">쉬움</span></button>
+        <button type="button" class="lobby-difficulty-button normal" data-difficulty="normal" data-hotkey="2" aria-label="보통"><span class="sr-only">보통</span></button>
+        <button type="button" class="lobby-difficulty-button hard" data-difficulty="hard" data-hotkey="3" aria-label="어려움"><span class="sr-only">어려움</span></button>
+      </div>
+      <button id="lobbyInfoButton" type="button" aria-label="안내"><span class="sr-only">안내</span></button>
+    </div>
+
+    <div id="screenFade" aria-hidden="true"></div>
+
     <div id="guardShield" aria-hidden="true">
       <img src="shield.png" alt="" draggable="false" />
     </div>
@@ -1444,7 +1766,7 @@
         <div id="expText">0 / 100</div>
       </div>
       <div class="portrait-panel">
-        <div id="inputBubble" class="input-bubble" aria-hidden="true">A</div>
+        <div id="inputBubble" class="input-bubble" aria-hidden="true">A!</div>
         <div id="portrait" aria-label="도구리 초상화">
           <img id="profileImage" src="profile_idle.png" alt="" draggable="false" />
         </div>
@@ -1471,7 +1793,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.39</div>
+          <div class="start-version">버전 0.4</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -1497,23 +1819,52 @@
         </div>
       </div>
     </div>
+
+    <div class="overlay hidden" id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+      <div class="modal">
+        <h2 id="infoTitle">안내</h2>
+        <p id="infoDesc">난이도가 높을수록 보물 획득 확률이 증가합니다.</p>
+        <div class="end-actions">
+          <div class="end-action-col">
+            <button id="infoCloseButton">확인</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
+    const MONSTER_SPRITE_A = 'monsters.png';
+    const MONSTER_SPRITE_B = 'monsters_b.png';
+
     const MONSTER_DATA = [
-      { level: 1, name: 'Rat', attackTime: 4.0, colors: ['#7a7080', '#3d3545'] },
-      { level: 2, name: 'Toad', attackTime: 4.2, colors: ['#6d82a3', '#344259'] },
-      { level: 3, name: 'Slime', attackTime: 4.4, colors: ['#85a27d', '#40543b'] },
-      { level: 4, name: 'Goblin', attackTime: 4.7, colors: ['#78c26b', '#32743f'] },
-      { level: 5, name: 'Cyclops', attackTime: 5.0, colors: ['#8bd0e7', '#3d678d'] },
-      { level: 6, name: 'Basilisk', attackTime: 5.3, colors: ['#d9d1ba', '#827665'] },
-      { level: 7, name: 'Dire Troll', attackTime: 5.7, colors: ['#b7865d', '#65402d'] },
-      { level: 8, name: 'Magma Golem', attackTime: 6.0, colors: ['#9096a0', '#545a63'] },
-      { level: 9, name: 'Hungry Mimic', attackTime: 6.3, colors: ['#7b5ab8', '#2b2348'] },
-      { level: 10, name: 'Void Beholder', attackTime: 6.6, colors: ['#bd5f86', '#512540'] },
-      { level: 11, name: 'Elder Lich King', attackTime: 7.0, colors: ['#c379d6', '#55316d'] },
-      { level: 12, name: 'Ancient Red Dragon', attackTime: 7.5, colors: ['#e35b45', '#741c19'] },
-      { level: 13, name: 'Fire', attackTime: 2.0, colors: ['#ffb347', '#d92f1f'] },
+      { type: 'A', level: 1, name: 'Rat', attackTime: 4.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#7a7080', '#3d3545'] },
+      { type: 'A', level: 2, name: 'Toad', attackTime: 4.2, spriteSheet: MONSTER_SPRITE_A, colors: ['#6d82a3', '#344259'] },
+      { type: 'A', level: 3, name: 'Slime', attackTime: 4.4, spriteSheet: MONSTER_SPRITE_A, colors: ['#85a27d', '#40543b'] },
+      { type: 'A', level: 4, name: 'Goblin', attackTime: 4.7, spriteSheet: MONSTER_SPRITE_A, colors: ['#78c26b', '#32743f'] },
+      { type: 'A', level: 5, name: 'Cyclops', attackTime: 5.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#8bd0e7', '#3d678d'] },
+      { type: 'A', level: 6, name: 'Basilisk', attackTime: 5.3, spriteSheet: MONSTER_SPRITE_A, colors: ['#d9d1ba', '#827665'] },
+      { type: 'A', level: 7, name: 'Dire Troll', attackTime: 5.7, spriteSheet: MONSTER_SPRITE_A, colors: ['#b7865d', '#65402d'] },
+      { type: 'A', level: 8, name: 'Magma Golem', attackTime: 6.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#9096a0', '#545a63'] },
+      { type: 'A', level: 9, name: 'Hungry Mimic', attackTime: 6.3, spriteSheet: MONSTER_SPRITE_A, colors: ['#7b5ab8', '#2b2348'] },
+      { type: 'A', level: 10, name: 'Void Beholder', attackTime: 6.6, spriteSheet: MONSTER_SPRITE_A, colors: ['#bd5f86', '#512540'] },
+      { type: 'A', level: 11, name: 'Elder Lich King', attackTime: 7.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#c379d6', '#55316d'] },
+      { type: 'A', level: 12, name: 'Ancient Red Dragon', attackTime: 7.5, spriteSheet: MONSTER_SPRITE_A, colors: ['#e35b45', '#741c19'] },
+      { type: 'A', level: 13, name: 'Fire', attackTime: 2.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#ffb347', '#d92f1f'] },
+
+      { type: 'B', level: 1, name: 'Bat', attackTime: 4.0, spriteSheet: MONSTER_SPRITE_B, colors: ['#7a7080', '#3d3545'] },
+      { type: 'B', level: 2, name: 'Wisp', attackTime: 4.2, spriteSheet: MONSTER_SPRITE_B, colors: ['#6d82a3', '#344259'] },
+      { type: 'B', level: 3, name: 'Mummy', attackTime: 4.4, spriteSheet: MONSTER_SPRITE_B, colors: ['#85a27d', '#40543b'] },
+      { type: 'B', level: 4, name: 'Kobold', attackTime: 4.7, spriteSheet: MONSTER_SPRITE_B, colors: ['#78c26b', '#32743f'] },
+      { type: 'B', level: 5, name: 'Banshee', attackTime: 5.0, spriteSheet: MONSTER_SPRITE_B, colors: ['#8bd0e7', '#3d678d'] },
+      { type: 'B', level: 6, name: 'Skeleton', attackTime: 5.3, spriteSheet: MONSTER_SPRITE_B, colors: ['#d9d1ba', '#827665'] },
+      { type: 'B', level: 7, name: 'Abyss Hound', attackTime: 5.7, spriteSheet: MONSTER_SPRITE_B, colors: ['#b7865d', '#65402d'] },
+      { type: 'B', level: 8, name: 'Grave Knight', attackTime: 6.0, spriteSheet: MONSTER_SPRITE_B, colors: ['#9096a0', '#545a63'] },
+      { type: 'B', level: 9, name: 'Plague Gorgon', attackTime: 6.3, spriteSheet: MONSTER_SPRITE_B, colors: ['#7b5ab8', '#2b2348'] },
+      { type: 'B', level: 10, name: 'Cursed Behemoth', attackTime: 6.6, spriteSheet: MONSTER_SPRITE_B, colors: ['#bd5f86', '#512540'] },
+      { type: 'B', level: 11, name: 'Veiled Warlock', attackTime: 7.0, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#c379d6', '#55316d'] },
+      { type: 'B', level: 12, name: 'Ancient Bone Dragon', attackTime: 7.5, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#e35b45', '#741c19'] },
+      { type: 'B', level: 13, name: 'Flame', attackTime: 2.0, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#ffb347', '#d92f1f'] },
     ];
 
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
@@ -1524,6 +1875,8 @@
       dying: 'profile_dying.png',
     };
     const BASE_MAX_HP = 3;
+    const MAX_PLAYER_HP = 12;
+    const LEVEL_UP_OCCURRENCE_RATE = 0.7;
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
     const TYPO_TIME_PENALTY = 0.5;
@@ -1537,6 +1890,47 @@
       6: { quota: 6, levels: [13], waveMode: 'fireDragon' },
     };
     const MAX_FLOOR = 6;
+    const DIFFICULTY_CONFIGS = {
+      easy: {
+        label: '쉬움',
+        attackTimeMultiplier: 1.5,
+        spawnIntervalMultiplier: 1.5,
+        allowedMonsterTypes: ['A'],
+      },
+      normal: {
+        label: '보통',
+        attackTimeMultiplier: 1,
+        spawnIntervalMultiplier: 1,
+        allowedMonsterTypes: ['A', 'B'],
+      },
+      hard: {
+        label: '어려움',
+        attackTimeMultiplier: 0.7,
+        spawnIntervalMultiplier: 0.7,
+        allowedMonsterTypes: ['A', 'B'],
+      },
+    };
+    const DEFAULT_DIFFICULTY_KEY = 'normal';
+    const LOBBY_BG_IMAGE_SRC = 'dungeon_bg.png';
+    const LOBBY_BG_FALLBACK_WIDTH = 1180;
+    const LOBBY_BUTTON_CONFIG = {
+      width: 128,
+      height: 256,
+      gap: -21,
+      centerX: 0.5,
+      centerY: 0.5,
+      offsetY: 15,
+    };
+    const LOBBY_INFO_BUTTON_CONFIG = {
+      size: 128,
+      centerX: 0.5,
+      centerY: 0.5,
+      offsetY: 175,
+    };
+    const SCENE_FADE_IN_MS = 340;
+    const SCENE_FADE_OUT_MS = 340;
+    const POPUP_CLOSE_MS = 100;
+    const FIRST_MONSTER_SPAWN_DELAY = 0.5;
 
 
     const game = document.getElementById('game');
@@ -1559,6 +1953,8 @@
     const bloodFlash = document.getElementById('bloodFlash');
     const startOverlay = document.getElementById('startOverlay');
     const endOverlay = document.getElementById('endOverlay');
+    const infoOverlay = document.getElementById('infoOverlay');
+    const infoCloseButton = document.getElementById('infoCloseButton');
     const endTitle = document.getElementById('endTitle');
     const endDesc = document.getElementById('endDesc');
     const startButton = document.getElementById('startButton');
@@ -1571,6 +1967,11 @@
     const floorProgressText = document.getElementById('floorProgressText');
     const playTimeHud = document.getElementById('playTimeHud');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
+    const dungeonEl = document.querySelector('.dungeon');
+    const lobbyDifficultyLayer = document.getElementById('lobbyDifficultyLayer');
+    const lobbyDifficultyButtons = document.getElementById('lobbyDifficultyButtons');
+    const lobbyInfoButton = document.getElementById('lobbyInfoButton');
+    const screenFade = document.getElementById('screenFade');
 
     let player;
     let monsters;
@@ -1579,6 +1980,7 @@
     let lastTime;
     let spawnTimer;
     let nextMonsterId;
+    let lastSpawnedMonsterKey;
     let gameState;
     let elapsed;
     let animationId;
@@ -1595,19 +1997,47 @@
     let shieldBlockTimeout = null;
     let profilePainTimeout = null;
     let cheatCodeEnabled = false;
+    let isSceneTransitioning = false;
+    let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
+    const lobbyBgImage = new Image();
+    lobbyBgImage.src = LOBBY_BG_IMAGE_SRC;
 
     function normalizeName(name) {
       return name.toLowerCase().replace(/\s+/g, '');
     }
 
     function expNeeded(level) {
-      // 레벨이 오를수록 필요 경험치가 지수함수처럼 더 빠르게 증가합니다.
-      return Math.floor(140 * Math.pow(1.35, level - 1));
+      // 레벨업 발생 빈도를 기존 대비 약 70% 느낌으로 낮추기 위해 필요 경험치를 1 / 0.7배로 보정합니다.
+      return Math.floor((140 * Math.pow(1.35, level - 1)) / LEVEL_UP_OCCURRENCE_RATE);
     }
 
     function expReward(monsterLevel) {
       if (monsterLevel === 13) return 0;
       return 34 + monsterLevel * 13;
+    }
+
+    function getCurrentDifficultyConfig() {
+      return DIFFICULTY_CONFIGS[currentDifficultyKey] || DIFFICULTY_CONFIGS[DEFAULT_DIFFICULTY_KEY];
+    }
+
+    function setCurrentDifficulty(key) {
+      currentDifficultyKey = DIFFICULTY_CONFIGS[key] ? key : DEFAULT_DIFFICULTY_KEY;
+    }
+
+    function isMonsterAllowedByDifficulty(monster) {
+      const config = getCurrentDifficultyConfig();
+      const allowedTypes = config.allowedMonsterTypes || ['A', 'B'];
+      return allowedTypes.includes(monster.type || 'A');
+    }
+
+    function applyDifficultyAttackTime(baseAttackTime) {
+      const multiplier = getCurrentDifficultyConfig().attackTimeMultiplier || 1;
+      return Math.max(0.1, baseAttackTime * multiplier);
+    }
+
+    function applyDifficultySpawnInterval(baseInterval) {
+      const multiplier = getCurrentDifficultyConfig().spawnIntervalMultiplier || 1;
+      return Math.max(0.25, baseInterval * multiplier);
     }
 
     function formatPlayTime(seconds) {
@@ -1683,7 +2113,9 @@
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
-    function resetGame(startFloor = 1) {
+    function resetGame(startFloor = 1, options = {}) {
+      const autoStart = options.autoStart !== false;
+      const initialSpawnDelay = Number.isFinite(options.initialSpawnDelay) ? options.initialSpawnDelay : FIRST_MONSTER_SPAWN_DELAY;
       const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
       const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
       cancelAnimationFrame(animationId);
@@ -1701,8 +2133,9 @@
       activeMonsterId = null;
       inputHintMode = null;
       lastTime = performance.now();
-      spawnTimer = 0.2;
+      spawnTimer = initialSpawnDelay;
       nextMonsterId = 1;
+      lastSpawnedMonsterKey = null;
       dragonSpawned = false;
       currentFloor = initialFloor;
       floorSpawned = 0;
@@ -1710,7 +2143,7 @@
       floorFirstBossSpawned = false;
       stageProgressReady = false;
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
-      gameState = 'playing';
+      gameState = autoStart ? 'playing' : 'transition';
       progressKeyArmed = true;
       isBlocking = false;
       guardShield.classList.remove('holding', 'block');
@@ -1723,12 +2156,19 @@
       guardShield.classList.remove('holding', 'block');
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
       endOverlay.classList.add('hidden');
+      endOverlay.classList.remove('closing');
+      if (infoOverlay) {
+        infoOverlay.classList.add('hidden');
+        infoOverlay.classList.remove('closing');
+      }
       startOverlay.classList.add('hidden');
+      hideLobbyDifficulty();
+      game.classList.remove('is-lobby');
       setFloorMessage();
       clearProfilePain();
       renderHud();
       updateKeyboardHint();
-      loop(lastTime);
+      if (autoStart) loop(lastTime);
     }
 
     function setProfileImage(src) {
@@ -1765,17 +2205,23 @@
     function renderHud() {
       heartsEl.innerHTML = '';
       for (let i = 0; i < player.maxHp; i++) {
-        const heart = document.createElement('span');
-        heart.className = `heart ${i < player.hp ? 'full' : 'empty'}`;
-        heart.textContent = i < player.hp ? '❤️' : '🤍';
+        const heart = document.createElement('img');
+        heart.className = `heart-icon ${i < player.hp ? 'full' : 'empty'}`;
+        heart.src = 'hp.png';
+        heart.alt = '';
+        heart.draggable = false;
+        heart.setAttribute('aria-hidden', 'true');
         heartsEl.appendChild(heart);
       }
 
       shieldsEl.innerHTML = '';
       for (let i = 0; i < player.shields; i++) {
-        const shield = document.createElement('span');
-        shield.className = 'shield-charge full';
-        shield.textContent = '🛡️';
+        const shield = document.createElement('img');
+        shield.className = 'shield-icon full';
+        shield.src = 'sp.png';
+        shield.alt = '';
+        shield.draggable = false;
+        shield.setAttribute('aria-hidden', 'true');
         shieldsEl.appendChild(shield);
       }
       guardShield.style.display = player.shields > 0 ? '' : 'none';
@@ -1799,6 +2245,12 @@
     }
 
     function renderStageHud() {
+      if (gameState === 'lobby') {
+        if (floorText) floorText.textContent = '로비';
+        if (floorProgressText) floorProgressText.textContent = '';
+        return;
+      }
+
       const config = FLOOR_CONFIGS[currentFloor];
       const total = config ? config.quota : 1;
       const progress = Math.min(100, Math.floor((floorKills / total) * 100));
@@ -1808,6 +2260,10 @@
 
     function setFloorMessage() {
       setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어하세요!</span>');
+    }
+
+    function setLobbyMessage() {
+      setMessage('<span class="message-line">난이도를 선택하세요.</span><span class="message-line">1~3 키를 눌러서도 선택할 수 있습니다.</span>');
     }
 
     function getMonsterDataByLevel(level) {
@@ -1967,7 +2423,20 @@
     function getSpawnInterval() {
       // 기본 3초에서 시작해서 플레이 시간과 레벨에 따라 조금씩 빨라집니다.
       const speedUp = elapsed * 0.018 + (player.level - 1) * 0.08;
-      return Math.max(1.15, 3.0 - speedUp);
+      const baseInterval = Math.max(1.15, 3.0 - speedUp);
+      return applyDifficultySpawnInterval(baseInterval);
+    }
+
+    function getMonsterSpawnKey(monster) {
+      if (!monster) return '';
+      return `${monster.type || 'A'}:${monster.level}:${monster.name}`;
+    }
+
+    function pickMonsterAvoidingPrevious(candidates) {
+      if (!candidates.length) return null;
+      const filtered = candidates.filter(monster => getMonsterSpawnKey(monster) !== lastSpawnedMonsterKey);
+      const pool = filtered.length ? filtered : candidates;
+      return pool[Math.floor(Math.random() * pool.length)];
     }
 
     function getRandomMonsterData() {
@@ -1980,8 +2449,12 @@
         return getMonsterDataByLevel(config.firstBossLevel);
       }
 
-      const candidates = MONSTER_DATA.filter(monster => config.levels.includes(monster.level));
-      return candidates[Math.floor(Math.random() * candidates.length)];
+      const candidates = MONSTER_DATA.filter(monster =>
+        config.levels.includes(monster.level)
+        && monster.normalSpawn !== false
+        && isMonsterAllowedByDifficulty(monster)
+      );
+      return pickMonsterAvoidingPrevious(candidates);
     }
 
     function getSpawnLaneForData(data) {
@@ -2053,14 +2526,17 @@
         dragonSpawned = true;
       }
 
+      const adjustedAttackTime = applyDifficultyAttackTime(data.attackTime);
       const monster = {
         id: nextMonsterId++,
         level: data.level,
         name: data.name,
         normalized: normalizeName(data.name),
-        attackTime: data.attackTime,
-        remaining: data.attackTime,
+        attackTime: adjustedAttackTime,
+        remaining: adjustedAttackTime,
         progress: 0,
+        type: data.type || 'A',
+        spriteSheet: data.spriteSheet || MONSTER_SPRITE_A,
         lane,
       };
 
@@ -2075,6 +2551,7 @@
       el.dataset.id = monster.id;
       el.style.setProperty('--monster-sprite-x', spritePosition(spriteCol));
       el.style.setProperty('--monster-sprite-y', spritePosition(spriteRow));
+      el.style.setProperty('--monster-sprite-image', `url('${monster.spriteSheet}')`);
       el.innerHTML = `
         <div class="nameplate">
           <div class="monster-results"></div>
@@ -2096,6 +2573,7 @@
       monster.timerEl = el.querySelector('.timer-ring');
       monsterLayer.appendChild(el);
       monsters.push(monster);
+      lastSpawnedMonsterKey = getMonsterSpawnKey(monster);
       renderMonsterWord(monster);
       updateMonsterElement(monster);
     }
@@ -2201,7 +2679,187 @@
       damageDoguri(`${monster.name}의 공격!`);
     }
 
-    function goToStart() {
+
+    function showEndOverlay() {
+      if (!endOverlay) return;
+      endOverlay.classList.remove('closing');
+      endOverlay.classList.remove('hidden');
+    }
+
+    function hideEndOverlay(onClosed) {
+      if (!endOverlay || endOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+
+      if (endOverlay.classList.contains('closing')) return;
+      endOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        endOverlay.classList.add('hidden');
+        endOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function showInfoOverlay() {
+      if (!infoOverlay) return;
+      infoOverlay.classList.remove('closing');
+      infoOverlay.classList.remove('hidden');
+    }
+
+    function hideInfoOverlay(onClosed) {
+      if (!infoOverlay || infoOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+
+      if (infoOverlay.classList.contains('closing')) return;
+      infoOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        infoOverlay.classList.add('hidden');
+        infoOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function isInfoOverlayOpen() {
+      return !!(infoOverlay && !infoOverlay.classList.contains('hidden'));
+    }
+
+    function runSceneFade(onBlack, onAfterFadeOut) {
+      if (!screenFade || isSceneTransitioning) return;
+      isSceneTransitioning = true;
+      screenFade.classList.add('show');
+      window.setTimeout(() => {
+        if (typeof onBlack === 'function') onBlack();
+        requestAnimationFrame(() => {
+          screenFade.classList.remove('show');
+          window.setTimeout(() => {
+            isSceneTransitioning = false;
+            if (typeof onAfterFadeOut === 'function') onAfterFadeOut();
+          }, SCENE_FADE_OUT_MS);
+        });
+      }, SCENE_FADE_IN_MS);
+    }
+
+    function beginPreparedGame() {
+      if (gameState !== 'transition') return;
+      gameState = 'playing';
+      lastTime = performance.now();
+      elapsed = 0;
+      updatePlayTimeHud();
+      updateKeyboardHint();
+      loop(lastTime);
+    }
+
+    function hideLobbyDifficulty() {
+      if (lobbyDifficultyLayer) lobbyDifficultyLayer.classList.add('hidden');
+    }
+
+    function showLobbyDifficulty() {
+      if (!lobbyDifficultyLayer) return;
+      lobbyDifficultyLayer.classList.remove('hidden');
+      updateLobbyDifficultyLayout();
+    }
+
+    function updateLobbyDifficultyLayout() {
+      if (!lobbyDifficultyLayer || !dungeonEl) return;
+
+      const dungeonRect = dungeonEl.getBoundingClientRect();
+      const gameRect = game.getBoundingClientRect();
+      const naturalWidth = lobbyBgImage.naturalWidth || LOBBY_BG_FALLBACK_WIDTH;
+      const naturalHeight = lobbyBgImage.naturalHeight || Math.max(1, dungeonRect.height);
+      const bgScale = Math.max(dungeonRect.width / naturalWidth, dungeonRect.height / naturalHeight);
+      const renderedBgWidth = naturalWidth * bgScale;
+      const renderedBgHeight = naturalHeight * bgScale;
+      const bgLeft = (dungeonRect.left - gameRect.left) + (dungeonRect.width - renderedBgWidth) / 2;
+      const bgTop = (dungeonRect.top - gameRect.top) + (dungeonRect.height - renderedBgHeight);
+
+      lobbyDifficultyLayer.style.left = `${bgLeft}px`;
+      lobbyDifficultyLayer.style.top = `${bgTop}px`;
+      lobbyDifficultyLayer.style.width = `${renderedBgWidth}px`;
+      lobbyDifficultyLayer.style.height = `${renderedBgHeight}px`;
+      lobbyDifficultyLayer.style.setProperty('--lobby-bg-scale', bgScale);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-width-scaled', `${LOBBY_BUTTON_CONFIG.width * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-height-scaled', `${LOBBY_BUTTON_CONFIG.height * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-gap', `${LOBBY_BUTTON_CONFIG.gap * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-offset-y', `${LOBBY_BUTTON_CONFIG.offsetY * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-center-x', `${LOBBY_BUTTON_CONFIG.centerX * 100}%`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-button-center-y', `${LOBBY_BUTTON_CONFIG.centerY * 100}%`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-info-size-scaled', `${LOBBY_INFO_BUTTON_CONFIG.size * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-info-offset-y', `${LOBBY_INFO_BUTTON_CONFIG.offsetY * bgScale}px`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-info-center-x', `${LOBBY_INFO_BUTTON_CONFIG.centerX * 100}%`);
+      lobbyDifficultyLayer.style.setProperty('--lobby-info-center-y', `${LOBBY_INFO_BUTTON_CONFIG.centerY * 100}%`);
+    }
+
+    function setupLobby() {
+      cancelAnimationFrame(animationId);
+      gameState = 'lobby';
+      progressKeyArmed = true;
+      stageProgressReady = false;
+      if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
+      monsters = [];
+      activeMonsterId = null;
+      inputHintMode = null;
+      monsterLayer.innerHTML = '';
+      isBlocking = false;
+      guardShield.classList.remove('holding', 'block');
+      if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
+      endOverlay.classList.add('hidden');
+      endOverlay.classList.remove('closing');
+      if (infoOverlay) {
+        infoOverlay.classList.add('hidden');
+        infoOverlay.classList.remove('closing');
+      }
+      startOverlay.classList.add('hidden');
+      game.classList.add('is-lobby');
+      currentFloor = 1;
+      floorSpawned = 0;
+      floorKills = 0;
+      floorFirstBossSpawned = false;
+      player = {
+        hp: BASE_MAX_HP,
+        maxHp: BASE_MAX_HP,
+        shields: BASE_MAX_SHIELDS,
+        maxShields: BASE_MAX_SHIELDS,
+        potions: 1,
+        level: 1,
+        exp: 0,
+        kills: 0,
+      };
+      elapsed = 0;
+      updatePlayTimeHud();
+      renderStageHud();
+      renderHud();
+      clearProfilePain();
+      setLobbyMessage();
+      showLobbyDifficulty();
+      updateKeyboardHint();
+    }
+
+    function enterLobby() {
+      if (isSceneTransitioning) return;
+      runSceneFade(() => setupLobby());
+    }
+
+    function startDifficultyGame(difficultyKey = DEFAULT_DIFFICULTY_KEY) {
+      if (isSceneTransitioning || gameState !== 'lobby' || isInfoOverlayOpen()) return;
+      setCurrentDifficulty(difficultyKey);
+      clearLobbyButtonPress();
+      runSceneFade(() => {
+        hideLobbyDifficulty();
+        game.classList.remove('is-lobby');
+        resetGame(1, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
+      }, () => beginPreparedGame());
+    }
+
+    function goToStart(options = {}) {
+      const shouldAnimatePopupClose = options.animatePopupClose !== false && endOverlay && !endOverlay.classList.contains('hidden');
+      if (shouldAnimatePopupClose) {
+        hideEndOverlay(() => goToStart({ animatePopupClose: false }));
+        return;
+      }
+
       cancelAnimationFrame(animationId);
       gameState = 'start';
       progressKeyArmed = true;
@@ -2214,7 +2872,16 @@
       isBlocking = false;
       guardShield.classList.remove('holding', 'block');
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
-      endOverlay.classList.add('hidden');
+      if (endOverlay) {
+        endOverlay.classList.add('hidden');
+        endOverlay.classList.remove('closing');
+      }
+      if (infoOverlay) {
+        infoOverlay.classList.add('hidden');
+        infoOverlay.classList.remove('closing');
+      }
+      hideLobbyDifficulty();
+      game.classList.remove('is-lobby');
       startOverlay.classList.remove('hidden');
       restartButton.textContent = '다시 도전';
       clearProfilePain();
@@ -2234,15 +2901,25 @@
     function startFromCheatFloor(floor) {
       if (!cheatCodeEnabled) return false;
       if (!Number.isInteger(floor) || floor < 1 || floor > MAX_FLOOR) return false;
+      setCurrentDifficulty(DEFAULT_DIFFICULTY_KEY);
       resetGame(floor);
       return true;
+    }
+
+    function restartGameWithFade() {
+      if (isSceneTransitioning) return;
+      hideEndOverlay(() => {
+        runSceneFade(() => {
+          resetGame(1, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
+        }, () => beginPreparedGame());
+      });
     }
 
     function pressProgressButton() {
       if (!progressKeyArmed) return false;
 
       if (!startOverlay.classList.contains('hidden')) {
-        resetGame();
+        enterLobby();
         return true;
       }
       if (!endOverlay.classList.contains('hidden')) {
@@ -2250,17 +2927,43 @@
           if (!stageProgressReady) return false;
           startNextFloor();
         } else {
-          resetGame();
+          restartGameWithFade();
         }
         return true;
       }
       return false;
     }
 
+    function pressLobbyDifficultyHotkey(key) {
+      if (!lobbyDifficultyButtons) return false;
+      const button = lobbyDifficultyButtons.querySelector(`.lobby-difficulty-button[data-hotkey="${key}"]`);
+      if (!button) return false;
+      button.classList.add('pressed');
+      window.setTimeout(() => button.classList.remove('pressed'), 140);
+      startDifficultyGame(button.dataset.difficulty);
+      return true;
+    }
+
     function handleKeydown(e) {
       if (gameState !== 'playing') {
+        if (isSceneTransitioning) {
+          e.preventDefault();
+          return;
+        }
         const startScreenVisible = !startOverlay.classList.contains('hidden');
         const endScreenVisible = !endOverlay.classList.contains('hidden');
+
+        if (isInfoOverlayOpen()) {
+          e.preventDefault();
+          if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') hideInfoOverlay();
+          return;
+        }
+
+        if (gameState === 'lobby' && /^[1-3]$/.test(e.key)) {
+          e.preventDefault();
+          pressLobbyDifficultyHotkey(e.key);
+          return;
+        }
 
         if (startScreenVisible && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
           e.preventDefault();
@@ -2396,10 +3099,13 @@
       while (player.exp >= expNeeded(player.level) && player.level < 12) {
         player.exp -= expNeeded(player.level);
         player.level += 1;
-        player.maxHp += 1;
+        const hpIncreased = player.maxHp < MAX_PLAYER_HP;
+        if (hpIncreased) player.maxHp = Math.min(MAX_PLAYER_HP, player.maxHp + 1);
         player.hp = player.maxHp;
         showToast('레벨업!');
-        setMessage(`레벨 업! 도구리 Lv. ${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`);
+        setMessage(hpIncreased
+          ? `레벨 업! 도구리 Lv. ${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`
+          : `레벨 업! 도구리 Lv. ${player.level}. 생명력이 모두 회복되었습니다.`);
       }
       renderHud();
       if (currentFloor === 6) trySpawnFloor6Wave();
@@ -2433,11 +3139,11 @@
       restartButton.textContent = '다음 층';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'none';
-      endOverlay.classList.remove('hidden');
+      showEndOverlay();
       updateKeyboardHint();
     }
 
-    function startNextFloor() {
+    function prepareNextFloor() {
       currentFloor += 1;
       floorSpawned = 0;
       floorKills = 0;
@@ -2446,19 +3152,35 @@
       activeMonsterId = null;
       inputHintMode = null;
       monsterLayer.innerHTML = '';
-      spawnTimer = 0.2;
+      spawnTimer = FIRST_MONSTER_SPAWN_DELAY;
       lastTime = performance.now();
-      gameState = 'playing';
+      gameState = 'transition';
       progressKeyArmed = true;
       stageProgressReady = false;
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       endOverlay.classList.add('hidden');
+      endOverlay.classList.remove('closing');
       setFloorMessage();
       renderStageHud();
       updatePlayTimeHud();
       updateKeyboardHint();
       updateActionButtonStates();
+    }
+
+    function beginPreparedFloor() {
+      if (gameState !== 'transition') return;
+      gameState = 'playing';
+      lastTime = performance.now();
+      updatePlayTimeHud();
+      updateKeyboardHint();
       loop(lastTime);
+    }
+
+    function startNextFloor() {
+      if (isSceneTransitioning || gameState !== 'stageclear') return;
+      hideEndOverlay(() => {
+        runSceneFade(() => prepareNextFloor(), () => beginPreparedFloor());
+      });
     }
 
     function damageDoguri(reason, amount = 1) {
@@ -2522,7 +3244,7 @@
       restartButton.textContent = '다시 도전';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
-      endOverlay.classList.remove('hidden');
+      showEndOverlay();
       updateKeyboardHint();
     }
 
@@ -2538,7 +3260,7 @@
       restartButton.textContent = '다시 도전';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
-      endOverlay.classList.remove('hidden');
+      showEndOverlay();
       updateKeyboardHint();
     }
 
@@ -2579,11 +3301,56 @@
       }, true);
     }
 
+    function clearLobbyButtonPress() {
+      if (!lobbyDifficultyButtons) return;
+      lobbyDifficultyButtons.querySelectorAll('.lobby-difficulty-button.pressed').forEach(button => button.classList.remove('pressed'));
+    }
+
+    if (lobbyDifficultyButtons) {
+      lobbyDifficultyButtons.addEventListener('pointerdown', (e) => {
+        const button = e.target.closest('.lobby-difficulty-button');
+        if (!button) return;
+        button.classList.add('pressed');
+      });
+
+      lobbyDifficultyButtons.addEventListener('pointerup', clearLobbyButtonPress);
+      lobbyDifficultyButtons.addEventListener('pointercancel', clearLobbyButtonPress);
+      lobbyDifficultyButtons.addEventListener('pointerleave', clearLobbyButtonPress);
+
+      lobbyDifficultyButtons.addEventListener('click', (e) => {
+        const button = e.target.closest('.lobby-difficulty-button');
+        if (!button) return;
+        e.preventDefault();
+        startDifficultyGame(button.dataset.difficulty);
+      });
+    }
+
+    if (lobbyInfoButton) {
+      lobbyInfoButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (gameState !== 'lobby' || isSceneTransitioning) return;
+        showInfoOverlay();
+      });
+    }
+
+    if (infoCloseButton) {
+      infoCloseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideInfoOverlay();
+      });
+    }
+
+    if (infoOverlay) {
+      infoOverlay.addEventListener('click', (e) => {
+        if (e.target === infoOverlay) hideInfoOverlay();
+      });
+    }
+
     potionSlot.addEventListener('click', (e) => {
       e.preventDefault();
       usePotion();
     });
-    startButton.addEventListener('click', () => resetGame());
+    startButton.addEventListener('click', () => enterLobby());
     if (cheatToggle) {
       cheatToggle.addEventListener('click', (e) => {
         e.preventDefault();
@@ -2596,12 +3363,14 @@
         if (!stageProgressReady) return;
         startNextFloor();
       } else {
-        resetGame();
+        restartGameWithFade();
       }
     });
     homeButton.addEventListener('click', goToStart);
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
+    window.addEventListener('resize', updateLobbyDifficultyLayout);
+    lobbyBgImage.addEventListener('load', updateLobbyDifficultyLayout);
 
     updateCheatToggle();
     renderAlphabetKeyboard();
