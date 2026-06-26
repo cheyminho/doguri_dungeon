@@ -229,6 +229,11 @@
       animation: monsterAttack .28s ease-in-out both;
     }
 
+    .monster.attack .monster-body {
+      transform-origin: 50% 70%;
+      animation: monsterAttackBody .28s ease-in-out both;
+    }
+
     .monster.hit .monster-body {
       animation: monsterHit .16s ease-out both;
     }
@@ -325,6 +330,11 @@
       100% { translate: 0 0; }
     }
 
+    @keyframes monsterAttackBody {
+      0%, 100% { transform: scale(1); }
+      48% { transform: scale(1.08); }
+    }
+
     @keyframes monsterHit {
       0%, 100% { transform: translateX(0) scale(1); filter: none; }
       35% { transform: translateX(-8px) scale(1.04); filter: brightness(1.65) saturate(1.25); }
@@ -351,7 +361,7 @@
     }
 
     @keyframes monsterDead {
-      to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(calc(var(--scale) * .42)); filter: blur(4px) brightness(.9); }
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(var(--scale)); filter: blur(4px) brightness(.9); }
     }
 
     .nameplate {
@@ -377,7 +387,7 @@
     }
 
     .monster.level-low .nameplate {
-      top: 28px;
+      top: 43px;
     }
 
     .monster-results {
@@ -576,6 +586,7 @@
       align-items: center;
       width: 104px;
       align-self: center;
+      translate: 0 -10px;
     }
 
     .input-bubble {
@@ -671,9 +682,6 @@
       background: radial-gradient(circle, transparent 35%, rgba(90, 165, 255, .34));
     }
 
-    .blood-flash.dodged {
-      background: radial-gradient(circle, transparent 35%, rgba(72, 220, 138, .34));
-    }
 
     @keyframes blood {
       0% { opacity: 0; }
@@ -742,7 +750,7 @@
       grid-row: 1 / span 2;
       justify-self: end;
       align-self: center;
-      transform: translate(-10px, -6px);
+      transform: translate(-10px, -16px);
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -771,6 +779,7 @@
       object-fit: contain;
       line-height: 1;
       pointer-events: none;
+      transform: translateY(-5px);
     }
 
     #potionHotkey {
@@ -778,6 +787,7 @@
       font-size: 12px;
       line-height: 1;
       margin-top: -2px;
+      transform: translateY(0);
     }
 
     .level-box {
@@ -785,20 +795,14 @@
     }
 
     #levelText {
-      position: absolute;
-      right: 6px;
-      bottom: 6px;
-      z-index: 2;
-      min-width: 0;
-      padding: 3px 7px;
-      border-radius: 999px;
-      background: rgba(21, 16, 23, .82);
-      border: 1px solid rgba(255,255,255,.14);
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1;
+      width: 100%;
       color: #fff6d7;
-      box-shadow: 0 3px 8px rgba(0,0,0,.25);
+      font-size: 16px;
+      font-weight: 950;
+      line-height: 1;
+      text-align: left;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 0 rgba(0,0,0,.45);
     }
 
     .exp-bar {
@@ -920,8 +924,7 @@
       box-shadow: none;
     }
 
-    .shield-key,
-    .dodge-key {
+    .shield-key {
       min-width: 52px;
       font-size: 12px;
     }
@@ -1320,9 +1323,6 @@
       animation: blockShake .26s ease both;
     }
 
-    .dodge-shake {
-      animation: dodgeShake .22s ease both;
-    }
 
     @keyframes screenShake {
       0%,100% { transform: translateX(0); }
@@ -1338,13 +1338,6 @@
       70% { transform: translateX(-3px); }
     }
 
-    @keyframes dodgeShake {
-      0%,100% { transform: translateX(0); }
-      16% { transform: translateX(-8px); }
-      36% { transform: translateX(10px); }
-      58% { transform: translateX(-7px); }
-      78% { transform: translateX(6px); }
-    }
 
     @media (max-width: 760px) {
       #game {
@@ -1373,7 +1366,7 @@
       .monster.lane-mid { --x: 0px; --scale: .76; }
       .monster.lane-right { --x: 112px; --scale: .76; }
       .nameplate { min-width: 190px; top: 2px; gap: 7px; padding: 8px 10px; }
-      .monster.level-low .nameplate { top: 32px; }
+      .monster.level-low .nameplate { top: 47px; }
       .monster-results { top: -18px; width: 160px; }
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
@@ -1381,14 +1374,14 @@
       #guardShield { left: 0px; bottom: 158px; scale: .7; }
       #sword { right: -4px; bottom: 206px; scale: .7; }
       #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
-      .portrait-panel { width: 78px; translate: 0 -10px; }
+      .portrait-panel { width: 78px; translate: 0 -20px; }
       .input-bubble { top: -41px; min-width: 40px; padding: 6px 11px; border-radius: 13px; font-size: 16px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
       .hud-side { display: none; }
       #hearts { gap: 1px; font-size: 23px; }
       #shields { gap: 1px; margin-left: -6px; font-size: 20px; }
-      #potionSlot { justify-self: end; align-self: center; transform: translate(-8px, -8px); gap: 0; min-width: 0; padding: 0; }
+      #potionSlot { justify-self: end; align-self: center; transform: translate(-8px, -18px); gap: 0; min-width: 0; padding: 0; }
       #potionSlot:active { scale: .94; }
       #potionIcon { width: 54px; height: 54px; }
       #potionHotkey { display: inline-flex; font-size: 11px; }
@@ -1397,7 +1390,7 @@
       #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
 
-      #levelText { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 11px; }
+      #levelText { font-size: 13px; }
       .exp-bar { height: 5px; }
       #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 2.0; max-width: none; overflow: hidden; }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
@@ -1407,7 +1400,6 @@
       .alpha-row:nth-child(3) { padding-left: 8px; }
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 9px; font-size: 13px; }
       .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
-      .dodge-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .cheat-toggle { top: 12px; right: 12px; padding: 8px 12px; font-size: 11px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
@@ -1436,7 +1428,7 @@
       <div id="floorProgressText">0%</div>
     </div>
 
-    <div id="playTimeHud" aria-label="플레이 타임">00:00</div>
+    <div id="playTimeHud" aria-label="플레이 타임">00:00.00</div>
 
     <div id="guardShield" aria-hidden="true">
       <img src="shield.png" alt="" draggable="false" />
@@ -1455,15 +1447,15 @@
         <div id="inputBubble" class="input-bubble" aria-hidden="true">A</div>
         <div id="portrait" aria-label="도구리 초상화">
           <img id="profileImage" src="profile_idle.png" alt="" draggable="false" />
-          <div id="levelText">Lv. 1</div>
         </div>
       </div>
       <div class="hud-main">
+        <div id="levelText">도구리 Lv. 1</div>
         <div class="stats-row">
           <div id="hearts" aria-label="생명력"></div>
           <div id="shields" aria-label="방패 능력"></div>
         </div>
-        <div id="message"><span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span></div>
+        <div id="message"><span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어하세요!</span></div>
       </div>
       <button id="potionSlot" type="button" aria-label="사과 사용">
         <img id="potionIcon" src="apple.png" alt="사과" draggable="false" />
@@ -1479,7 +1471,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.38</div>
+          <div class="start-version">버전 0.39</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -1535,8 +1527,6 @@
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
     const TYPO_TIME_PENALTY = 0.5;
-    const DODGE_WINDOW = 0.5;
-    const DODGE_COOLDOWN = 1.0;
     const INPUT_RESULT_THRESHOLDS = { perfect: 0.2, great: 0.5, good: 3.0 };
     const FLOOR_CONFIGS = {
       1: { quota: 5, levels: [1, 2, 3] },
@@ -1602,8 +1592,6 @@
     let floorFirstBossSpawned = false;
     let stageProgressReady = false;
     let stageProgressDelayTimeout = null;
-    let dodgeCooldownUntil = 0;
-    let dodgeCooldownTimer = null;
     let shieldBlockTimeout = null;
     let profilePainTimeout = null;
     let cheatCodeEnabled = false;
@@ -1623,10 +1611,11 @@
     }
 
     function formatPlayTime(seconds) {
-      const totalSeconds = Math.max(0, Math.floor(seconds || 0));
-      const minutes = Math.floor(totalSeconds / 60);
-      const secs = totalSeconds % 60;
-      return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const safeSeconds = Math.max(0, seconds || 0);
+      const minutes = Math.floor(safeSeconds / 60);
+      const secs = safeSeconds - minutes * 60;
+      const secText = secs.toFixed(2).padStart(5, '0');
+      return `${String(minutes).padStart(2, '0')}:${secText}`;
     }
 
     function updatePlayTimeHud() {
@@ -1646,14 +1635,10 @@
         const shieldButton = index === 2
           ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="방어">방어</button>`
           : '';
-        const dodgeButton = index === 2
-          ? `<button type="button" class="alpha-key dodge-key" data-action="dodge" aria-label="회피">회피</button>`
-          : '';
         return `
           <div class="alpha-row">
             ${shieldButton}
             ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
-            ${dodgeButton}
           </div>
         `;
       }).join('');
@@ -1662,21 +1647,11 @@
     function updateActionButtonStates() {
       if (!alphaKeyboard) return;
       const shieldButton = alphaKeyboard.querySelector('.shield-key');
-      const dodgeButton = alphaKeyboard.querySelector('.dodge-key');
-      const now = performance.now() / 1000;
       const shieldEnabled = gameState === 'playing' && player && player.shields > 0;
-      const cooldownRemaining = Math.max(0, dodgeCooldownUntil - now);
-      const dodgeEnabled = gameState === 'playing' && cooldownRemaining <= 0;
       if (shieldButton) {
         shieldButton.classList.toggle('disabled', !shieldEnabled);
         shieldButton.disabled = !shieldEnabled;
         shieldButton.textContent = '방어';
-      }
-      if (dodgeButton) {
-        dodgeButton.classList.toggle('disabled', !dodgeEnabled);
-        dodgeButton.disabled = !dodgeEnabled;
-        dodgeButton.textContent = dodgeEnabled ? '회피' : `${cooldownRemaining.toFixed(1)}초`;
-        dodgeButton.setAttribute('aria-label', dodgeEnabled ? '회피' : `회피 쿨타임 ${cooldownRemaining.toFixed(1)}초`);
       }
     }
 
@@ -1708,47 +1683,6 @@
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
-    function useDodge() {
-      if (gameState !== 'playing') return;
-
-      const now = performance.now() / 1000;
-      if (now < dodgeCooldownUntil) {
-        updateActionButtonStates();
-        return;
-      }
-
-      dodgeCooldownUntil = now + DODGE_COOLDOWN;
-      updateActionButtonStates();
-
-      if (dodgeCooldownTimer) clearInterval(dodgeCooldownTimer);
-      dodgeCooldownTimer = setInterval(() => {
-        updateActionButtonStates();
-        if (performance.now() / 1000 >= dodgeCooldownUntil) {
-          clearInterval(dodgeCooldownTimer);
-          dodgeCooldownTimer = null;
-          updateActionButtonStates();
-        }
-      }, 100);
-
-      const target = monsters
-        .filter(monster => monster.remaining > 0 && monster.remaining <= DODGE_WINDOW)
-        .sort((a, b) => a.remaining - b.remaining)[0];
-
-      if (!target) {
-        animateDodgeFailFeedback();
-        setMessage('회피 실패! 공격 타이밍이 아닙니다.');
-        return;
-      }
-
-      target.remaining = target.attackTime;
-      target.el.classList.remove('attack');
-      void target.el.offsetWidth;
-      target.el.classList.add('attack');
-      animateDodgeFeedback();
-      updateMonsterElement(target);
-      setMessage(`${target.name}의 공격을 회피했습니다!`);
-    }
-
     function resetGame(startFloor = 1) {
       const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
       const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
@@ -1774,10 +1708,8 @@
       floorSpawned = 0;
       floorKills = 0;
       floorFirstBossSpawned = false;
-      dodgeCooldownUntil = 0;
       stageProgressReady = false;
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
-      if (dodgeCooldownTimer) { clearInterval(dodgeCooldownTimer); dodgeCooldownTimer = null; }
       gameState = 'playing';
       progressKeyArmed = true;
       isBlocking = false;
@@ -1853,7 +1785,7 @@
 
       const need = expNeeded(player.level);
       const pct = Math.min(100, (player.exp / need) * 100);
-      levelText.textContent = `Lv. ${player.level}`;
+      levelText.textContent = `도구리 Lv. ${player.level}`;
       expFill.style.width = `${pct}%`;
       expText.textContent = `${player.exp} / ${need}`;
       updateProfileImage();
@@ -1875,7 +1807,7 @@
     }
 
     function setFloorMessage() {
-      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
+      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어하세요!</span>');
     }
 
     function getMonsterDataByLevel(level) {
@@ -1914,31 +1846,14 @@
 
     function animateBlockFeedback() {
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked', 'dodged');
-      game.classList.remove('shake', 'block-shake', 'dodge-shake');
+      bloodFlash.classList.remove('show', 'blocked');
+      game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
       bloodFlash.classList.add('blocked', 'show');
       game.classList.add('block-shake');
     }
 
-    function animateDodgeFeedback() {
-      portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked', 'dodged');
-      game.classList.remove('shake', 'block-shake', 'dodge-shake');
-      void portrait.offsetWidth;
-      void game.offsetWidth;
-      portrait.classList.add('hit');
-      bloodFlash.classList.add('dodged', 'show');
-      game.classList.add('dodge-shake');
-    }
-
-    function animateDodgeFailFeedback() {
-      bloodFlash.classList.remove('show', 'blocked', 'dodged');
-      game.classList.remove('shake', 'block-shake', 'dodge-shake');
-      void game.offsetWidth;
-      game.classList.add('dodge-shake');
-    }
 
     function getInputDelta() {
       const now = performance.now() / 1000;
@@ -2305,7 +2220,7 @@
       clearProfilePain();
       updateKeyboardHint();
       lastInputTime = null;
-      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어! <span class="kbd">Tab</span>으로 회피!</span>');
+      setMessage('<span class="message-line">몬스터 이름을 입력해 처치하세요!</span><span class="message-line"><span class="kbd">Space</span>로 방어하세요!</span>');
     }
 
 
@@ -2384,12 +2299,6 @@
         return;
       }
 
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        if (e.repeat) return;
-        useDodge();
-        return;
-      }
 
       if (e.key.length !== 1) return;
       const char = e.key.toLowerCase();
@@ -2405,7 +2314,7 @@
         progressKeyArmed = true;
       }
 
-      if (e.key === 'Control' || e.key === 'Tab' || e.key === 'Escape') {
+      if (e.key === 'Control' || e.key === 'Escape') {
         e.preventDefault();
       }
 
@@ -2490,7 +2399,7 @@
         player.maxHp += 1;
         player.hp = player.maxHp;
         showToast('레벨업!');
-        setMessage(`레벨 업! 도구리 Lv.${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`);
+        setMessage(`레벨 업! 도구리 Lv. ${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`);
       }
       renderHud();
       if (currentFloor === 6) trySpawnFloor6Wave();
@@ -2559,8 +2468,8 @@
       setMessage(reason);
 
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked', 'dodged');
-      game.classList.remove('shake', 'block-shake', 'dodge-shake');
+      bloodFlash.classList.remove('show', 'blocked');
+      game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
       showProfilePain();
@@ -2650,10 +2559,6 @@
           return;
         }
 
-        if (button.dataset.action === 'dodge') {
-          useDodge();
-          return;
-        }
 
         handleAlphabetButton(button.dataset.key);
       });
