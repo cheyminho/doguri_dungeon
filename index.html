@@ -238,6 +238,10 @@
       animation: monsterHit .16s ease-out both;
     }
 
+    .monster.dead .monster-body {
+      filter: grayscale(1) brightness(.78);
+    }
+
     .monster-hit-slash {
       position: absolute;
       z-index: 6;
@@ -361,7 +365,7 @@
     }
 
     @keyframes monsterDead {
-      to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(var(--scale)); filter: blur(4px) brightness(.9); }
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(var(--scale)); filter: grayscale(1) blur(4px) brightness(.9); }
     }
 
     .nameplate {
@@ -1797,7 +1801,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.41</div>
+          <div class="start-version">버전 0.42</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" />
@@ -1909,8 +1913,8 @@
       },
       hard: {
         label: '어려움',
-        attackTimeMultiplier: 0.7,
-        spawnIntervalMultiplier: 0.7,
+        attackTimeMultiplier: 0.5,
+        spawnIntervalMultiplier: 0.5,
         allowedMonsterTypes: ['A', 'B'],
       },
     };
@@ -1935,6 +1939,7 @@
     const SCENE_FADE_OUT_MS = 340;
     const POPUP_CLOSE_MS = 100;
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
+    const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
 
 
     const game = document.getElementById('game');
@@ -3067,7 +3072,6 @@
       const inputDelta = getInputDelta();
       const inputResult = getResultLabel(inputDelta);
       target.progress += 1;
-      target.remaining = Math.min(target.attackTime, target.remaining + 0.1); // 정확한 입력 보너스
       animateMonsterHit(target);
       showMonsterResult(target, inputResult.text, inputResult.className);
       renderAllMonsterWords();
@@ -3098,7 +3102,7 @@
       inputHintMode = null;
       renderAllMonsterWords();
       updateKeyboardHint();
-      setTimeout(() => monster.el.remove(), 440);
+      setTimeout(() => monster.el.remove(), MONSTER_DEFEAT_REMOVE_DELAY_MS);
 
       while (player.exp >= expNeeded(player.level) && player.level < 12) {
         player.exp -= expNeeded(player.level);
@@ -3113,7 +3117,13 @@
       }
       renderHud();
       if (currentFloor === 6) trySpawnFloor6Wave();
-      checkFloorClear();
+      scheduleFloorClearCheck();
+    }
+
+    function scheduleFloorClearCheck() {
+      setTimeout(() => {
+        checkFloorClear();
+      }, MONSTER_DEFEAT_REMOVE_DELAY_MS);
     }
 
     function checkFloorClear() {
