@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>던전앤도구리</title>
   <style>
     :root {
@@ -416,7 +416,7 @@
     }
 
     .monster.treasure-chest .nameplate {
-      top: 42px;
+      top: 52px;
     }
 
     .monster.treasure-chest.chest-opened .nameplate {
@@ -653,7 +653,7 @@
       border-radius: 15px;
       background: #fcf9f2;
       color: #21131c;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 950;
       line-height: 1;
       text-align: center;
@@ -740,6 +740,15 @@
       background: radial-gradient(circle, transparent 35%, rgba(90, 165, 255, .34));
     }
 
+    .blood-flash.blocked.show,
+    .blood-flash.healed.show {
+      animation-duration: .5s;
+    }
+
+    .blood-flash.healed {
+      background: radial-gradient(circle, transparent 35%, rgba(104, 224, 168, .34));
+    }
+
 
     @keyframes blood {
       0% { opacity: 0; }
@@ -763,6 +772,7 @@
       align-items: center;
       gap: 10px;
       flex-wrap: nowrap;
+      transform: translateY(-3px);
     }
 
     #hearts {
@@ -846,7 +856,7 @@
       object-fit: contain;
       line-height: 1;
       pointer-events: none;
-      transform: translateY(-5px);
+      transform: translateY(-9px);
     }
 
     #potionHotkey {
@@ -884,7 +894,6 @@
       overflow: hidden;
       background: #a39d8f;
       border: 0;
-      border-bottom: 1px solid rgba(34, 38, 24, .24);
       z-index: 3;
     }
 
@@ -906,10 +915,10 @@
       display: block;
       color: #fff6d7;
       font-size: 14px;
-      line-height: 1.74;
+      line-height: 22px;
       white-space: normal;
       overflow: hidden;
-      transform: translateY(-5px);
+      transform: translateY(-10px);
     }
 
     .message-line {
@@ -962,7 +971,7 @@
       padding: 0;
       border-radius: 30px;
       color: #2b2b2b;
-      background: #fff6d7;
+      background: #fbf9f3;
       font-size: 13px;
       font-weight: 950;
       line-height: 1;
@@ -1023,7 +1032,7 @@
 
     #hud #alphaKeyboard .alpha-key {
       color: #2b2b2b;
-      background: #fff6d7;
+      background: #fbf9f3;
     }
 
     #hud #alphaKeyboard .alpha-key.next-key {
@@ -1067,13 +1076,19 @@
       z-index: 130;
     }
 
+    #resetConfirmOverlay {
+      z-index: 150;
+    }
+
     #endOverlay:not(.hidden):not(.closing) .modal,
-    #infoOverlay:not(.hidden):not(.closing) .modal {
+    #infoOverlay:not(.hidden):not(.closing) .modal,
+    #resetConfirmOverlay:not(.hidden):not(.closing) .modal {
       animation: popupOpen .2s ease-in-out both;
     }
 
     #endOverlay.closing .modal,
-    #infoOverlay.closing .modal {
+    #infoOverlay.closing .modal,
+    #resetConfirmOverlay.closing .modal {
       animation: popupClose .1s ease-in-out both;
     }
 
@@ -1088,7 +1103,8 @@
     }
 
     #endOverlay .modal,
-    #infoOverlay .modal {
+    #infoOverlay .modal,
+    #resetConfirmOverlay .modal {
       position: relative;
       z-index: 0;
       margin: 20px 0;
@@ -1101,8 +1117,15 @@
       overflow: visible;
     }
 
+    #resetConfirmOverlay .reset-confirm-modal {
+      width: min(620px, calc(100vw - 40px));
+      padding-top: 70px;
+      padding-bottom: 30px;
+    }
+
     #endOverlay .modal::before,
-    #infoOverlay .modal::before {
+    #infoOverlay .modal::before,
+    #resetConfirmOverlay .modal::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -1118,6 +1141,7 @@
 
     #endOverlay .modal h2,
     #endOverlay .modal p,
+    #endOverlay .modal .end-desc,
     #endOverlay .modal .button-hint,
     #endOverlay .modal .kbd,
     #endOverlay .modal button,
@@ -1125,16 +1149,26 @@
     #infoOverlay .modal p,
     #infoOverlay .modal .button-hint,
     #infoOverlay .modal .kbd,
-    #infoOverlay .modal button {
+    #infoOverlay .modal button,
+    #resetConfirmOverlay .modal .reset-confirm-desc,
+    #resetConfirmOverlay .modal button {
       color: #000;
       text-shadow: none;
     }
 
     #endOverlay .modal button,
-    #infoOverlay .modal button {
+    #infoOverlay .modal button,
+    #resetConfirmOverlay .modal button {
       border-radius: 30px;
       color: #21131c;
-      background: #ffe29b;
+      background: #f6bc4e;
+    }
+
+    #endOverlay .modal button.secondary-button,
+    #infoOverlay .modal button.secondary-button,
+    #resetConfirmOverlay .modal button.secondary-button {
+      color: #21131c;
+      background: #f6bc4e;
     }
 
     #endOverlay .modal .button-hint,
@@ -1146,6 +1180,21 @@
     #infoOverlay .modal .button-hint .kbd {
       color: #fff;
       background: #000;
+    }
+
+    .reset-confirm-desc {
+      margin: 4px auto 24px;
+      color: #000;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .reset-confirm-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
     }
 
     #rewardOverlay {
@@ -1197,7 +1246,7 @@
     #rewardOverlay .modal button {
       border-radius: 30px;
       color: #21131c;
-      background: #ffe29b;
+      background: #f6bc4e;
     }
 
     .reward-content {
@@ -1216,7 +1265,7 @@
       background-size: 400% 400%;
       background-position: 0% 0%;
       image-rendering: auto;
-      filter: drop-shadow(0 14px 16px rgba(0,0,0,.22));
+      filter: none;
       pointer-events: none;
     }
 
@@ -1227,6 +1276,23 @@
       line-height: 1.65;
       font-size: 16px;
       font-weight: 800;
+    }
+
+    .clear-reward-treasure-image {
+      width: 200px;
+      height: 200px;
+      margin: -10px auto -10px;
+    }
+
+    .clear-reward-description {
+      margin-top: -6px;
+      line-height: 1.25;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .clear-reward-description b {
+      font-weight: 950;
     }
 
     .modal {
@@ -1245,7 +1311,8 @@
       letter-spacing: -1.6px;
     }
 
-    .modal p {
+    .modal p,
+    .modal .end-desc {
       margin: 0 auto 18px;
       max-width: 430px;
       color: #d0d0d0;
@@ -1427,6 +1494,13 @@
 
     #startButton {
       border-radius: 30px;
+      font-weight: 950;
+    }
+
+    #endOverlay .modal button,
+    #infoOverlay .modal button,
+    #rewardOverlay .modal button {
+      font-weight: 950;
     }
 
     .cheat-controls {
@@ -1435,17 +1509,32 @@
       right: 18px;
       z-index: 90;
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      align-items: flex-start;
+      justify-content: flex-end;
       gap: 8px;
       pointer-events: auto;
+    }
+
+    .cheat-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .cheat-mode-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 7px;
     }
 
     .cheat-controls.hidden {
       display: none;
     }
 
-    .cheat-toggle {
+    .cheat-toggle,
+    .cheat-reset-button {
       position: static;
       padding: 9px 14px;
       border: 1px solid #000;
@@ -1463,7 +1552,8 @@
       background: #000;
     }
 
-    .cheat-toggle.hidden {
+    .cheat-toggle.hidden,
+    .cheat-reset-button.hidden {
       display: none;
     }
 
@@ -1532,8 +1622,8 @@
       border-radius: 30px;
       padding: 14px 28px;
       color: #21131c;
-      background: #ffe29b;
-      font-size: 18px;
+      background: #f6bc4e;
+      font-size: 16px;
       font-weight: 950;
       cursor: pointer;
       box-shadow: none;
@@ -1554,6 +1644,19 @@
       margin-top: 4px;
     }
 
+    #endOverlay.clear-result .modal {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    #endOverlay.clear-result .end-actions {
+      margin-top: 28px;
+    }
+
+    #endOverlay.clear-result .home-hint {
+      transform: translateY(-3px);
+    }
+
     .end-action-col {
       display: flex;
       flex-direction: column;
@@ -1561,8 +1664,8 @@
     }
 
     .secondary-button {
-      color: #f8f1dc;
-      background: #565656;
+      color: #21131c;
+      background: #f6bc4e;
       box-shadow: none;
     }
 
@@ -1877,7 +1980,7 @@
       #sword { right: -4px; bottom: 206px; scale: .7; }
       #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
       .portrait-panel { width: 78px; translate: 0 -20px; }
-      .input-bubble { top: -41px; min-width: 40px; padding: 6px 11px; border-radius: 13px; font-size: 16px; }
+      .input-bubble { top: -41px; min-width: 40px; padding: 6px 11px; border-radius: 13px; font-size: 14px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
       .hud-side { display: none; }
@@ -1891,12 +1994,12 @@
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 1.68; max-width: none; overflow: hidden; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-10px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
 
       #levelText { font-size: 14px; font-weight: 1000; }
       .exp-bar { height: 5px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 1.68; max-width: none; overflow: hidden; }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-10px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-29px); }
       .alpha-row { gap: 3px; }
@@ -1906,7 +2009,7 @@
       .shield-key, .threat-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
       .cheat-controls { top: 12px; right: 12px; gap: 7px; }
-      .cheat-toggle { padding: 8px 12px; font-size: 11px; }
+      .cheat-toggle, .cheat-reset-button { padding: 8px 12px; font-size: 11px; }
       .cheat-floor-panel { gap: 6px; }
       .cheat-floor-button { width: 38px; height: 38px; min-width: 38px; font-size: 10px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
@@ -1917,14 +2020,19 @@
 <body>
   <main id="game" aria-label="던전앤도구리 타이핑 게임">
     <div id="cheatControls" class="cheat-controls">
-      <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
-      <div id="cheatFloorPanel" class="cheat-floor-panel hidden" aria-label="치트 시작 층 선택">
-        <button type="button" class="cheat-floor-button active" data-floor="1" aria-pressed="true">B1F</button>
-        <button type="button" class="cheat-floor-button" data-floor="2" aria-pressed="false">B2F</button>
-        <button type="button" class="cheat-floor-button" data-floor="3" aria-pressed="false">B3F</button>
-        <button type="button" class="cheat-floor-button" data-floor="4" aria-pressed="false">B4F</button>
-        <button type="button" class="cheat-floor-button" data-floor="5" aria-pressed="false">B5F</button>
-        <button type="button" class="cheat-floor-button" data-floor="6" aria-pressed="false">B6F</button>
+      <div class="cheat-top-row">
+        <button id="cheatResetButton" class="cheat-reset-button" type="button">초기화</button>
+        <div class="cheat-mode-column">
+          <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
+          <div id="cheatFloorPanel" class="cheat-floor-panel hidden" aria-label="치트 시작 층 선택">
+            <button type="button" class="cheat-floor-button active" data-floor="1" aria-pressed="true">B1F</button>
+            <button type="button" class="cheat-floor-button" data-floor="2" aria-pressed="false">B2F</button>
+            <button type="button" class="cheat-floor-button" data-floor="3" aria-pressed="false">B3F</button>
+            <button type="button" class="cheat-floor-button" data-floor="4" aria-pressed="false">B4F</button>
+            <button type="button" class="cheat-floor-button" data-floor="5" aria-pressed="false">B5F</button>
+            <button type="button" class="cheat-floor-button" data-floor="6" aria-pressed="false">B6F</button>
+          </div>
+        </div>
       </div>
     </div>
     <section class="dungeon" aria-hidden="true">
@@ -2000,7 +2108,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.43</div>
+          <div class="start-version">버전 0.44</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2013,7 +2121,7 @@
     <div class="overlay hidden" id="endOverlay">
       <div class="modal">
         <h2 id="endTitle">게임 오버</h2>
-        <p id="endDesc">도구리가 던전 바닥과 친해졌습니다.</p>
+        <div id="endDesc" class="end-desc">도구리가 던전 바닥과 친해졌습니다.</div>
         <div class="end-actions">
           <div class="end-action-col">
             <button id="restartButton">다시 도전</button>
@@ -2043,25 +2151,17 @@
       </div>
     </div>
 
-
-    <div class="overlay hidden" id="rewardOverlay" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
-      <div class="modal">
-        <h2 id="rewardTitle">보상 획득</h2>
-        <div class="reward-content">
-          <div id="rewardTreasureImage" class="reward-treasure-image" aria-hidden="true"></div>
-          <p id="rewardDesc" class="reward-description">보물을 획득했습니다.</p>
-        </div>
-        <div class="end-actions reward-actions">
-          <div class="end-action-col">
-            <button id="rewardBestiaryButton" class="secondary-button">도감</button>
-          </div>
-          <div class="end-action-col">
-            <button id="rewardCloseButton">확인</button>
-            <div class="button-hint"><span class="kbd">Space</span></div>
-          </div>
+    <div class="overlay hidden" id="resetConfirmOverlay" role="dialog" aria-modal="true" aria-label="초기화 확인">
+      <div class="modal reset-confirm-modal">
+        <div class="reset-confirm-desc">초기화를 진행할까요?</div>
+        <div class="reset-confirm-actions">
+          <button id="resetCancelButton" class="secondary-button" type="button">취소</button>
+          <button id="resetConfirmButton" type="button">확인</button>
         </div>
       </div>
     </div>
+
+
   </main>
 
   <script>
@@ -2122,6 +2222,8 @@
       normal: 0.38,
       hard: 0.22,
     };
+    const TREASURE_COLLECTION_KEY = 'dungeonDoguriOwnedTreasures';
+    const TREASURE_COLLECTION_LEGACY_KEYS = ['dungeonDoguriTreasureCollection', 'dungeonDoguriTreasures'];
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     const PROFILE_IMAGES = {
@@ -2190,6 +2292,8 @@
     const POPUP_CLOSE_MS = 100;
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
     const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
+    // true: 치트 버튼 표시 / false: 치트 버튼 숨김
+    const SHOW_CHEAT_CONTROLS = true;
 
 
     const game = document.getElementById('game');
@@ -2225,10 +2329,16 @@
     const startGateImage = document.querySelector('.start-gate-image');
     const cheatControls = document.getElementById('cheatControls');
     const cheatToggle = document.getElementById('cheatToggle');
+    const cheatResetButton = document.getElementById('cheatResetButton');
     const cheatFloorPanel = document.getElementById('cheatFloorPanel');
+    const resetConfirmOverlay = document.getElementById('resetConfirmOverlay');
+    const resetCancelButton = document.getElementById('resetCancelButton');
+    const resetConfirmButton = document.getElementById('resetConfirmButton');
     const restartButton = document.getElementById('restartButton');
     const homeButton = document.getElementById('homeButton');
     const homeHintKbd = document.querySelector('.home-hint .kbd');
+    const restartHintEl = document.querySelector('#restartButton + .button-hint');
+    const homeHintEl = document.querySelector('.home-hint');
     const monsterTable = document.getElementById('monsterTable');
     const comboToast = document.getElementById('comboToast');
     const floorText = document.getElementById('floorText');
@@ -2276,6 +2386,20 @@
     function preventScreenGesture(e) {
       if (e.cancelable) e.preventDefault();
     }
+
+    let lastTouchEndTime = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1 && e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEndTime <= 300 && e.cancelable) e.preventDefault();
+      lastTouchEndTime = now;
+    }, { passive: false });
+
+    document.addEventListener('dblclick', preventScreenGesture, { passive: false });
 
     ['touchmove', 'gesturestart', 'gesturechange', 'gestureend'].forEach(eventName => {
       document.addEventListener(eventName, preventScreenGesture, { passive: false });
@@ -2346,6 +2470,16 @@
       return code % 28 === 0 ? '를' : '을';
     }
 
+    function escapeHtml(text) {
+      return String(text ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
     function isMonsterAllowedByDifficulty(monster) {
       const config = getCurrentDifficultyConfig();
       const allowedTypes = config.allowedMonsterTypes || ['A', 'B'];
@@ -2400,6 +2534,85 @@
         return current;
       }
       return previousBest;
+    }
+
+    function getOwnedTreasureIds() {
+      try {
+        const stored = window.localStorage.getItem(TREASURE_COLLECTION_KEY);
+        const parsed = stored ? JSON.parse(stored) : [];
+        return Array.isArray(parsed) ? parsed.map(String) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveOwnedTreasureIds(ids) {
+      try {
+        const uniqueIds = Array.from(new Set((ids || []).map(String)));
+        window.localStorage.setItem(TREASURE_COLLECTION_KEY, JSON.stringify(uniqueIds));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 보물 획득 기록만 생략합니다.
+      }
+    }
+
+    function unlockTreasure(treasure) {
+      if (!treasure) return;
+      const treasureId = String(treasure.spriteIndex ?? treasure.name);
+      const ownedIds = getOwnedTreasureIds();
+      if (!ownedIds.includes(treasureId)) {
+        ownedIds.push(treasureId);
+        saveOwnedTreasureIds(ownedIds);
+      }
+    }
+
+    function clearOwnedTreasureData() {
+      try {
+        window.localStorage.removeItem(TREASURE_COLLECTION_KEY);
+        TREASURE_COLLECTION_LEGACY_KEYS.forEach(key => window.localStorage.removeItem(key));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 보물 초기화 요청을 조용히 무시합니다.
+      }
+    }
+
+    function resetSavedData() {
+      try {
+        Object.keys(DIFFICULTY_CONFIGS).forEach(key => {
+          window.localStorage.removeItem(getBestClearTimeKey(key));
+        });
+        clearOwnedTreasureData();
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 초기화 요청을 조용히 무시합니다.
+      }
+      pendingRewardTreasure = null;
+    }
+
+    function isResetConfirmOverlayOpen() {
+      return !!resetConfirmOverlay && !resetConfirmOverlay.classList.contains('hidden');
+    }
+
+    function showResetConfirmOverlay() {
+      if (!resetConfirmOverlay) return;
+      resetConfirmOverlay.classList.remove('closing');
+      resetConfirmOverlay.classList.remove('hidden');
+    }
+
+    function hideResetConfirmOverlay(onClosed) {
+      if (!resetConfirmOverlay || resetConfirmOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (resetConfirmOverlay.classList.contains('closing')) return;
+      resetConfirmOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        resetConfirmOverlay.classList.add('hidden');
+        resetConfirmOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function confirmResetSavedData() {
+      resetSavedData();
+      hideResetConfirmOverlay();
     }
 
     function updatePlayTimeHud() {
@@ -2479,11 +2692,12 @@
       player.potions = Math.max(0, player.potions - 1);
       player.hp = player.maxHp;
       renderHud();
+      animateHealFeedback();
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
     function useBestiaryButton() {
-      if (gameState !== 'lobby') return;
+      if (!['lobby', 'clear'].includes(gameState)) return;
       // 도감 팝업은 추후 추가 예정입니다.
     }
 
@@ -2543,6 +2757,10 @@
       if (rewardOverlay) {
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
+      }
+      if (resetConfirmOverlay) {
+        resetConfirmOverlay.classList.add('hidden');
+        resetConfirmOverlay.classList.remove('closing');
       }
       startOverlay.classList.add('hidden');
       setCheatControlsVisible(false);
@@ -2811,12 +3029,19 @@
 
     function animateBlockFeedback() {
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked');
+      bloodFlash.classList.remove('show', 'blocked', 'healed');
       game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
       bloodFlash.classList.add('blocked', 'show');
       game.classList.add('block-shake');
+    }
+
+    function animateHealFeedback() {
+      bloodFlash.classList.remove('show', 'blocked', 'healed');
+      game.classList.remove('shake', 'block-shake');
+      void bloodFlash.offsetWidth;
+      bloodFlash.classList.add('healed', 'show');
     }
 
 
@@ -3348,6 +3573,10 @@
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
       }
+      if (resetConfirmOverlay) {
+        resetConfirmOverlay.classList.add('hidden');
+        resetConfirmOverlay.classList.remove('closing');
+      }
       startOverlay.classList.add('hidden');
       setCheatControlsVisible(true);
       game.classList.add('is-lobby');
@@ -3430,6 +3659,7 @@
       }
       hideLobbyDifficulty();
       game.classList.remove('is-lobby');
+      if (endOverlay) endOverlay.classList.remove('clear-result');
       startOverlay.classList.remove('hidden');
       setCheatControlsVisible(true);
       restartButton.textContent = '다시 도전';
@@ -3459,10 +3689,18 @@
 
     function setCheatControlsVisible(isVisible) {
       if (!cheatControls) return;
-      cheatControls.classList.toggle('hidden', !isVisible);
+      cheatControls.classList.toggle('hidden', !(SHOW_CHEAT_CONTROLS && isVisible));
     }
 
     function updateCheatToggle() {
+      if (!SHOW_CHEAT_CONTROLS) {
+        setCheatControlsVisible(false);
+        if (cheatToggle) cheatToggle.classList.add('hidden');
+        if (cheatResetButton) cheatResetButton.classList.add('hidden');
+        if (cheatFloorPanel) cheatFloorPanel.classList.add('hidden');
+        return;
+      }
+      if (cheatResetButton) cheatResetButton.classList.remove('hidden');
       if (cheatToggle) {
         cheatToggle.classList.toggle('active', cheatCodeEnabled);
         cheatToggle.classList.toggle('hidden', cheatCodeEnabled);
@@ -3514,6 +3752,13 @@
     }
 
     function handleKeydown(e) {
+      if (isResetConfirmOverlayOpen()) {
+        e.preventDefault();
+        if (e.key === 'Escape') hideResetConfirmOverlay();
+        if (e.key === ' ' || e.key === 'Enter') confirmResetSavedData();
+        return;
+      }
+
       if (gameState !== 'playing') {
         if (isSceneTransitioning) {
           e.preventDefault();
@@ -3540,7 +3785,7 @@
           return;
         }
 
-        if ((startScreenVisible || gameState === 'lobby') && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
+        if (SHOW_CHEAT_CONTROLS && (startScreenVisible || gameState === 'lobby') && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
           e.preventDefault();
           setSelectedCheatFloor(Number(e.key));
           return;
@@ -3819,7 +4064,7 @@
       updateKeyboardHint();
       setMessage(`${chestConfig.name} 오픈!`);
       setTimeout(() => {
-        if (gameState === 'rewardpending') showRewardOverlay(pendingRewardTreasure);
+        if (gameState === 'rewardpending') winGame(pendingRewardTreasure);
       }, 1000);
     }
 
@@ -3870,13 +4115,19 @@
       }, 500);
       cancelAnimationFrame(animationId);
       setCheatControlsVisible(false);
+      if (endOverlay) endOverlay.classList.remove('clear-result');
       endTitle.textContent = `지하 ${currentFloor}층 클리어!`;
       endDesc.innerHTML = `지하 ${currentFloor}층의 몬스터를 모두 처치했습니다.<br /><b>Space</b>를 누르면 지하 ${currentFloor + 1}층으로 이동합니다.`;
       restartButton.textContent = '다음 층';
+      restartButton.classList.remove('secondary-button');
+      homeButton.textContent = '시작 화면';
+      homeButton.classList.add('secondary-button');
       const restartActionCol = restartButton.closest('.end-action-col');
       if (restartActionCol) restartActionCol.style.display = 'flex';
+      if (restartHintEl) restartHintEl.style.display = '';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'none';
+      if (homeHintEl) homeHintEl.style.display = '';
       showEndOverlay();
       updateKeyboardHint();
     }
@@ -3931,7 +4182,7 @@
       setMessage(reason);
 
       portrait.classList.remove('hit');
-      bloodFlash.classList.remove('show', 'blocked');
+      bloodFlash.classList.remove('show', 'blocked', 'healed');
       game.classList.remove('shake', 'block-shake');
       void portrait.offsetWidth;
       portrait.classList.add('hit');
@@ -3982,35 +4233,57 @@
       setProfileImage(PROFILE_IMAGES.dying);
       cancelAnimationFrame(animationId);
       const difficultyLabel = getCurrentDifficultyConfig().label;
+      if (endOverlay) endOverlay.classList.remove('clear-result');
       endTitle.textContent = '게임 오버';
       endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />도달 층: <b>${difficultyLabel} ${currentFloor}층</b> · 처치한 몬스터: <b>${player.kills}</b>마리`;
       restartButton.textContent = '다시 도전';
+      restartButton.classList.remove('secondary-button');
+      homeButton.textContent = '시작 화면';
+      homeButton.classList.add('secondary-button');
       const restartActionCol = restartButton.closest('.end-action-col');
       if (restartActionCol) restartActionCol.style.display = 'flex';
+      if (restartHintEl) restartHintEl.style.display = '';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
+      if (homeHintEl) homeHintEl.style.display = '';
       if (homeHintKbd) homeHintKbd.textContent = 'ESC';
       showEndOverlay();
       updateKeyboardHint();
     }
 
-    function winGame() {
+    function winGame(treasure = pendingRewardTreasure) {
       gameState = 'clear';
       setBlocking(false);
       clearAllMonsterSpecialTimers();
       cancelAnimationFrame(animationId);
       renderHud();
       updatePlayTimeHud();
+      const rewardTreasure = treasure || pendingRewardTreasure;
       const currentRecordText = formatPlayTime(elapsed);
       const bestRecord = updateBestClearTime(elapsed);
       const bestRecordText = formatPlayTime(bestRecord);
-      endTitle.textContent = '게임 클리어!';
-      endDesc.innerHTML = `<span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>`;
-      restartButton.textContent = '다시 도전';
+      const difficultyLabel = getCurrentDifficultyLabel();
+      const rewardHtml = rewardTreasure
+        ? `<div id="clearRewardTreasureImage" class="reward-treasure-image clear-reward-treasure-image" aria-hidden="true"></div><span class="message-line clear-reward-description">'<b>${escapeHtml(rewardTreasure.name)}</b>'${getObjectParticle(rewardTreasure.name)} 획득했습니다.</span>`
+        : '';
+      if (endOverlay) endOverlay.classList.add('clear-result');
+      endTitle.textContent = '게임 클리어';
+      endDesc.innerHTML = `<span class="message-line clear-difficulty-label">- ${difficultyLabel} 난이도 -</span><span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>${rewardHtml}`;
+      if (rewardTreasure) {
+        setTreasureSpritePosition(document.getElementById('clearRewardTreasureImage'), rewardTreasure.spriteIndex);
+        unlockTreasure(rewardTreasure);
+      }
+      pendingRewardTreasure = null;
+      restartButton.textContent = '도감 보기';
+      restartButton.classList.add('secondary-button');
+      homeButton.textContent = '시작 화면';
+      homeButton.classList.remove('secondary-button');
       const restartActionCol = restartButton.closest('.end-action-col');
-      if (restartActionCol) restartActionCol.style.display = 'none';
+      if (restartActionCol) restartActionCol.style.display = 'flex';
+      if (restartHintEl) restartHintEl.style.display = 'none';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
+      if (homeHintEl) homeHintEl.style.display = '';
       if (homeHintKbd) homeHintKbd.textContent = 'Space';
       showEndOverlay();
       updateKeyboardHint();
@@ -4144,32 +4417,58 @@
         enterLobby();
       });
     }
+    if (cheatResetButton) {
+      cheatResetButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!SHOW_CHEAT_CONTROLS) return;
+        showResetConfirmOverlay();
+      });
+    }
+    if (resetCancelButton) {
+      resetCancelButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideResetConfirmOverlay();
+      });
+    }
+    if (resetConfirmButton) {
+      resetConfirmButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        confirmResetSavedData();
+      });
+    }
+    if (resetConfirmOverlay) {
+      resetConfirmOverlay.addEventListener('click', (e) => {
+        if (e.target === resetConfirmOverlay) hideResetConfirmOverlay();
+      });
+    }
     if (cheatToggle) {
       cheatToggle.addEventListener('click', (e) => {
         e.preventDefault();
+        if (!SHOW_CHEAT_CONTROLS) return;
         cheatCodeEnabled = !cheatCodeEnabled;
         updateCheatToggle();
       });
     }
     if (cheatFloorPanel) {
       cheatFloorPanel.addEventListener('click', (e) => {
+        if (!SHOW_CHEAT_CONTROLS) return;
         const button = e.target.closest('.cheat-floor-button');
         if (!button) return;
         e.preventDefault();
         const floor = Number(button.dataset.floor);
+        setSelectedCheatFloor(floor);
         if (floor === 1) {
-          selectedCheatFloor = 1;
           cheatCodeEnabled = false;
           updateCheatToggle();
-          return;
         }
-        setSelectedCheatFloor(floor);
       });
     }
     restartButton.addEventListener('click', () => {
       if (gameState === 'stageclear') {
         if (!stageProgressReady) return;
         startNextFloor();
+      } else if (gameState === 'clear') {
+        useBestiaryButton();
       } else {
         restartGameWithFade();
       }
