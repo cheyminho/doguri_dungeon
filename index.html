@@ -18,7 +18,10 @@
       --panel-line: rgba(255, 255, 255, .16);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-user-drag: none;
+    }
 
     html, body {
       width: 100%;
@@ -34,6 +37,7 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
       overscroll-behavior: none;
+      touch-action: none;
     }
 
     body {
@@ -368,6 +372,14 @@
       to { opacity: 0; transform: translate(-50%, -50%) translateY(-20px) scale(var(--scale)); filter: grayscale(1) blur(4px) brightness(.9); }
     }
 
+    .monster.jump-away {
+      animation: monsterJumpAway .36s ease-in both;
+    }
+
+    @keyframes monsterJumpAway {
+      to { opacity: 0; transform: translate(-50%, -50%) translateY(-460px) scale(var(--scale)); filter: drop-shadow(0 8px 12px rgba(0,0,0,.35)); }
+    }
+
     .nameplate {
       position: absolute;
       z-index: 2;
@@ -384,6 +396,45 @@
       box-shadow: none;
       backdrop-filter: none;
       white-space: nowrap;
+    }
+
+    .lethal-skull {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      top: -27px;
+      width: 32px;
+      height: 32px;
+      translate: -50% 0;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,.55)) drop-shadow(0 8px 12px rgba(0,0,0,.42));
+    }
+
+    .monster.treasure-chest .timer-ring {
+      display: none;
+    }
+
+    .monster.treasure-chest .nameplate {
+      top: 42px;
+    }
+
+    .monster.treasure-chest.chest-opened .nameplate {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .monster.treasure-chest.chest-opened .monster-body {
+      filter: none;
+    }
+
+    .monster.treasure-chest.chest-opened .defeat-burst {
+      opacity: 1;
+      transform: scale(3);
+    }
+
+    .monster.treasure-chest.chest-opened .defeat-burst span {
+      animation: defeatDust .42s ease-out both;
     }
 
     .monster.level-low {
@@ -606,6 +657,10 @@
       font-weight: 950;
       line-height: 1;
       text-align: center;
+      white-space: nowrap;
+      word-break: keep-all;
+      writing-mode: horizontal-tb;
+      width: max-content;
       opacity: 0;
       pointer-events: none;
       translate: -50% 0;
@@ -916,7 +971,7 @@
       transition: scale .08s ease, transform .08s ease;
     }
     .alpha-key.next-key {
-      background: #fff6d7;
+      background: #ffe29b;
       box-shadow: none;
       transform: translateY(-2px) scale(1.06);
     }
@@ -969,6 +1024,10 @@
     #hud #alphaKeyboard .alpha-key {
       color: #2b2b2b;
       background: #fff6d7;
+    }
+
+    #hud #alphaKeyboard .alpha-key.next-key {
+      background: #ffe29b;
     }
 
 
@@ -1089,6 +1148,87 @@
       background: #000;
     }
 
+    #rewardOverlay {
+      z-index: 130;
+    }
+
+    #rewardOverlay:not(.hidden):not(.closing) .modal {
+      animation: popupOpen .2s ease-in-out both;
+    }
+
+    #rewardOverlay.closing .modal {
+      animation: popupClose .1s ease-in-out both;
+    }
+
+    #rewardOverlay .modal {
+      position: relative;
+      z-index: 0;
+      margin: 20px 0;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      color: #000;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #rewardOverlay .modal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      box-sizing: border-box;
+      border: 126px solid transparent;
+      border-image-source: url("popupbg.png");
+      border-image-slice: 126 fill;
+      border-image-width: 126px;
+      border-image-repeat: stretch;
+      pointer-events: none;
+    }
+
+    #rewardOverlay .modal h2,
+    #rewardOverlay .modal p,
+    #rewardOverlay .modal button {
+      color: #000;
+      text-shadow: none;
+    }
+
+    #rewardOverlay .modal button {
+      border-radius: 30px;
+      color: #21131c;
+      background: #ffe29b;
+    }
+
+    .reward-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin: 6px 0 20px;
+    }
+
+    .reward-treasure-image {
+      width: 222px;
+      height: 222px;
+      background-image: url('treasure.png');
+      background-repeat: no-repeat;
+      background-size: 400% 400%;
+      background-position: 0% 0%;
+      image-rendering: auto;
+      filter: drop-shadow(0 14px 16px rgba(0,0,0,.22));
+      pointer-events: none;
+    }
+
+    .reward-description {
+      margin: 0;
+      max-width: 430px;
+      color: #000;
+      line-height: 1.65;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
     .modal {
       width: min(560px, 92vw);
       padding: 30px 28px;
@@ -1177,7 +1317,10 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      pointer-events: none;
+      pointer-events: auto;
+      cursor: pointer;
+      -webkit-user-drag: none;
+      user-drag: none;
     }
 
     .entrance-tower {
@@ -1286,11 +1429,24 @@
       border-radius: 30px;
     }
 
-    .cheat-toggle {
+    .cheat-controls {
       position: absolute;
       top: 18px;
       right: 18px;
-      z-index: 3;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .cheat-controls.hidden {
+      display: none;
+    }
+
+    .cheat-toggle {
+      position: static;
       padding: 9px 14px;
       border: 1px solid #000;
       border-radius: 30px;
@@ -1301,12 +1457,43 @@
       letter-spacing: -0.02em;
       box-shadow: none;
     }
-	
-	#cheatToggle {
-	display: none;
-	}
 
     .cheat-toggle.active {
+      color: #fff;
+      background: #000;
+    }
+
+    .cheat-toggle.hidden {
+      display: none;
+    }
+
+    .cheat-floor-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 7px;
+    }
+
+    .cheat-floor-panel.hidden {
+      display: none;
+    }
+
+    .cheat-floor-button {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      padding: 0;
+      border: 1px solid #000;
+      border-radius: 999px;
+      color: #000;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 950;
+      line-height: 1;
+      box-shadow: none;
+    }
+
+    .cheat-floor-button.active {
       color: #fff;
       background: #000;
     }
@@ -1621,8 +1808,6 @@
     }
 
 
-    .is-lobby #guardShield,
-    .is-lobby #sword,
     .is-lobby #playTimeHud {
       display: none;
     }
@@ -1643,7 +1828,7 @@
     #screenFade {
       position: absolute;
       inset: 0;
-      z-index: 100;
+      z-index: 200;
       background: #000;
       opacity: 0;
       pointer-events: none;
@@ -1683,6 +1868,7 @@
       .monster.lane-right { --x: 112px; --scale: .76; }
       .nameplate { min-width: 190px; top: 2px; gap: 7px; padding: 8px 10px; }
       .monster.level-low .nameplate { top: 47px; }
+      .lethal-skull { top: -27px; width: 32px; height: 32px; }
       .monster-results { top: -18px; width: 160px; }
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
@@ -1712,14 +1898,17 @@
       .exp-bar { height: 5px; }
       #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 1.68; max-width: none; overflow: hidden; }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
-      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-24px); }
+      #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-29px); }
       .alpha-row { gap: 3px; }
       .alpha-row:nth-child(2) { padding-left: 12px; }
       .alpha-row:nth-child(3) { padding-left: 8px; }
-      .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 30px; font-size: 13px; }
-      .shield-key { width: 44px; min-width: 44px; font-size: 12px; }
+      .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 5px; font-size: 13px; }
+      .shield-key, .threat-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
-      .cheat-toggle { top: 12px; right: 12px; padding: 8px 12px; font-size: 11px; }
+      .cheat-controls { top: 12px; right: 12px; gap: 7px; }
+      .cheat-toggle { padding: 8px 12px; font-size: 11px; }
+      .cheat-floor-panel { gap: 6px; }
+      .cheat-floor-button { width: 38px; height: 38px; min-width: 38px; font-size: 10px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
     }
@@ -1727,6 +1916,17 @@
 </head>
 <body>
   <main id="game" aria-label="던전앤도구리 타이핑 게임">
+    <div id="cheatControls" class="cheat-controls">
+      <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
+      <div id="cheatFloorPanel" class="cheat-floor-panel hidden" aria-label="치트 시작 층 선택">
+        <button type="button" class="cheat-floor-button active" data-floor="1" aria-pressed="true">B1F</button>
+        <button type="button" class="cheat-floor-button" data-floor="2" aria-pressed="false">B2F</button>
+        <button type="button" class="cheat-floor-button" data-floor="3" aria-pressed="false">B3F</button>
+        <button type="button" class="cheat-floor-button" data-floor="4" aria-pressed="false">B4F</button>
+        <button type="button" class="cheat-floor-button" data-floor="5" aria-pressed="false">B5F</button>
+        <button type="button" class="cheat-floor-button" data-floor="6" aria-pressed="false">B6F</button>
+      </div>
+    </div>
     <section class="dungeon" aria-hidden="true">
       <div class="ceiling"></div>
       <div class="left-wall"></div>
@@ -1797,14 +1997,13 @@
     <div class="blood-flash" id="bloodFlash"></div>
 
     <div class="overlay" id="startOverlay">
-      <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.42</div>
+          <div class="start-version">버전 0.43</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
-          <img class="start-gate-image" src="gate.png" alt="" />
+          <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
         </div>
         <button id="startButton">입장</button>
         <div class="start-hint"><span class="kbd">Space</span></div>
@@ -1830,11 +2029,35 @@
 
     <div class="overlay hidden" id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
       <div class="modal">
-        <h2 id="infoTitle">안내</h2>
-        <p id="infoDesc">난이도가 높을수록 보물 획득 확률이 증가합니다.</p>
-        <div class="end-actions">
+        <h2 id="infoTitle">안 내</h2>
+        <p id="infoDesc"><span class="message-line">난이도별로 별도의 랭킹이 기록됩니다.</span><span class="message-line">난이도가 높을수록 보물 획득 확률이 증가합니다.</span></p>
+        <div class="end-actions info-actions">
+          <div class="end-action-col">
+            <button id="rankingButton" class="secondary-button">랭킹</button>
+          </div>
           <div class="end-action-col">
             <button id="infoCloseButton">확인</button>
+            <div class="button-hint"><span class="kbd">Space</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="overlay hidden" id="rewardOverlay" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
+      <div class="modal">
+        <h2 id="rewardTitle">보상 획득</h2>
+        <div class="reward-content">
+          <div id="rewardTreasureImage" class="reward-treasure-image" aria-hidden="true"></div>
+          <p id="rewardDesc" class="reward-description">보물을 획득했습니다.</p>
+        </div>
+        <div class="end-actions reward-actions">
+          <div class="end-action-col">
+            <button id="rewardBestiaryButton" class="secondary-button">도감</button>
+          </div>
+          <div class="end-action-col">
+            <button id="rewardCloseButton">확인</button>
+            <div class="button-hint"><span class="kbd">Space</span></div>
           </div>
         </div>
       </div>
@@ -1875,6 +2098,30 @@
       { type: 'B', level: 13, name: 'Flame', attackTime: 2.0, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#ffb347', '#d92f1f'] },
     ];
 
+    const CHEST_CONFIGS = {
+      easy: { grade: 'common', name: 'Common Chest', spriteIndex: 13 },
+      normal: { grade: 'fine', name: 'Fine Chest', spriteIndex: 14 },
+      hard: { grade: 'rare', name: 'Rare Chest', spriteIndex: 15 },
+    };
+    const TREASURE_DATA = [
+      { name: '보물 벌레', spriteIndex: 0 },
+      { name: '마사지 볼', spriteIndex: 1 },
+      { name: '파이널 걸', spriteIndex: 2 },
+      { name: '핸디 스팀 청소기', spriteIndex: 3 },
+      { name: '工夫 머그컵', spriteIndex: 4 },
+      { name: '라이카 D-Lux 8', spriteIndex: 5 },
+      { name: '레고 375', spriteIndex: 6 },
+      { name: 'TP-7', spriteIndex: 7 },
+      { name: '오목눈이 풍경', spriteIndex: 8 },
+      { name: '비전 프로', spriteIndex: 9 },
+      { name: '스팀 머신', spriteIndex: 10 },
+      { name: 'RTX 5090', spriteIndex: 11 },
+    ];
+    const TREASURE_DECAY_BY_DIFFICULTY = {
+      easy: 0.62,
+      normal: 0.38,
+      hard: 0.22,
+    };
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     const PROFILE_IMAGES = {
@@ -1884,6 +2131,9 @@
     };
     const BASE_MAX_HP = 3;
     const MAX_PLAYER_HP = 12;
+    const MOBILE_HP_VISIBLE_SLOTS = 7;
+    const HP_RED_IMAGE = 'hp.png';
+    const HP_YELLOW_IMAGE = 'hp_y.png';
     const LEVEL_UP_OCCURRENCE_RATE = 0.7;
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
@@ -1901,7 +2151,7 @@
     const DIFFICULTY_CONFIGS = {
       easy: {
         label: '쉬움',
-        attackTimeMultiplier: 1.5,
+        attackTimeMultiplier: 2,
         spawnIntervalMultiplier: 1.5,
         allowedMonsterTypes: ['A'],
       },
@@ -1913,7 +2163,7 @@
       },
       hard: {
         label: '어려움',
-        attackTimeMultiplier: 0.5,
+        attackTimeMultiplier: 0.75,
         spawnIntervalMultiplier: 0.5,
         allowedMonsterTypes: ['A', 'B'],
       },
@@ -1964,12 +2214,21 @@
     const endOverlay = document.getElementById('endOverlay');
     const infoOverlay = document.getElementById('infoOverlay');
     const infoCloseButton = document.getElementById('infoCloseButton');
+    const rewardOverlay = document.getElementById('rewardOverlay');
+    const rewardTreasureImage = document.getElementById('rewardTreasureImage');
+    const rewardDesc = document.getElementById('rewardDesc');
+    const rewardCloseButton = document.getElementById('rewardCloseButton');
+    const rewardBestiaryButton = document.getElementById('rewardBestiaryButton');
     const endTitle = document.getElementById('endTitle');
     const endDesc = document.getElementById('endDesc');
     const startButton = document.getElementById('startButton');
+    const startGateImage = document.querySelector('.start-gate-image');
+    const cheatControls = document.getElementById('cheatControls');
     const cheatToggle = document.getElementById('cheatToggle');
+    const cheatFloorPanel = document.getElementById('cheatFloorPanel');
     const restartButton = document.getElementById('restartButton');
     const homeButton = document.getElementById('homeButton');
+    const homeHintKbd = document.querySelector('.home-hint .kbd');
     const monsterTable = document.getElementById('monsterTable');
     const comboToast = document.getElementById('comboToast');
     const floorText = document.getElementById('floorText');
@@ -2001,15 +2260,30 @@
     let floorSpawned = 0;
     let floorKills = 0;
     let floorFirstBossSpawned = false;
+    let clearChestSpawned = false;
+    let pendingRewardTreasure = null;
     let stageProgressReady = false;
     let stageProgressDelayTimeout = null;
     let shieldBlockTimeout = null;
     let profilePainTimeout = null;
     let cheatCodeEnabled = false;
+    let selectedCheatFloor = 1;
     let isSceneTransitioning = false;
     let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
     const lobbyBgImage = new Image();
     lobbyBgImage.src = LOBBY_BG_IMAGE_SRC;
+
+    function preventScreenGesture(e) {
+      if (e.cancelable) e.preventDefault();
+    }
+
+    ['touchmove', 'gesturestart', 'gesturechange', 'gestureend'].forEach(eventName => {
+      document.addEventListener(eventName, preventScreenGesture, { passive: false });
+    });
+    document.addEventListener('dragstart', preventScreenGesture, { passive: false });
+    window.addEventListener('wheel', (e) => {
+      if (e.ctrlKey && e.cancelable) e.preventDefault();
+    }, { passive: false });
 
     function normalizeName(name) {
       return name.toLowerCase().replace(/\s+/g, '');
@@ -2031,6 +2305,45 @@
 
     function setCurrentDifficulty(key) {
       currentDifficultyKey = DIFFICULTY_CONFIGS[key] ? key : DEFAULT_DIFFICULTY_KEY;
+    }
+
+
+    function getCurrentDifficultyLabel() {
+      return getCurrentDifficultyConfig().label || DIFFICULTY_CONFIGS[DEFAULT_DIFFICULTY_KEY].label;
+    }
+
+    function getChestConfigForDifficulty() {
+      return CHEST_CONFIGS[currentDifficultyKey] || CHEST_CONFIGS[DEFAULT_DIFFICULTY_KEY] || CHEST_CONFIGS.normal;
+    }
+
+    function setTreasureSpritePosition(el, spriteIndex) {
+      if (!el) return;
+      const safeIndex = Math.max(0, Math.min(15, Number.isFinite(spriteIndex) ? spriteIndex : 0));
+      const col = safeIndex % 4;
+      const row = Math.floor(safeIndex / 4);
+      const pos = value => `${(value / 3) * 100}%`;
+      el.style.backgroundPosition = `${pos(col)} ${pos(row)}`;
+    }
+
+    function pickRewardTreasure() {
+      const decay = TREASURE_DECAY_BY_DIFFICULTY[currentDifficultyKey] ?? TREASURE_DECAY_BY_DIFFICULTY.normal;
+      const weights = TREASURE_DATA.map((_, index) => Math.exp(-decay * index));
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      let roll = Math.random() * totalWeight;
+      for (let i = 0; i < TREASURE_DATA.length; i++) {
+        roll -= weights[i];
+        if (roll <= 0) return TREASURE_DATA[i];
+      }
+      return TREASURE_DATA[0];
+    }
+
+    function getObjectParticle(text) {
+      if (!text) return '을';
+      const lastHangul = [...text].reverse().find(ch => /[가-힣]/.test(ch));
+      if (!lastHangul) return '를';
+      const code = lastHangul.charCodeAt(0) - 0xAC00;
+      if (code < 0 || code > 11171) return '를';
+      return code % 28 === 0 ? '를' : '을';
     }
 
     function isMonsterAllowedByDifficulty(monster) {
@@ -2057,6 +2370,38 @@
       return `${String(minutes).padStart(2, '0')}:${secText}`;
     }
 
+    function getBestClearTimeKey(difficultyKey = currentDifficultyKey) {
+      return `dungeonDoguriBestClearTime.${difficultyKey}`;
+    }
+
+    function getBestClearTime(difficultyKey = currentDifficultyKey) {
+      try {
+        const stored = window.localStorage.getItem(getBestClearTimeKey(difficultyKey));
+        const value = Number(stored);
+        return Number.isFinite(value) && value > 0 ? value : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setBestClearTime(seconds, difficultyKey = currentDifficultyKey) {
+      try {
+        window.localStorage.setItem(getBestClearTimeKey(difficultyKey), String(seconds));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 기록 표시만 생략합니다.
+      }
+    }
+
+    function updateBestClearTime(seconds, difficultyKey = currentDifficultyKey) {
+      const current = Math.max(0, seconds || 0);
+      const previousBest = getBestClearTime(difficultyKey);
+      if (previousBest === null || current < previousBest) {
+        setBestClearTime(current, difficultyKey);
+        return current;
+      }
+      return previousBest;
+    }
+
     function updatePlayTimeHud() {
       if (playTimeHud) playTimeHud.textContent = formatPlayTime(elapsed);
     }
@@ -2074,10 +2419,14 @@
         const shieldButton = index === 2
           ? `<button type="button" class="alpha-key shield-key" data-action="shield" aria-label="방어">방어</button>`
           : '';
+        const threatButton = index === 2
+          ? `<button type="button" class="alpha-key threat-key" data-action="threat" aria-label="위협">위협</button>`
+          : '';
         return `
           <div class="alpha-row">
             ${shieldButton}
             ${row.split('').map(key => `<button type="button" class="alpha-key" data-key="${key.toLowerCase()}" aria-label="${key} 입력">${key}</button>`).join('')}
+            ${threatButton}
           </div>
         `;
       }).join('');
@@ -2086,7 +2435,7 @@
     function updateActionButtonStates() {
       if (!alphaKeyboard) return;
       const shieldButton = alphaKeyboard.querySelector('.shield-key');
-      const shieldEnabled = gameState === 'playing' && player && player.shields > 0;
+      const shieldEnabled = (gameState === 'playing' || gameState === 'lobby') && player && player.shields > 0;
       if (shieldButton) {
         shieldButton.classList.toggle('disabled', !shieldEnabled);
         shieldButton.disabled = !shieldEnabled;
@@ -2103,9 +2452,20 @@
     }
 
     function handleAlphabetButton(char) {
+      if (gameState === 'lobby') {
+        animateSword();
+        showInputBubble(char);
+        return;
+      }
       if (gameState !== 'playing') return;
       animateSword();
       typeCharacter(char);
+    }
+
+    function playThreat() {
+      if (gameState !== 'playing' && gameState !== 'lobby') return;
+      animateSword();
+      showInputBubble('얍');
     }
 
 
@@ -2122,12 +2482,18 @@
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
 
+    function useBestiaryButton() {
+      if (gameState !== 'lobby') return;
+      // 도감 팝업은 추후 추가 예정입니다.
+    }
+
     function resetGame(startFloor = 1, options = {}) {
       const autoStart = options.autoStart !== false;
       const initialSpawnDelay = Number.isFinite(options.initialSpawnDelay) ? options.initialSpawnDelay : FIRST_MONSTER_SPAWN_DELAY;
       const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
       const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
       cancelAnimationFrame(animationId);
+      clearAllMonsterSpecialTimers();
       player = {
         hp: BASE_MAX_HP,
         maxHp: BASE_MAX_HP,
@@ -2150,6 +2516,8 @@
       floorSpawned = 0;
       floorKills = 0;
       floorFirstBossSpawned = false;
+      clearChestSpawned = false;
+      pendingRewardTreasure = null;
       stageProgressReady = false;
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       gameState = autoStart ? 'playing' : 'transition';
@@ -2161,6 +2529,8 @@
       updatePlayTimeHud();
       lastInputTime = performance.now() / 1000;
       monsterLayer.innerHTML = '';
+      clearChestSpawned = false;
+      pendingRewardTreasure = null;
       isBlocking = false;
       guardShield.classList.remove('holding', 'block');
       if (shieldBlockTimeout) { clearTimeout(shieldBlockTimeout); shieldBlockTimeout = null; }
@@ -2170,7 +2540,12 @@
         infoOverlay.classList.add('hidden');
         infoOverlay.classList.remove('closing');
       }
+      if (rewardOverlay) {
+        rewardOverlay.classList.add('hidden');
+        rewardOverlay.classList.remove('closing');
+      }
       startOverlay.classList.add('hidden');
+      setCheatControlsVisible(false);
       hideLobbyDifficulty();
       game.classList.remove('is-lobby');
       setFloorMessage();
@@ -2211,17 +2586,38 @@
       }, 480);
     }
 
-    function renderHud() {
+    function isMobileHeartView() {
+      return window.matchMedia('(max-width: 760px)').matches;
+    }
+
+    function appendHeartIcon(src, isFull) {
+      const heart = document.createElement('img');
+      heart.className = `heart-icon ${isFull ? 'full' : 'empty'}`;
+      heart.src = src;
+      heart.alt = '';
+      heart.draggable = false;
+      heart.setAttribute('aria-hidden', 'true');
+      heartsEl.appendChild(heart);
+    }
+
+    function renderHearts() {
       heartsEl.innerHTML = '';
-      for (let i = 0; i < player.maxHp; i++) {
-        const heart = document.createElement('img');
-        heart.className = `heart-icon ${i < player.hp ? 'full' : 'empty'}`;
-        heart.src = 'hp.png';
-        heart.alt = '';
-        heart.draggable = false;
-        heart.setAttribute('aria-hidden', 'true');
-        heartsEl.appendChild(heart);
+      const useMobileCompactHp = isMobileHeartView() && player.maxHp > MOBILE_HP_VISIBLE_SLOTS;
+      const visibleHeartCount = useMobileCompactHp ? MOBILE_HP_VISIBLE_SLOTS : player.maxHp;
+      const yellowHeartCount = useMobileCompactHp
+        ? Math.min(visibleHeartCount, Math.max(0, player.hp - MOBILE_HP_VISIBLE_SLOTS))
+        : 0;
+      const redHeartSlots = visibleHeartCount - yellowHeartCount;
+
+      for (let i = 0; i < visibleHeartCount; i++) {
+        const isYellowHeart = useMobileCompactHp && i >= redHeartSlots;
+        const isFull = isYellowHeart ? true : i < Math.min(player.hp, redHeartSlots);
+        appendHeartIcon(isYellowHeart ? HP_YELLOW_IMAGE : HP_RED_IMAGE, isFull);
       }
+    }
+
+    function renderHud() {
+      renderHearts();
 
       shieldsEl.innerHTML = '';
       for (let i = 0; i < player.shields; i++) {
@@ -2235,8 +2631,19 @@
       }
       guardShield.style.display = player.shields > 0 ? '' : 'none';
 
-      potionIcon.src = 'apple.png';
-      potionSlot.style.display = player.potions > 0 ? 'inline-flex' : 'none';
+      if (gameState === 'lobby') {
+        potionIcon.src = 'book.png';
+        potionIcon.alt = '도감';
+        potionSlot.setAttribute('aria-label', '도감 보기');
+        potionHotkey.style.display = '';
+        potionSlot.style.display = 'inline-flex';
+      } else {
+        potionIcon.src = 'apple.png';
+        potionIcon.alt = '사과';
+        potionSlot.setAttribute('aria-label', '사과 사용');
+        potionHotkey.style.display = '';
+        potionSlot.style.display = player.potions > 0 ? 'inline-flex' : 'none';
+      }
 
       const need = expNeeded(player.level);
       const pct = Math.min(100, (player.exp / need) * 100);
@@ -2275,13 +2682,106 @@
       setMessage('<span class="message-line">난이도를 선택하세요.</span><span class="message-line">1~3 키를 눌러서도 선택할 수 있습니다.</span>');
     }
 
-    function getMonsterDataByLevel(level) {
-      return MONSTER_DATA.find(monster => monster.level === level);
+    function getMonsterDataByLevelAndType(level, type) {
+      return MONSTER_DATA.find(monster => monster.level === level && monster.type === type);
+    }
+
+    function shouldUseHardVariantLevel(level) {
+      return currentDifficultyKey === 'hard' && level >= 11 && level <= 13;
+    }
+
+    function getMonsterDataByLevel(level, type = null) {
+      if (type) return getMonsterDataByLevelAndType(level, type);
+      if (shouldUseHardVariantLevel(level)) {
+        return getMonsterDataByLevelAndType(level, 'B') || getMonsterDataByLevelAndType(level, 'A');
+      }
+      return getMonsterDataByLevelAndType(level, 'A') || MONSTER_DATA.find(monster => monster.level === level);
     }
 
 
+    function clearMonsterSpecialTimers(monster) {
+      if (!monster) return;
+      if (monster.veilTimer) {
+        clearTimeout(monster.veilTimer);
+        monster.veilTimer = null;
+      }
+    }
+
+    function clearAllMonsterSpecialTimers() {
+      if (!Array.isArray(monsters)) return;
+      monsters.forEach(clearMonsterSpecialTimers);
+    }
+
+    function isVeiledWarlock(monster) {
+      return monster && monster.type === 'B' && monster.level === 11;
+    }
+
+    function scheduleVeiledWarlockHide(monster) {
+      if (!isVeiledWarlock(monster) || !monster.wordEl || !monster.el || monster.el.classList.contains('dead')) return;
+      clearMonsterSpecialTimers(monster);
+      monster.wordEl.style.transition = 'none';
+      monster.wordEl.style.opacity = '1';
+      void monster.wordEl.offsetWidth;
+      monster.veilTimer = setTimeout(() => {
+        if (!isVeiledWarlock(monster) || !monster.wordEl || !monsters.includes(monster)) return;
+        monster.wordEl.style.transition = 'opacity 1s linear';
+        monster.wordEl.style.opacity = '0';
+        monster.veilTimer = null;
+      }, 1000);
+    }
+
+    function isBoneDragonVariant(monster) {
+      return monster && monster.type === 'B' && monster.level === 12;
+    }
+
+    function createBoneDragonReturnState(monster) {
+      return {
+        data: getMonsterDataByLevel(12, 'B'),
+        lane: monster.lane,
+        progress: monster.progress,
+      };
+    }
+
+    function swapBoneDragonToFlame(monster) {
+      if (!isBoneDragonVariant(monster)) return false;
+      const flameData = getMonsterDataByLevel(13, 'B');
+      const returnState = createBoneDragonReturnState(monster);
+      if (!flameData || !returnState.data) return false;
+
+      const lane = monster.lane;
+      const monsterId = monster.id;
+      clearMonsterSpecialTimers(monster);
+      monsters = monsters.filter(item => item.id !== monsterId);
+      if (activeMonsterId === monsterId) activeMonsterId = null;
+      inputHintMode = null;
+      monster.el.classList.add('jump-away');
+      setTimeout(() => monster.el && monster.el.remove(), 380);
+      setTimeout(() => {
+        if (gameState !== 'playing') return;
+        spawnMonster(flameData, lane, {
+          temporarySummon: true,
+          returnMonster: returnState,
+        });
+        updateKeyboardHint();
+      }, 170);
+      renderAllMonsterWords();
+      updateKeyboardHint();
+      return true;
+    }
+
+    function respawnReturnedMonster(returnMonster) {
+      if (!returnMonster || gameState !== 'playing') return;
+      const data = returnMonster.data || getMonsterDataByLevel(12, 'B');
+      if (!data) return;
+      spawnMonster(data, returnMonster.lane || 'lane-mid', {
+        progress: returnMonster.progress || 0,
+        attackTimeOverride: 1,
+      });
+      updateKeyboardHint();
+    }
+
     function setBlocking(nextState) {
-      const canBlock = gameState === 'playing' && player && player.shields > 0;
+      const canBlock = (gameState === 'playing' || gameState === 'lobby') && player && player.shields > 0;
       isBlocking = !!nextState && canBlock;
       if (!isBlocking) {
         guardShield.classList.remove('block');
@@ -2380,6 +2880,7 @@
       showMissOnRelevantMonsters();
 
       for (const monster of monsters) {
+        if (monster.isTreasureChest) continue;
         monster.remaining = Math.max(0, monster.remaining - TYPO_TIME_PENALTY);
         updateMonsterElement(monster);
       }
@@ -2419,6 +2920,10 @@
       }
 
       for (const monster of [...monsters]) {
+        if (monster.isTreasureChest) {
+          updateMonsterElement(monster);
+          continue;
+        }
         monster.remaining -= dt;
         if (monster.remaining <= 0) {
           monsterAttack(monster);
@@ -2530,12 +3035,14 @@
       }
     }
 
-    function spawnMonster(data, lane) {
-      if (data.name === 'Ancient Red Dragon') {
+    function spawnMonster(data, lane, options = {}) {
+      if (data.name === 'Ancient Red Dragon' || data.name === 'Ancient Bone Dragon') {
         dragonSpawned = true;
       }
 
-      const adjustedAttackTime = applyDifficultyAttackTime(data.attackTime);
+      const adjustedAttackTime = Number.isFinite(options.attackTimeOverride)
+        ? Math.max(0.1, options.attackTimeOverride)
+        : applyDifficultyAttackTime(data.attackTime);
       const monster = {
         id: nextMonsterId++,
         level: data.level,
@@ -2543,25 +3050,33 @@
         normalized: normalizeName(data.name),
         attackTime: adjustedAttackTime,
         remaining: adjustedAttackTime,
-        progress: 0,
+        progress: Math.max(0, Math.min(normalizeName(data.name).length, options.progress || 0)),
         type: data.type || 'A',
         spriteSheet: data.spriteSheet || MONSTER_SPRITE_A,
         lane,
+        temporarySummon: !!options.temporarySummon,
+        returnMonster: options.returnMonster || null,
+        isTreasureChest: !!options.treasureChest || !!data.isTreasureChest,
+        chestConfig: options.chestConfig || data.chestConfig || null,
+        veilTimer: null,
       };
 
-      const spriteIndex = Math.max(0, Math.min(15, data.level - 1));
+      const dataSpriteIndex = Number.isFinite(data.spriteIndex) ? data.spriteIndex : data.level - 1;
+      const spriteIndex = Math.max(0, Math.min(15, dataSpriteIndex));
       const spriteCol = spriteIndex % 4;
       const spriteRow = Math.floor(spriteIndex / 4);
       const spritePosition = value => `${(value / 3) * 100}%`;
 
       const el = document.createElement('div');
-      const levelClass = data.level <= 3 ? 'level-low' : '';
-      el.className = `monster ${levelClass} ${lane}`;
+      const levelClass = data.level <= 3 && !monster.isTreasureChest ? 'level-low' : '';
+      const showLethalSkull = data.level === 12 && currentDifficultyKey !== 'easy' && !monster.isTreasureChest;
+      el.className = `monster ${levelClass} ${showLethalSkull ? 'lethal-warning' : ''} ${monster.isTreasureChest ? 'treasure-chest' : ''} ${lane}`;
       el.dataset.id = monster.id;
       el.style.setProperty('--monster-sprite-x', spritePosition(spriteCol));
       el.style.setProperty('--monster-sprite-y', spritePosition(spriteRow));
       el.style.setProperty('--monster-sprite-image', `url('${monster.spriteSheet}')`);
       el.innerHTML = `
+        ${showLethalSkull ? '<img class="lethal-skull" src="skull.png" alt="" draggable="false" aria-hidden="true" />' : ''}
         <div class="nameplate">
           <div class="monster-results"></div>
           <div class="word"></div>
@@ -2582,9 +3097,11 @@
       monster.timerEl = el.querySelector('.timer-ring');
       monsterLayer.appendChild(el);
       monsters.push(monster);
-      lastSpawnedMonsterKey = getMonsterSpawnKey(monster);
+      if (!monster.temporarySummon) lastSpawnedMonsterKey = getMonsterSpawnKey(monster);
       renderMonsterWord(monster);
       updateMonsterElement(monster);
+      if (isVeiledWarlock(monster)) scheduleVeiledWarlockHide(monster);
+      return monster;
     }
 
     function shouldHighlightNeededChar(monster, normalizedIndex) {
@@ -2634,6 +3151,11 @@
     }
 
     function updateMonsterElement(monster) {
+      if (monster.isTreasureChest) {
+        if (monster.timerEl) monster.timerEl.dataset.time = '';
+        monster.el.classList.toggle('active', monster.id === activeMonsterId);
+        return;
+      }
       const ratio = Math.max(0, Math.min(1, monster.remaining / monster.attackTime));
       const used = 1 - ratio;
       const deg = used * 360;
@@ -2669,6 +3191,7 @@
       monster.el.classList.remove('attack');
       void monster.el.offsetWidth;
       monster.el.classList.add('attack');
+      if (isVeiledWarlock(monster)) scheduleVeiledWarlockHide(monster);
 
       if (isBlocking && player.shields > 0) {
         player.shields = Math.max(0, player.shields - 1);
@@ -2680,7 +3203,7 @@
         return;
       }
 
-      if (monster.level === 12) {
+      if (monster.level === 12 && currentDifficultyKey !== 'easy') {
         damageDoguri(`${monster.name}의 치명적인 공격!`, player.hp);
         return;
       }
@@ -2803,6 +3326,7 @@
 
     function setupLobby() {
       cancelAnimationFrame(animationId);
+      clearAllMonsterSpecialTimers();
       gameState = 'lobby';
       progressKeyArmed = true;
       stageProgressReady = false;
@@ -2820,12 +3344,19 @@
         infoOverlay.classList.add('hidden');
         infoOverlay.classList.remove('closing');
       }
+      if (rewardOverlay) {
+        rewardOverlay.classList.add('hidden');
+        rewardOverlay.classList.remove('closing');
+      }
       startOverlay.classList.add('hidden');
+      setCheatControlsVisible(true);
       game.classList.add('is-lobby');
       currentFloor = 1;
       floorSpawned = 0;
       floorKills = 0;
       floorFirstBossSpawned = false;
+      clearChestSpawned = false;
+      pendingRewardTreasure = null;
       player = {
         hp: BASE_MAX_HP,
         maxHp: BASE_MAX_HP,
@@ -2858,7 +3389,8 @@
       runSceneFade(() => {
         hideLobbyDifficulty();
         game.classList.remove('is-lobby');
-        resetGame(1, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
+        const startFloor = cheatCodeEnabled ? selectedCheatFloor : 1;
+        resetGame(startFloor, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
       }, () => beginPreparedGame());
     }
 
@@ -2870,9 +3402,12 @@
       }
 
       cancelAnimationFrame(animationId);
+      clearAllMonsterSpecialTimers();
       gameState = 'start';
       progressKeyArmed = true;
       stageProgressReady = false;
+      clearChestSpawned = false;
+      pendingRewardTreasure = null;
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       monsters = [];
       activeMonsterId = null;
@@ -2889,10 +3424,16 @@
         infoOverlay.classList.add('hidden');
         infoOverlay.classList.remove('closing');
       }
+      if (rewardOverlay) {
+        rewardOverlay.classList.add('hidden');
+        rewardOverlay.classList.remove('closing');
+      }
       hideLobbyDifficulty();
       game.classList.remove('is-lobby');
       startOverlay.classList.remove('hidden');
+      setCheatControlsVisible(true);
       restartButton.textContent = '다시 도전';
+      if (homeHintKbd) homeHintKbd.textContent = 'ESC';
       clearProfilePain();
       updateKeyboardHint();
       lastInputTime = null;
@@ -2900,19 +3441,36 @@
     }
 
 
-    function updateCheatToggle() {
-      if (!cheatToggle) return;
-      cheatToggle.classList.toggle('active', cheatCodeEnabled);
-      cheatToggle.setAttribute('aria-pressed', String(cheatCodeEnabled));
-      cheatToggle.textContent = cheatCodeEnabled ? '치트 ON' : '치트 OFF';
+    function updateCheatFloorButtons() {
+      if (!cheatFloorPanel) return;
+      cheatFloorPanel.querySelectorAll('.cheat-floor-button').forEach(button => {
+        const floor = Number(button.dataset.floor);
+        const isActive = floor === selectedCheatFloor;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
     }
 
-    function startFromCheatFloor(floor) {
-      if (!cheatCodeEnabled) return false;
-      if (!Number.isInteger(floor) || floor < 1 || floor > MAX_FLOOR) return false;
-      setCurrentDifficulty(DEFAULT_DIFFICULTY_KEY);
-      resetGame(floor);
-      return true;
+    function setSelectedCheatFloor(floor) {
+      const safeFloor = Number.isInteger(floor) ? floor : 1;
+      selectedCheatFloor = Math.max(1, Math.min(MAX_FLOOR, safeFloor));
+      updateCheatFloorButtons();
+    }
+
+    function setCheatControlsVisible(isVisible) {
+      if (!cheatControls) return;
+      cheatControls.classList.toggle('hidden', !isVisible);
+    }
+
+    function updateCheatToggle() {
+      if (cheatToggle) {
+        cheatToggle.classList.toggle('active', cheatCodeEnabled);
+        cheatToggle.classList.toggle('hidden', cheatCodeEnabled);
+        cheatToggle.setAttribute('aria-pressed', String(cheatCodeEnabled));
+        cheatToggle.textContent = cheatCodeEnabled ? '치트 ON' : '치트 OFF';
+      }
+      if (cheatFloorPanel) cheatFloorPanel.classList.toggle('hidden', !cheatCodeEnabled);
+      updateCheatFloorButtons();
     }
 
     function restartGameWithFade() {
@@ -2935,6 +3493,8 @@
         if (gameState === 'stageclear') {
           if (!stageProgressReady) return false;
           startNextFloor();
+        } else if (gameState === 'clear') {
+          goToStart();
         } else {
           restartGameWithFade();
         }
@@ -2962,6 +3522,12 @@
         const startScreenVisible = !startOverlay.classList.contains('hidden');
         const endScreenVisible = !endOverlay.classList.contains('hidden');
 
+        if (isRewardOverlayOpen()) {
+          e.preventDefault();
+          if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') closeRewardAndShowClear();
+          return;
+        }
+
         if (isInfoOverlayOpen()) {
           e.preventDefault();
           if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') hideInfoOverlay();
@@ -2974,9 +3540,37 @@
           return;
         }
 
-        if (startScreenVisible && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
+        if ((startScreenVisible || gameState === 'lobby') && cheatCodeEnabled && /^[1-6]$/.test(e.key)) {
           e.preventDefault();
-          startFromCheatFloor(Number(e.key));
+          setSelectedCheatFloor(Number(e.key));
+          return;
+        }
+
+        if (gameState === 'lobby' && e.key === ' ') {
+          e.preventDefault();
+          if (e.repeat) return;
+          setBlocking(true);
+          return;
+        }
+
+        if (gameState === 'lobby' && e.key === 'Control') {
+          e.preventDefault();
+          if (e.repeat) return;
+          useBestiaryButton();
+          return;
+        }
+
+        if (gameState === 'lobby' && e.key === 'Alt') {
+          e.preventDefault();
+          if (e.repeat) return;
+          playThreat();
+          return;
+        }
+
+        if (gameState === 'lobby' && e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+          e.preventDefault();
+          animateSword();
+          showInputBubble(e.key);
           return;
         }
 
@@ -3011,6 +3605,12 @@
         return;
       }
 
+      if (e.key === 'Alt') {
+        e.preventDefault();
+        if (e.repeat) return;
+        playThreat();
+        return;
+      }
 
       if (e.key.length !== 1) return;
       const char = e.key.toLowerCase();
@@ -3028,6 +3628,12 @@
 
       if (e.key === 'Control' || e.key === 'Escape') {
         e.preventDefault();
+      }
+
+      if (gameState === 'lobby' && e.key === ' ') {
+        e.preventDefault();
+        setBlocking(false);
+        return;
       }
 
       if (gameState !== 'playing') return;
@@ -3077,7 +3683,12 @@
       renderAllMonsterWords();
       updateMonsterElement(target);
 
-      if (target.level === 11 && target.progress < target.normalized.length) {
+      if (isBoneDragonVariant(target) && target.progress < target.normalized.length) {
+        swapBoneDragonToFlame(target);
+        return;
+      }
+
+      if (target.level === 11 && target.type !== 'B' && target.progress < target.normalized.length) {
         swapLevel11MonsterLane(target);
       }
 
@@ -3089,6 +3700,27 @@
     }
 
     function killMonster(monster) {
+      clearMonsterSpecialTimers(monster);
+
+      if (monster.isTreasureChest) {
+        openTreasureChest(monster);
+        return;
+      }
+
+      if (monster.temporarySummon) {
+        const returnMonster = monster.returnMonster;
+        setMessage(`${monster.name} 처치!`);
+        monster.el.classList.add('dead');
+        monsters = monsters.filter(m => m.id !== monster.id);
+        if (activeMonsterId === monster.id) activeMonsterId = null;
+        inputHintMode = null;
+        renderAllMonsterWords();
+        updateKeyboardHint();
+        setTimeout(() => monster.el.remove(), MONSTER_DEFEAT_REMOVE_DELAY_MS);
+        setTimeout(() => respawnReturnedMonster(returnMonster), MONSTER_DEFEAT_REMOVE_DELAY_MS);
+        return;
+      }
+
       player.kills += 1;
       floorKills += 1;
       const gained = expReward(monster.level);
@@ -3131,11 +3763,100 @@
       if (!config || gameState !== 'playing') return;
       if (floorKills >= config.quota && floorSpawned >= config.quota && monsters.length === 0) {
         if (currentFloor >= MAX_FLOOR) {
-          winGame();
+          spawnClearChest();
         } else {
           stageClear();
         }
       }
+    }
+
+    function spawnClearChest() {
+      if (clearChestSpawned || gameState !== 'playing') return;
+      const chestConfig = getChestConfigForDifficulty();
+      clearChestSpawned = true;
+      setBlocking(false);
+      activeMonsterId = null;
+      inputHintMode = null;
+      spawnTimer = 999999;
+      const chestData = {
+        type: 'Chest',
+        level: 14,
+        name: chestConfig.name,
+        attackTime: 999999,
+        spriteSheet: MONSTER_SPRITE_A,
+        spriteIndex: chestConfig.spriteIndex,
+        isTreasureChest: true,
+        chestConfig,
+      };
+      spawnMonster(chestData, 'lane-mid', {
+        treasureChest: true,
+        chestConfig,
+        attackTimeOverride: 999999,
+      });
+      setMessage(`<span class="message-line">${chestConfig.name}가 나타났습니다!</span><span class="message-line">이름을 입력해 보물상자를 여세요.</span>`);
+      updateKeyboardHint();
+    }
+
+    function openTreasureChest(chest) {
+      if (!chest || !chest.isTreasureChest || chest.chestOpened) return;
+      const chestConfig = chest.chestConfig || getChestConfigForDifficulty();
+      chest.chestOpened = true;
+      chest.progress = chest.normalized.length;
+      activeMonsterId = null;
+      inputHintMode = null;
+      pendingRewardTreasure = pickRewardTreasure();
+      cancelAnimationFrame(animationId);
+      gameState = 'rewardpending';
+      setBlocking(false);
+      chest.spriteSheet = MONSTER_SPRITE_B;
+      if (chest.el) {
+        chest.el.style.setProperty('--monster-sprite-image', `url('${MONSTER_SPRITE_B}')`);
+        chest.el.classList.remove('hit');
+        void chest.el.offsetWidth;
+        chest.el.classList.add('chest-opened');
+      }
+      renderMonsterWord(chest);
+      updateKeyboardHint();
+      setMessage(`${chestConfig.name} 오픈!`);
+      setTimeout(() => {
+        if (gameState === 'rewardpending') showRewardOverlay(pendingRewardTreasure);
+      }, 1000);
+    }
+
+    function showRewardOverlay(treasure) {
+      if (!rewardOverlay || !treasure) return;
+      gameState = 'reward';
+      setTreasureSpritePosition(rewardTreasureImage, treasure.spriteIndex);
+      const particle = getObjectParticle(treasure.name);
+      if (rewardDesc) rewardDesc.textContent = `${treasure.name}${particle} 획득했습니다.`;
+      rewardOverlay.classList.remove('closing');
+      rewardOverlay.classList.remove('hidden');
+    }
+
+    function hideRewardOverlay(onClosed) {
+      if (!rewardOverlay || rewardOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (rewardOverlay.classList.contains('closing')) return;
+      rewardOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        rewardOverlay.classList.add('hidden');
+        rewardOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function isRewardOverlayOpen() {
+      return !!(rewardOverlay && !rewardOverlay.classList.contains('hidden'));
+    }
+
+    function closeRewardAndShowClear() {
+      if (isSceneTransitioning || !isRewardOverlayOpen()) return;
+      hideRewardOverlay(() => {
+        pendingRewardTreasure = null;
+        winGame();
+      });
     }
 
     function stageClear() {
@@ -3148,9 +3869,12 @@
         stageProgressDelayTimeout = null;
       }, 500);
       cancelAnimationFrame(animationId);
+      setCheatControlsVisible(false);
       endTitle.textContent = `지하 ${currentFloor}층 클리어!`;
       endDesc.innerHTML = `지하 ${currentFloor}층의 몬스터를 모두 처치했습니다.<br /><b>Space</b>를 누르면 지하 ${currentFloor + 1}층으로 이동합니다.`;
       restartButton.textContent = '다음 층';
+      const restartActionCol = restartButton.closest('.end-action-col');
+      if (restartActionCol) restartActionCol.style.display = 'flex';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'none';
       showEndOverlay();
@@ -3159,9 +3883,12 @@
 
     function prepareNextFloor() {
       currentFloor += 1;
+      clearAllMonsterSpecialTimers();
       floorSpawned = 0;
       floorKills = 0;
       floorFirstBossSpawned = false;
+      clearChestSpawned = false;
+      pendingRewardTreasure = null;
       monsters = [];
       activeMonsterId = null;
       inputHintMode = null;
@@ -3192,9 +3919,9 @@
 
     function startNextFloor() {
       if (isSceneTransitioning || gameState !== 'stageclear') return;
-      hideEndOverlay(() => {
-        runSceneFade(() => prepareNextFloor(), () => beginPreparedFloor());
-      });
+      runSceneFade(() => {
+        prepareNextFloor();
+      }, () => beginPreparedFloor());
     }
 
     function damageDoguri(reason, amount = 1) {
@@ -3246,6 +3973,7 @@
     function gameOver() {
       gameState = 'gameover';
       setBlocking(false);
+      clearAllMonsterSpecialTimers();
       if (profilePainTimeout) {
         clearTimeout(profilePainTimeout);
         profilePainTimeout = null;
@@ -3253,11 +3981,15 @@
       portrait.classList.remove('pain');
       setProfileImage(PROFILE_IMAGES.dying);
       cancelAnimationFrame(animationId);
+      const difficultyLabel = getCurrentDifficultyConfig().label;
       endTitle.textContent = '게임 오버';
-      endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />도달 층: <b>${currentFloor}층</b> · 처치한 몬스터: <b>${player.kills}</b>마리 · 도달 레벨: <b>Lv.${player.level}</b>`;
+      endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />도달 층: <b>${difficultyLabel} ${currentFloor}층</b> · 처치한 몬스터: <b>${player.kills}</b>마리`;
       restartButton.textContent = '다시 도전';
+      const restartActionCol = restartButton.closest('.end-action-col');
+      if (restartActionCol) restartActionCol.style.display = 'flex';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
+      if (homeHintKbd) homeHintKbd.textContent = 'ESC';
       showEndOverlay();
       updateKeyboardHint();
     }
@@ -3265,15 +3997,21 @@
     function winGame() {
       gameState = 'clear';
       setBlocking(false);
+      clearAllMonsterSpecialTimers();
       cancelAnimationFrame(animationId);
       renderHud();
       updatePlayTimeHud();
-      const clearTimeText = formatPlayTime(elapsed);
+      const currentRecordText = formatPlayTime(elapsed);
+      const bestRecord = updateBestClearTime(elapsed);
+      const bestRecordText = formatPlayTime(bestRecord);
       endTitle.textContent = '게임 클리어!';
-      endDesc.innerHTML = `6층의 모든 몬스터를 처치했습니다!<br />클리어 타임: <b>${clearTimeText}</b><br />도구리가 던전의 키보드 왕이 되었습니다.`;
+      endDesc.innerHTML = `<span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>`;
       restartButton.textContent = '다시 도전';
+      const restartActionCol = restartButton.closest('.end-action-col');
+      if (restartActionCol) restartActionCol.style.display = 'none';
       const homeActionCol = homeButton.closest('.end-action-col');
       if (homeActionCol) homeActionCol.style.display = 'flex';
+      if (homeHintKbd) homeHintKbd.textContent = 'Space';
       showEndOverlay();
       updateKeyboardHint();
     }
@@ -3285,7 +4023,7 @@
         e.preventDefault();
 
         if (button.dataset.action === 'shield') {
-          if (gameState !== 'playing') return;
+          if (gameState !== 'playing' && gameState !== 'lobby') return;
           if (player.shields <= 0) {
             setMessage('방패 능력이 없어 방어할 수 없습니다.');
             updateActionButtonStates();
@@ -3295,6 +4033,10 @@
           return;
         }
 
+        if (button.dataset.action === 'threat') {
+          playThreat();
+          return;
+        }
 
         handleAlphabetButton(button.dataset.key);
       });
@@ -3302,7 +4044,7 @@
       const releaseShieldButton = (e) => {
         const button = e.target.closest('.shield-key');
         if (!button) return;
-        if (gameState !== 'playing') return;
+        if (gameState !== 'playing' && gameState !== 'lobby') return;
         setBlocking(false);
       };
 
@@ -3310,7 +4052,7 @@
       alphaKeyboard.addEventListener('pointercancel', releaseShieldButton);
       alphaKeyboard.addEventListener('pointerleave', (e) => {
         if (e.target.closest && e.target.closest('.shield-key')) {
-          if (gameState === 'playing') setBlocking(false);
+          if (gameState === 'playing' || gameState === 'lobby') setBlocking(false);
         }
       }, true);
     }
@@ -3347,6 +4089,13 @@
       });
     }
 
+    const rankingButton = document.getElementById('rankingButton');
+    if (rankingButton) {
+      rankingButton.addEventListener('click', (e) => {
+        e.preventDefault();
+      });
+    }
+
     if (infoCloseButton) {
       infoCloseButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -3360,16 +4109,61 @@
       });
     }
 
+    if (rewardBestiaryButton) {
+      rewardBestiaryButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        // 도감 팝업은 추후 추가 예정입니다.
+      });
+    }
+
+    if (rewardCloseButton) {
+      rewardCloseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeRewardAndShowClear();
+      });
+    }
+
+    if (rewardOverlay) {
+      rewardOverlay.addEventListener('click', (e) => {
+        if (e.target === rewardOverlay) closeRewardAndShowClear();
+      });
+    }
+
     potionSlot.addEventListener('click', (e) => {
       e.preventDefault();
+      if (gameState === 'lobby') {
+        useBestiaryButton();
+        return;
+      }
       usePotion();
     });
     startButton.addEventListener('click', () => enterLobby());
+    if (startGateImage) {
+      startGateImage.addEventListener('click', (e) => {
+        e.preventDefault();
+        enterLobby();
+      });
+    }
     if (cheatToggle) {
       cheatToggle.addEventListener('click', (e) => {
         e.preventDefault();
         cheatCodeEnabled = !cheatCodeEnabled;
         updateCheatToggle();
+      });
+    }
+    if (cheatFloorPanel) {
+      cheatFloorPanel.addEventListener('click', (e) => {
+        const button = e.target.closest('.cheat-floor-button');
+        if (!button) return;
+        e.preventDefault();
+        const floor = Number(button.dataset.floor);
+        if (floor === 1) {
+          selectedCheatFloor = 1;
+          cheatCodeEnabled = false;
+          updateCheatToggle();
+          return;
+        }
+        setSelectedCheatFloor(floor);
       });
     }
     restartButton.addEventListener('click', () => {
@@ -3383,9 +4177,15 @@
     homeButton.addEventListener('click', goToStart);
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
-    window.addEventListener('resize', updateLobbyDifficultyLayout);
+    function handleWindowResize() {
+      updateLobbyDifficultyLayout();
+      if (player) renderHud();
+    }
+
+    window.addEventListener('resize', handleWindowResize);
     lobbyBgImage.addEventListener('load', updateLobbyDifficultyLayout);
 
+    setCheatControlsVisible(true);
     updateCheatToggle();
     renderAlphabetKeyboard();
     renderMonsterTable();
