@@ -1065,7 +1065,7 @@
       padding: 20px;
       background:
         radial-gradient(circle at 50% 42%, rgba(220, 220, 220, .11), transparent 28%),
-        rgba(7, 7, 7, .72);
+        rgba(7, 7, 7, .50);
       backdrop-filter: blur(3px);
     }
 
@@ -1077,17 +1077,27 @@
     }
 
     #resetConfirmOverlay {
-      z-index: 150;
+      z-index: 190;
     }
+
+    #collectionOverlay,
+    #rankingOverlay {
+      z-index: 160;
+    }
+
 
     #endOverlay:not(.hidden):not(.closing) .modal,
     #infoOverlay:not(.hidden):not(.closing) .modal,
+    #collectionOverlay:not(.hidden):not(.closing) .modal,
+    #rankingOverlay:not(.hidden):not(.closing) .modal,
     #resetConfirmOverlay:not(.hidden):not(.closing) .modal {
       animation: popupOpen .2s ease-in-out both;
     }
 
     #endOverlay.closing .modal,
     #infoOverlay.closing .modal,
+    #collectionOverlay.closing .modal,
+    #rankingOverlay.closing .modal,
     #resetConfirmOverlay.closing .modal {
       animation: popupClose .1s ease-in-out both;
     }
@@ -1104,6 +1114,8 @@
 
     #endOverlay .modal,
     #infoOverlay .modal,
+    #collectionOverlay .modal,
+    #rankingOverlay .modal,
     #resetConfirmOverlay .modal {
       position: relative;
       z-index: 0;
@@ -1118,13 +1130,15 @@
     }
 
     #resetConfirmOverlay .reset-confirm-modal {
-      width: min(620px, calc(100vw - 40px));
+      width: min(560px, calc(100vw - 40px));
       padding-top: 70px;
       padding-bottom: 30px;
     }
 
     #endOverlay .modal::before,
     #infoOverlay .modal::before,
+    #collectionOverlay .modal::before,
+    #rankingOverlay .modal::before,
     #resetConfirmOverlay .modal::before {
       content: "";
       position: absolute;
@@ -1150,6 +1164,16 @@
     #infoOverlay .modal .button-hint,
     #infoOverlay .modal .kbd,
     #infoOverlay .modal button,
+    #collectionOverlay .modal h2,
+    #collectionOverlay .modal p,
+    #collectionOverlay .modal button,
+    #collectionOverlay .modal .button-hint,
+    #collectionOverlay .modal .kbd,
+    #rankingOverlay .modal h2,
+    #rankingOverlay .modal p,
+    #rankingOverlay .modal button,
+    #rankingOverlay .modal .button-hint,
+    #rankingOverlay .modal .kbd,
     #resetConfirmOverlay .modal .reset-confirm-desc,
     #resetConfirmOverlay .modal button {
       color: #000;
@@ -1158,6 +1182,8 @@
 
     #endOverlay .modal button,
     #infoOverlay .modal button,
+    #collectionOverlay .modal button,
+    #rankingOverlay .modal button,
     #resetConfirmOverlay .modal button {
       border-radius: 30px;
       color: #21131c;
@@ -1166,18 +1192,24 @@
 
     #endOverlay .modal button.secondary-button,
     #infoOverlay .modal button.secondary-button,
+    #collectionOverlay .modal button.secondary-button,
+    #rankingOverlay .modal button.secondary-button,
     #resetConfirmOverlay .modal button.secondary-button {
       color: #21131c;
       background: #f6bc4e;
     }
 
     #endOverlay .modal .button-hint,
-    #infoOverlay .modal .button-hint {
+    #infoOverlay .modal .button-hint,
+    #collectionOverlay .modal .button-hint,
+    #rankingOverlay .modal .button-hint {
       margin-top: 11px;
     }
 
     #endOverlay .modal .button-hint .kbd,
-    #infoOverlay .modal .button-hint .kbd {
+    #infoOverlay .modal .button-hint .kbd,
+    #collectionOverlay .modal .button-hint .kbd,
+    #rankingOverlay .modal .button-hint .kbd {
       color: #fff;
       background: #000;
     }
@@ -1294,6 +1326,246 @@
     .clear-reward-description b {
       font-weight: 950;
     }
+
+    .clear-player-name-editor {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 10px auto 2px;
+      padding: 0;
+      border: 0;
+      color: #d67b60;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+      box-shadow: none;
+      transform: none;
+      transition: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .clear-player-name-editor:hover,
+    .clear-player-name-editor:active,
+    .clear-player-name-editor:focus {
+      scale: 1;
+      transform: none;
+      box-shadow: none;
+      filter: none;
+      outline: none;
+    }
+
+    .clear-player-name-text {
+      font-size: 24px;
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .clear-player-pencil {
+      display: block;
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      pointer-events: none;
+      filter: brightness(0) saturate(100%) invert(55%) sepia(44%) saturate(812%) hue-rotate(335deg) brightness(89%) contrast(91%);
+    }
+
+    .collection-modal,
+    .ranking-modal {
+      width: min(720px, calc(100vw - 32px));
+      padding-top: 50px;
+      padding-bottom: 44px;
+    }
+
+    .collection-modal {
+      translate: 0 -30px;
+      padding-top: 10px;
+      padding-bottom: 4px;
+    }
+
+    .ranking-modal {
+      translate: 0 -7px;
+    }
+
+    .collection-modal h2,
+    .ranking-modal h2 {
+      margin-bottom: 10px;
+    }
+
+    .collection-progress {
+      margin: 0 auto 14px;
+      color: #000;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .collection-guide {
+      margin: 0 auto 7px;
+      color: #000;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.35;
+      letter-spacing: -0.03em;
+    }
+
+    .treasure-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px 10px;
+      margin: 4px auto 18px;
+      max-width: 560px;
+    }
+
+    .treasure-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-width: 0;
+      padding: 6px 3px 6px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .35);
+    }
+
+    .treasure-card-image {
+      width: 76px;
+      height: 76px;
+      background-image: url('treasure.png');
+      background-repeat: no-repeat;
+      background-size: 400% 400%;
+      background-position: 0% 0%;
+      image-rendering: auto;
+      filter: none;
+    }
+
+    .treasure-card-image.silhouette {
+      background-image: none;
+      background-color: #a98d70;
+      filter: none;
+      -webkit-mask-image: url('treasure.png');
+      mask-image: url('treasure.png');
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 400% 400%;
+      mask-size: 400% 400%;
+      -webkit-mask-position: 0% 0%;
+      mask-position: 0% 0%;
+    }
+
+    .treasure-card-name {
+      width: 100%;
+      margin-top: 3px;
+      color: #000;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .treasure-card-count {
+      margin-top: 2px;
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      opacity: .82;
+    }
+
+    .treasure-card.not-owned .treasure-card-name,
+    .treasure-card.not-owned .treasure-card-count {
+      color: #a98d70;
+      opacity: 1;
+    }
+
+    .collection-close-col,
+    .ranking-close-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .ranking-tabs {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 2px 0 14px;
+    }
+
+    .ranking-tab-button {
+      width: 80px;
+      height: 30px;
+      min-width: 80px;
+      padding: 0;
+      border-radius: 5px;
+      color: #faf2e5;
+      background: #332326;
+      font-size: 14px;
+      opacity: 1;
+    }
+
+    #rankingOverlay .modal .ranking-tab-button {
+      border-radius: 5px;
+      color: #faf2e5;
+      background: #332326;
+    }
+
+    .ranking-tab-button.active,
+    #rankingOverlay .modal .ranking-tab-button.active {
+      color: #21131c;
+      background: #f6bc4e;
+      opacity: 1;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: min(430px, 100%);
+      margin: 0 auto 18px;
+    }
+
+    .ranking-row {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .35);
+      color: #000;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .ranking-rank {
+      text-align: left;
+      opacity: .76;
+    }
+
+    .ranking-name {
+      min-width: 0;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ranking-time {
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 400;
+    }
+
 
     .modal {
       width: min(560px, 92vw);
@@ -1499,6 +1771,9 @@
 
     #endOverlay .modal button,
     #infoOverlay .modal button,
+    #collectionOverlay .modal button,
+    #rankingOverlay .modal button,
+    #resetConfirmOverlay .modal button,
     #rewardOverlay .modal button {
       font-weight: 950;
     }
@@ -2012,6 +2287,20 @@
       .cheat-toggle, .cheat-reset-button { padding: 8px 12px; font-size: 11px; }
       .cheat-floor-panel { gap: 6px; }
       .cheat-floor-button { width: 38px; height: 38px; min-width: 38px; font-size: 10px; }
+
+      .collection-modal, .ranking-modal { width: min(560px, calc(100vw - 24px)); padding-top: 42px; padding-bottom: 34px; }
+      .collection-modal { padding-top: 10px; padding-bottom: 6px; }
+      .collection-guide { max-width: 280px; margin-bottom: 5px; font-size: 12.5px; font-weight: 400; }
+      .treasure-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 7px; max-width: 318px; margin-bottom: 14px; }
+      .treasure-card { padding: 5px 3px 5px; }
+      .treasure-card-image { width: 64px; height: 64px; }
+      .treasure-card-name { font-size: 10.5px; }
+      .treasure-card-count { font-size: 10px; }
+      .clear-player-name-text { font-size: 24px; }
+      .ranking-tabs { gap: 5px; margin-bottom: 10px; }
+      .ranking-tab-button { width: 80px; height: 30px; min-width: 80px; padding: 0; border-radius: 5px; font-size: 12px; }
+      .ranking-list { width: min(340px, 100%); gap: 4px; margin-bottom: 14px; }
+      .ranking-row { grid-template-columns: 32px minmax(0, 1fr) auto; padding: 4px 8px; font-size: 12px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
     }
@@ -2108,7 +2397,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.44</div>
+          <div class="start-version">버전 0.45</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2141,10 +2430,10 @@
         <p id="infoDesc"><span class="message-line">난이도별로 별도의 랭킹이 기록됩니다.</span><span class="message-line">난이도가 높을수록 보물 획득 확률이 증가합니다.</span></p>
         <div class="end-actions info-actions">
           <div class="end-action-col">
-            <button id="rankingButton" class="secondary-button">랭킹</button>
+            <button id="rankingButton" class="secondary-button">랭킹 보기</button>
           </div>
           <div class="end-action-col">
-            <button id="infoCloseButton">확인</button>
+            <button id="infoCloseButton">닫기</button>
             <div class="button-hint"><span class="kbd">Space</span></div>
           </div>
         </div>
@@ -2153,10 +2442,39 @@
 
     <div class="overlay hidden" id="resetConfirmOverlay" role="dialog" aria-modal="true" aria-label="초기화 확인">
       <div class="modal reset-confirm-modal">
-        <div class="reset-confirm-desc">초기화를 진행할까요?</div>
+        <div id="resetConfirmDesc" class="reset-confirm-desc">초기화를 진행할까요?</div>
         <div class="reset-confirm-actions">
           <button id="resetCancelButton" class="secondary-button" type="button">취소</button>
           <button id="resetConfirmButton" type="button">확인</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="overlay hidden" id="collectionOverlay" role="dialog" aria-modal="true" aria-labelledby="collectionTitle">
+      <div class="modal collection-modal">
+        <h2 id="collectionTitle">보물 도감 00%</h2>
+        <p class="collection-guide">던전을 클리어하고 숨겨진 보물을 찾아보세요!</p>
+        <div id="treasureGrid" class="treasure-grid" aria-label="보물 목록"></div>
+        <div class="collection-close-col">
+          <button id="collectionCloseButton" type="button">닫기</button>
+          <div class="button-hint"><span class="kbd">Space</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay hidden" id="rankingOverlay" role="dialog" aria-modal="true" aria-labelledby="rankingTitle">
+      <div class="modal ranking-modal">
+        <h2 id="rankingTitle">랭킹</h2>
+        <div class="ranking-tabs" role="tablist" aria-label="난이도별 랭킹">
+          <button type="button" class="ranking-tab-button active" data-difficulty="easy" aria-selected="true">쉬움</button>
+          <button type="button" class="ranking-tab-button" data-difficulty="normal" aria-selected="false">보통</button>
+          <button type="button" class="ranking-tab-button" data-difficulty="hard" aria-selected="false">어려움</button>
+        </div>
+        <div id="rankingList" class="ranking-list" aria-label="랭킹 목록"></div>
+        <div class="ranking-close-col">
+          <button id="rankingCloseButton" type="button">닫기</button>
+          <div class="button-hint"><span class="kbd">Space</span></div>
         </div>
       </div>
     </div>
@@ -2223,7 +2541,18 @@
       hard: 0.22,
     };
     const TREASURE_COLLECTION_KEY = 'dungeonDoguriOwnedTreasures';
+    const TREASURE_COUNTS_KEY = 'dungeonDoguriTreasureCounts';
     const TREASURE_COLLECTION_LEGACY_KEYS = ['dungeonDoguriTreasureCollection', 'dungeonDoguriTreasures'];
+    const PLAYER_NAME_KEY = 'dungeonDoguriPlayerName';
+    const RANKING_STORAGE_KEY = 'dungeonDoguriRankings.v1';
+    const RANKING_ACTIVE_TAB_KEY = 'dungeonDoguriRankingActiveTab';
+    const RANKING_SIZE = 10;
+    const DEFAULT_PLAYER_NAME = '도구리';
+    const DEFAULT_RANKING_NAMES = {
+      easy: '초보 도구리',
+      normal: '모험가 도구리',
+      hard: '베테랑 도구리',
+    };
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
     const PROFILE_IMAGES = {
@@ -2293,7 +2622,7 @@
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
     const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
     // true: 치트 버튼 표시 / false: 치트 버튼 숨김
-    const SHOW_CHEAT_CONTROLS = true;
+    const SHOW_CHEAT_CONTROLS = false;
 
 
     const game = document.getElementById('game');
@@ -2350,6 +2679,14 @@
     const lobbyDifficultyButtons = document.getElementById('lobbyDifficultyButtons');
     const lobbyInfoButton = document.getElementById('lobbyInfoButton');
     const screenFade = document.getElementById('screenFade');
+    const resetConfirmDesc = document.getElementById('resetConfirmDesc');
+    const collectionOverlay = document.getElementById('collectionOverlay');
+    const treasureGrid = document.getElementById('treasureGrid');
+    const collectionCloseButton = document.getElementById('collectionCloseButton');
+    const rankingOverlay = document.getElementById('rankingOverlay');
+    const rankingList = document.getElementById('rankingList');
+    const rankingCloseButton = document.getElementById('rankingCloseButton');
+    const rankingTabs = document.querySelector('.ranking-tabs');
 
     let player;
     let monsters;
@@ -2378,6 +2715,12 @@
     let profilePainTimeout = null;
     let cheatCodeEnabled = false;
     let selectedCheatFloor = 1;
+    let currentRunUsedCheat = false;
+    let clearResultRankingSaved = false;
+    let clearResultRecordSeconds = 0;
+    let clearResultDifficultyKey = DEFAULT_DIFFICULTY_KEY;
+    let clearResultPlayerName = DEFAULT_PLAYER_NAME;
+    let activeRankingDifficultyKey = 'easy';
     let isSceneTransitioning = false;
     let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
     const lobbyBgImage = new Image();
@@ -2446,7 +2789,10 @@
       const col = safeIndex % 4;
       const row = Math.floor(safeIndex / 4);
       const pos = value => `${(value / 3) * 100}%`;
-      el.style.backgroundPosition = `${pos(col)} ${pos(row)}`;
+      const spritePosition = `${pos(col)} ${pos(row)}`;
+      el.style.backgroundPosition = spritePosition;
+      el.style.webkitMaskPosition = spritePosition;
+      el.style.maskPosition = spritePosition;
     }
 
     function pickRewardTreasure() {
@@ -2536,6 +2882,49 @@
       return previousBest;
     }
 
+    function getTreasureId(treasureOrIndex) {
+      if (typeof treasureOrIndex === 'number') return String(treasureOrIndex);
+      if (!treasureOrIndex) return '';
+      return String(treasureOrIndex.spriteIndex ?? treasureOrIndex.name);
+    }
+
+    function normalizeTreasureCounts(rawCounts = {}) {
+      const counts = {};
+      TREASURE_DATA.forEach((treasure, index) => {
+        const id = getTreasureId(treasure);
+        const directValue = Number(rawCounts[id]);
+        const indexValue = Number(rawCounts[String(index)]);
+        const value = Number.isFinite(directValue) ? directValue : indexValue;
+        counts[id] = Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
+      });
+      return counts;
+    }
+
+    function getTreasureCounts() {
+      try {
+        const stored = window.localStorage.getItem(TREASURE_COUNTS_KEY);
+        if (stored) return normalizeTreasureCounts(JSON.parse(stored));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 빈 도감으로 표시합니다.
+      }
+
+      const counts = normalizeTreasureCounts({});
+      getOwnedTreasureIds().forEach(id => {
+        if (Object.prototype.hasOwnProperty.call(counts, id)) counts[id] = Math.max(1, counts[id]);
+      });
+      return counts;
+    }
+
+    function saveTreasureCounts(counts) {
+      const normalized = normalizeTreasureCounts(counts);
+      try {
+        window.localStorage.setItem(TREASURE_COUNTS_KEY, JSON.stringify(normalized));
+        saveOwnedTreasureIds(Object.keys(normalized).filter(id => normalized[id] > 0));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 보물 획득 기록만 생략합니다.
+      }
+    }
+
     function getOwnedTreasureIds() {
       try {
         const stored = window.localStorage.getItem(TREASURE_COLLECTION_KEY);
@@ -2557,21 +2946,121 @@
 
     function unlockTreasure(treasure) {
       if (!treasure) return;
-      const treasureId = String(treasure.spriteIndex ?? treasure.name);
-      const ownedIds = getOwnedTreasureIds();
-      if (!ownedIds.includes(treasureId)) {
-        ownedIds.push(treasureId);
-        saveOwnedTreasureIds(ownedIds);
-      }
+      const treasureId = getTreasureId(treasure);
+      const counts = getTreasureCounts();
+      counts[treasureId] = (counts[treasureId] || 0) + 1;
+      saveTreasureCounts(counts);
     }
 
     function clearOwnedTreasureData() {
       try {
         window.localStorage.removeItem(TREASURE_COLLECTION_KEY);
+        window.localStorage.removeItem(TREASURE_COUNTS_KEY);
         TREASURE_COLLECTION_LEGACY_KEYS.forEach(key => window.localStorage.removeItem(key));
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 보물 초기화 요청을 조용히 무시합니다.
       }
+    }
+
+    function sanitizePlayerName(name) {
+      const normalized = String(name || '').replace(/\s+/g, ' ').trim();
+      if (!normalized) return DEFAULT_PLAYER_NAME;
+      const hasHangul = /[가-힣]/.test(normalized);
+      const maxLength = hasHangul ? 8 : 16;
+      const limited = Array.from(normalized).slice(0, maxLength).join('').trim();
+      return limited || DEFAULT_PLAYER_NAME;
+    }
+
+    function getPlayerName() {
+      try {
+        const stored = window.localStorage.getItem(PLAYER_NAME_KEY);
+        return sanitizePlayerName(stored);
+      } catch (error) {
+        return DEFAULT_PLAYER_NAME;
+      }
+    }
+
+    function setPlayerName(name) {
+      const safeName = sanitizePlayerName(name);
+      try {
+        window.localStorage.setItem(PLAYER_NAME_KEY, safeName);
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 현재 팝업에만 반영합니다.
+      }
+      return safeName;
+    }
+
+    function getSavedRankingDifficultyKey() {
+      try {
+        const stored = window.localStorage.getItem(RANKING_ACTIVE_TAB_KEY);
+        return DIFFICULTY_CONFIGS[stored] ? stored : DEFAULT_DIFFICULTY_KEY;
+      } catch (error) {
+        return DEFAULT_DIFFICULTY_KEY;
+      }
+    }
+
+    function saveRankingDifficultyKey(difficultyKey) {
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      try {
+        window.localStorage.setItem(RANKING_ACTIVE_TAB_KEY, key);
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 이번 세션에서만 유지합니다.
+      }
+      return key;
+    }
+
+    function getEmptyRankings() {
+      return Object.keys(DIFFICULTY_CONFIGS).reduce((acc, key) => {
+        acc[key] = [];
+        return acc;
+      }, {});
+    }
+
+    function getRankings() {
+      const rankings = getEmptyRankings();
+      try {
+        const stored = window.localStorage.getItem(RANKING_STORAGE_KEY);
+        const parsed = stored ? JSON.parse(stored) : null;
+        if (parsed && typeof parsed === 'object') {
+          Object.keys(DIFFICULTY_CONFIGS).forEach(key => {
+            const list = Array.isArray(parsed[key]) ? parsed[key] : [];
+            rankings[key] = list
+              .map(item => ({
+                name: sanitizePlayerName(item.name),
+                time: Number(item.time),
+              }))
+              .filter(item => Number.isFinite(item.time) && item.time > 0)
+              .sort((a, b) => a.time - b.time)
+              .slice(0, RANKING_SIZE);
+          });
+        }
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 기본 랭킹으로 표시합니다.
+      }
+      return rankings;
+    }
+
+    function saveRankings(rankings) {
+      try {
+        window.localStorage.setItem(RANKING_STORAGE_KEY, JSON.stringify(rankings));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 랭킹 저장만 생략합니다.
+      }
+    }
+
+    function tryAddRankingRecord(seconds, difficultyKey = currentDifficultyKey, name = getPlayerName()) {
+      if (currentRunUsedCheat) return false;
+      const time = Number(seconds);
+      if (!Number.isFinite(time) || time <= 0) return false;
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      const rankings = getRankings();
+      const list = rankings[key] || [];
+      const qualifies = list.length < RANKING_SIZE || time < list[list.length - 1].time;
+      if (!qualifies) return false;
+      list.push({ name: sanitizePlayerName(name), time });
+      rankings[key] = list.sort((a, b) => a.time - b.time).slice(0, RANKING_SIZE);
+      saveRankings(rankings);
+      return true;
     }
 
     function resetSavedData() {
@@ -2579,6 +3068,7 @@
         Object.keys(DIFFICULTY_CONFIGS).forEach(key => {
           window.localStorage.removeItem(getBestClearTimeKey(key));
         });
+        window.localStorage.removeItem(RANKING_STORAGE_KEY);
         clearOwnedTreasureData();
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 초기화 요청을 조용히 무시합니다.
@@ -2592,6 +3082,7 @@
 
     function showResetConfirmOverlay() {
       if (!resetConfirmOverlay) return;
+      if (resetConfirmDesc) resetConfirmDesc.textContent = '초기화를 진행할까요?';
       resetConfirmOverlay.classList.remove('closing');
       resetConfirmOverlay.classList.remove('hidden');
     }
@@ -2612,12 +3103,117 @@
 
     function confirmResetSavedData() {
       resetSavedData();
+      renderTreasureCollection();
+      renderRanking();
       hideResetConfirmOverlay();
     }
 
     function updatePlayTimeHud() {
       if (playTimeHud) playTimeHud.textContent = formatPlayTime(elapsed);
     }
+
+
+    function renderTreasureCollection() {
+      if (!treasureGrid) return;
+      const counts = getTreasureCounts();
+      const ownedCount = TREASURE_DATA.reduce((sum, treasure) => sum + ((counts[getTreasureId(treasure)] || 0) > 0 ? 1 : 0), 0);
+      const percent = Math.floor((ownedCount / TREASURE_DATA.length) * 100);
+      if (collectionTitle) collectionTitle.textContent = `보물 도감 ${String(percent).padStart(2, '0')}%`;
+      treasureGrid.innerHTML = TREASURE_DATA.map((treasure, index) => {
+        const id = getTreasureId(treasure);
+        const count = counts[id] || 0;
+        const isOwned = count > 0;
+        return `
+          <div class="treasure-card ${isOwned ? '' : 'not-owned'}">
+            <div class="treasure-card-image ${isOwned ? '' : 'silhouette'}" data-sprite-index="${treasure.spriteIndex}" aria-hidden="true"></div>
+            <div class="treasure-card-name">${isOwned ? escapeHtml(treasure.name) : '미획득'}</div>
+            <div class="treasure-card-count">${count}개</div>
+          </div>
+        `;
+      }).join('');
+      treasureGrid.querySelectorAll('.treasure-card-image').forEach(el => {
+        setTreasureSpritePosition(el, Number(el.dataset.spriteIndex));
+      });
+    }
+
+    function showTreasureCollectionOverlay() {
+      if (!collectionOverlay) return;
+      renderTreasureCollection();
+      collectionOverlay.classList.remove('closing');
+      collectionOverlay.classList.remove('hidden');
+    }
+
+    function hideTreasureCollectionOverlay(onClosed) {
+      if (!collectionOverlay || collectionOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (collectionOverlay.classList.contains('closing')) return;
+      collectionOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        collectionOverlay.classList.add('hidden');
+        collectionOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function isTreasureCollectionOpen() {
+      return !!(collectionOverlay && !collectionOverlay.classList.contains('hidden'));
+    }
+
+    function renderRanking() {
+      if (!rankingList || !rankingTabs) return;
+      const key = DIFFICULTY_CONFIGS[activeRankingDifficultyKey] ? activeRankingDifficultyKey : DEFAULT_DIFFICULTY_KEY;
+      activeRankingDifficultyKey = key;
+      rankingTabs.querySelectorAll('.ranking-tab-button').forEach(button => {
+        const isActive = button.dataset.difficulty === key;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+      });
+      const rankings = getRankings();
+      const list = rankings[key] || [];
+      const rows = Array.from({ length: RANKING_SIZE }, (_, index) => {
+        const defaultRankingName = DEFAULT_RANKING_NAMES[key] || DEFAULT_PLAYER_NAME;
+        const item = list[index] || { name: defaultRankingName, time: 0 };
+        const timeText = item.time > 0 ? formatPlayTime(item.time) : '00:00.00';
+        return `
+          <div class="ranking-row">
+            <div class="ranking-rank">${index + 1}위</div>
+            <div class="ranking-name">${escapeHtml(item.name || defaultRankingName)}</div>
+            <div class="ranking-time">${timeText}</div>
+          </div>
+        `;
+      });
+      rankingList.innerHTML = rows.join('');
+    }
+
+    function showRankingOverlay(difficultyKey = null) {
+      if (!rankingOverlay) return;
+      const nextKey = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : getSavedRankingDifficultyKey();
+      activeRankingDifficultyKey = saveRankingDifficultyKey(nextKey);
+      renderRanking();
+      rankingOverlay.classList.remove('closing');
+      rankingOverlay.classList.remove('hidden');
+    }
+
+    function hideRankingOverlay(onClosed) {
+      if (!rankingOverlay || rankingOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (rankingOverlay.classList.contains('closing')) return;
+      rankingOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        rankingOverlay.classList.add('hidden');
+        rankingOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function isRankingOverlayOpen() {
+      return !!(rankingOverlay && !rankingOverlay.classList.contains('hidden'));
+    }
+
 
     function renderMonsterTable() {
       if (!monsterTable) return;
@@ -2698,7 +3294,7 @@
 
     function useBestiaryButton() {
       if (!['lobby', 'clear'].includes(gameState)) return;
-      // 도감 팝업은 추후 추가 예정입니다.
+      showTreasureCollectionOverlay();
     }
 
     function resetGame(startFloor = 1, options = {}) {
@@ -2706,6 +3302,7 @@
       const initialSpawnDelay = Number.isFinite(options.initialSpawnDelay) ? options.initialSpawnDelay : FIRST_MONSTER_SPAWN_DELAY;
       const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
       const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
+      currentRunUsedCheat = !!options.usedCheat;
       cancelAnimationFrame(animationId);
       clearAllMonsterSpecialTimers();
       player = {
@@ -2761,6 +3358,14 @@
       if (resetConfirmOverlay) {
         resetConfirmOverlay.classList.add('hidden');
         resetConfirmOverlay.classList.remove('closing');
+      }
+      if (collectionOverlay) {
+        collectionOverlay.classList.add('hidden');
+        collectionOverlay.classList.remove('closing');
+      }
+      if (rankingOverlay) {
+        rankingOverlay.classList.add('hidden');
+        rankingOverlay.classList.remove('closing');
       }
       startOverlay.classList.add('hidden');
       setCheatControlsVisible(false);
@@ -3577,6 +4182,14 @@
         resetConfirmOverlay.classList.add('hidden');
         resetConfirmOverlay.classList.remove('closing');
       }
+      if (collectionOverlay) {
+        collectionOverlay.classList.add('hidden');
+        collectionOverlay.classList.remove('closing');
+      }
+      if (rankingOverlay) {
+        rankingOverlay.classList.add('hidden');
+        rankingOverlay.classList.remove('closing');
+      }
       startOverlay.classList.add('hidden');
       setCheatControlsVisible(true);
       game.classList.add('is-lobby');
@@ -3618,8 +4231,9 @@
       runSceneFade(() => {
         hideLobbyDifficulty();
         game.classList.remove('is-lobby');
-        const startFloor = cheatCodeEnabled ? selectedCheatFloor : 1;
-        resetGame(startFloor, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
+        const usedCheat = !!(cheatCodeEnabled && selectedCheatFloor > 1);
+        const startFloor = usedCheat ? selectedCheatFloor : 1;
+        resetGame(startFloor, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY, usedCheat });
       }, () => beginPreparedGame());
     }
 
@@ -3657,6 +4271,15 @@
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
       }
+      if (collectionOverlay) {
+        collectionOverlay.classList.add('hidden');
+        collectionOverlay.classList.remove('closing');
+      }
+      if (rankingOverlay) {
+        rankingOverlay.classList.add('hidden');
+        rankingOverlay.classList.remove('closing');
+      }
+      currentRunUsedCheat = false;
       hideLobbyDifficulty();
       game.classList.remove('is-lobby');
       if (endOverlay) endOverlay.classList.remove('clear-result');
@@ -3715,7 +4338,7 @@
       if (isSceneTransitioning) return;
       hideEndOverlay(() => {
         runSceneFade(() => {
-          resetGame(1, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY });
+          resetGame(1, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY, usedCheat: false });
         }, () => beginPreparedGame());
       });
     }
@@ -3732,7 +4355,7 @@
           if (!stageProgressReady) return false;
           startNextFloor();
         } else if (gameState === 'clear') {
-          goToStart();
+          confirmClearAndGoToStart();
         } else {
           restartGameWithFade();
         }
@@ -3756,6 +4379,18 @@
         e.preventDefault();
         if (e.key === 'Escape') hideResetConfirmOverlay();
         if (e.key === ' ' || e.key === 'Enter') confirmResetSavedData();
+        return;
+      }
+
+      if (isTreasureCollectionOpen()) {
+        e.preventDefault();
+        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') hideTreasureCollectionOverlay();
+        return;
+      }
+
+      if (isRankingOverlayOpen()) {
+        e.preventDefault();
+        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') hideRankingOverlay();
         return;
       }
 
@@ -4251,6 +4886,36 @@
       updateKeyboardHint();
     }
 
+    function wireClearPlayerNameEditor() {
+      const editor = document.getElementById('clearPlayerNameEditor');
+      const nameText = document.getElementById('clearPlayerNameText');
+      if (!editor || !nameText) return;
+      const editName = () => {
+        const nextName = window.prompt('플레이어 이름을 입력하세요. (한글/공백 8자, 영문/숫자 16자까지)', clearResultPlayerName || getPlayerName());
+        if (nextName === null) return;
+        clearResultPlayerName = setPlayerName(nextName);
+        nameText.textContent = clearResultPlayerName;
+      };
+      editor.addEventListener('click', (e) => {
+        e.preventDefault();
+        editName();
+      });
+      editor.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          editName();
+        }
+      });
+    }
+
+    function confirmClearAndGoToStart() {
+      if (gameState === 'clear' && !clearResultRankingSaved) {
+        tryAddRankingRecord(clearResultRecordSeconds, clearResultDifficultyKey, clearResultPlayerName);
+        clearResultRankingSaved = true;
+      }
+      goToStart();
+    }
+
     function winGame(treasure = pendingRewardTreasure) {
       gameState = 'clear';
       setBlocking(false);
@@ -4260,15 +4925,25 @@
       updatePlayTimeHud();
       const rewardTreasure = treasure || pendingRewardTreasure;
       const currentRecordText = formatPlayTime(elapsed);
-      const bestRecord = updateBestClearTime(elapsed);
+      const bestRecord = currentRunUsedCheat ? (getBestClearTime(currentDifficultyKey) || elapsed) : updateBestClearTime(elapsed);
       const bestRecordText = formatPlayTime(bestRecord);
       const difficultyLabel = getCurrentDifficultyLabel();
+      clearResultRankingSaved = false;
+      clearResultRecordSeconds = elapsed;
+      clearResultDifficultyKey = currentDifficultyKey;
+      clearResultPlayerName = getPlayerName();
+      const playerNameHtml = `
+        <span id="clearPlayerNameEditor" class="clear-player-name-editor" role="button" tabindex="0" aria-label="플레이어 이름 변경">
+          <span id="clearPlayerNameText" class="clear-player-name-text">${escapeHtml(clearResultPlayerName)}</span>
+          <img class="clear-player-pencil" src="pencil.png" alt="" draggable="false" aria-hidden="true" />
+        </span>`;
       const rewardHtml = rewardTreasure
         ? `<div id="clearRewardTreasureImage" class="reward-treasure-image clear-reward-treasure-image" aria-hidden="true"></div><span class="message-line clear-reward-description">'<b>${escapeHtml(rewardTreasure.name)}</b>'${getObjectParticle(rewardTreasure.name)} 획득했습니다.</span>`
         : '';
       if (endOverlay) endOverlay.classList.add('clear-result');
       endTitle.textContent = '게임 클리어';
-      endDesc.innerHTML = `<span class="message-line clear-difficulty-label">- ${difficultyLabel} 난이도 -</span><span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>${rewardHtml}`;
+      endDesc.innerHTML = `<span class="message-line clear-difficulty-label">- ${difficultyLabel} 난이도 -</span><span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>${playerNameHtml}${rewardHtml}`;
+      wireClearPlayerNameEditor();
       if (rewardTreasure) {
         setTreasureSpritePosition(document.getElementById('clearRewardTreasureImage'), rewardTreasure.spriteIndex);
         unlockTreasure(rewardTreasure);
@@ -4276,7 +4951,7 @@
       pendingRewardTreasure = null;
       restartButton.textContent = '도감 보기';
       restartButton.classList.add('secondary-button');
-      homeButton.textContent = '시작 화면';
+      homeButton.textContent = '확인';
       homeButton.classList.remove('secondary-button');
       const restartActionCol = restartButton.closest('.end-action-col');
       if (restartActionCol) restartActionCol.style.display = 'flex';
@@ -4366,6 +5041,7 @@
     if (rankingButton) {
       rankingButton.addEventListener('click', (e) => {
         e.preventDefault();
+        showRankingOverlay();
       });
     }
 
@@ -4385,7 +5061,7 @@
     if (rewardBestiaryButton) {
       rewardBestiaryButton.addEventListener('click', (e) => {
         e.preventDefault();
-        // 도감 팝업은 추후 추가 예정입니다.
+        showTreasureCollectionOverlay();
       });
     }
 
@@ -4399,6 +5075,38 @@
     if (rewardOverlay) {
       rewardOverlay.addEventListener('click', (e) => {
         if (e.target === rewardOverlay) closeRewardAndShowClear();
+      });
+    }
+
+    if (collectionCloseButton) {
+      collectionCloseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideTreasureCollectionOverlay();
+      });
+    }
+    if (collectionOverlay) {
+      collectionOverlay.addEventListener('click', (e) => {
+        if (e.target === collectionOverlay) hideTreasureCollectionOverlay();
+      });
+    }
+    if (rankingCloseButton) {
+      rankingCloseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideRankingOverlay();
+      });
+    }
+    if (rankingOverlay) {
+      rankingOverlay.addEventListener('click', (e) => {
+        if (e.target === rankingOverlay) hideRankingOverlay();
+      });
+    }
+    if (rankingTabs) {
+      rankingTabs.addEventListener('click', (e) => {
+        const button = e.target.closest('.ranking-tab-button');
+        if (!button) return;
+        e.preventDefault();
+        activeRankingDifficultyKey = saveRankingDifficultyKey(button.dataset.difficulty || DEFAULT_DIFFICULTY_KEY);
+        renderRanking();
       });
     }
 
@@ -4473,7 +5181,13 @@
         restartGameWithFade();
       }
     });
-    homeButton.addEventListener('click', goToStart);
+    homeButton.addEventListener('click', () => {
+      if (gameState === 'clear') {
+        confirmClearAndGoToStart();
+      } else {
+        goToStart();
+      }
+    });
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
     function handleWindowResize() {
