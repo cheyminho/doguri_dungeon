@@ -83,6 +83,25 @@
       display: none;
     }
 
+    .torch-sequence-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .torch-sequence {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 64px;
+      height: 64px;
+      background-image: url("torchlight.png");
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 0 16px rgba(255, 168, 70, .42));
+      will-change: transform, background-position, width, height, left, top;
+    }
+
     .ceiling, .floor, .left-wall, .right-wall, .back-wall {
       position: absolute;
       inset: 0;
@@ -1135,6 +1154,11 @@
       padding-bottom: 30px;
     }
 
+    #endOverlay.clear-result .modal,
+    #infoOverlay .modal {
+      width: min(460px, calc(100vw - 40px));
+    }
+
     #endOverlay .modal::before,
     #infoOverlay .modal::before,
     #collectionOverlay .modal::before,
@@ -1380,9 +1404,15 @@
     }
 
     .collection-modal {
-      translate: 0 -30px;
+      translate: 0 0;
       padding-top: 10px;
       padding-bottom: 4px;
+    }
+
+    #collectionOverlay .collection-modal {
+      padding-top: 30px;
+      padding-bottom: 30px;
+      translate: 0 0;
     }
 
     .ranking-modal {
@@ -1392,6 +1422,10 @@
     .collection-modal h2,
     .ranking-modal h2 {
       margin-bottom: 10px;
+    }
+
+    #collectionOverlay .collection-modal h2 {
+      margin: 0 0 2px;
     }
 
     .collection-progress {
@@ -1411,12 +1445,20 @@
       letter-spacing: -0.03em;
     }
 
+    #collectionOverlay .collection-guide {
+      margin: 0 auto 14px;
+    }
+
     .treasure-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px 10px;
-      margin: 4px auto 18px;
+      margin: 4px auto 13px;
       max-width: 560px;
+    }
+
+    #collectionOverlay .treasure-grid {
+      margin: 0 auto 18px;
     }
 
     .treasure-card {
@@ -1445,6 +1487,7 @@
       background-image: none;
       background-color: #a98d70;
       filter: none;
+      opacity: .7;
       -webkit-mask-image: url('treasure.png');
       mask-image: url('treasure.png');
       -webkit-mask-repeat: no-repeat;
@@ -1457,7 +1500,7 @@
 
     .treasure-card-name {
       width: 100%;
-      margin-top: 3px;
+      margin-top: -2px;
       color: #000;
       font-size: 12px;
       font-weight: 900;
@@ -1822,9 +1865,15 @@
       box-shadow: none;
     }
 
+    .cheat-toggle {
+      opacity: 0;
+      pointer-events: auto;
+    }
+
     .cheat-toggle.active {
-      color: #fff;
-      background: #000;
+      color: #000;
+      background: #fff;
+      opacity: 0;
     }
 
     .cheat-toggle.hidden,
@@ -2186,6 +2235,120 @@
     }
 
 
+    #nameInputOverlay {
+      z-index: 220;
+    }
+
+    #nameInputOverlay:not(.hidden):not(.closing) .modal {
+      animation: popupOpen .2s ease-in-out both;
+    }
+
+    #nameInputOverlay.closing .modal {
+      animation: popupClose .1s ease-in-out both;
+    }
+
+    #nameInputOverlay .modal {
+      position: relative;
+      z-index: 0;
+      width: min(560px, calc(100vw - 40px));
+      margin: 20px 0;
+      padding-top: 70px;
+      padding-bottom: 34px;
+      color: #000;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #nameInputOverlay .modal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      box-sizing: border-box;
+      border: 126px solid transparent;
+      border-image-source: url("popupbg.png");
+      border-image-slice: 126 fill;
+      border-image-width: 126px;
+      border-image-repeat: stretch;
+      pointer-events: none;
+    }
+
+    #nameInputOverlay .modal h2,
+    #nameInputOverlay .modal p,
+    #nameInputOverlay .modal .button-hint,
+    #nameInputOverlay .modal .kbd,
+    #nameInputOverlay .modal button {
+      color: #000;
+      text-shadow: none;
+    }
+
+    #nameInputOverlay .modal .button-hint {
+      margin-top: 11px;
+    }
+
+    #nameInputOverlay .modal .button-hint .kbd {
+      color: #fff;
+      background: #000;
+    }
+
+    #nameInputOverlay .modal button {
+      border-radius: 30px;
+      color: #21131c;
+      background: #f6bc4e;
+      font-weight: 950;
+    }
+
+    #nameInputOverlay .modal button.secondary-button {
+      color: #21131c;
+      background: #f6bc4e;
+    }
+
+    .name-input-guide {
+      margin: 0 auto 14px;
+      max-width: 430px;
+      color: #000;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.45;
+      letter-spacing: -0.03em;
+    }
+
+    .name-input-field {
+      display: block;
+      width: min(360px, 100%);
+      margin: 0 auto 22px;
+      padding: 13px 16px;
+      border: 2px solid rgba(0, 0, 0, .24);
+      border-radius: 16px;
+      color: #21131c;
+      background: rgba(255, 255, 255, .62);
+      font: inherit;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+      text-align: center;
+      outline: none;
+      box-shadow: none;
+      user-select: text;
+      -webkit-user-select: text;
+      -webkit-touch-callout: default;
+      touch-action: manipulation;
+    }
+
+    .name-input-field:focus {
+      border-color: rgba(246, 188, 78, .95);
+      background: rgba(255, 255, 255, .8);
+    }
+
+    .name-input-actions {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
     .is-lobby #playTimeHud {
       display: none;
     }
@@ -2259,9 +2422,9 @@
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
       .hud-main { translate: 0 -10px; gap: 5px; }
       .hud-side { display: none; }
-      #hearts { gap: 0; }
+      #hearts { gap: 0; transform: translateY(2px); }
       .heart-icon { width: 23px; height: 23px; }
-      #shields { gap: 0; margin-left: -6px; }
+      #shields { gap: 0; margin-left: -6px; transform: translateY(2px); }
       .shield-icon { width: 21px; height: 21px; }
       #potionSlot { justify-self: end; align-self: center; transform: translate(-8px, -18px); gap: 0; min-width: 0; padding: 0; }
       #potionSlot:active { scale: .94; }
@@ -2269,12 +2432,12 @@
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-10px); }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-5px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
 
       #levelText { font-size: 14px; font-weight: 1000; }
       .exp-bar { height: 5px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-10px); }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-5px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-29px); }
       .alpha-row { gap: 3px; }
@@ -2283,15 +2446,31 @@
       .alpha-key { width: clamp(29px, 8.6vw, 35px); height: 34px; border-radius: 5px; font-size: 13px; }
       .shield-key, .threat-key { width: 44px; min-width: 44px; font-size: 12px; }
       .modal h2 { font-size: 34px; }
+      .overlay { padding-left: 12px; padding-right: 12px; justify-items: center; }
+      #endOverlay .modal,
+      #infoOverlay .modal,
+      #rewardOverlay .modal,
+      #collectionOverlay .collection-modal,
+      #rankingOverlay .ranking-modal,
+      #resetConfirmOverlay .reset-confirm-modal {
+        width: min(560px, 100%);
+        justify-self: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
       .cheat-controls { top: 12px; right: 12px; gap: 7px; }
       .cheat-toggle, .cheat-reset-button { padding: 8px 12px; font-size: 11px; }
       .cheat-floor-panel { gap: 6px; }
       .cheat-floor-button { width: 38px; height: 38px; min-width: 38px; font-size: 10px; }
 
-      .collection-modal, .ranking-modal { width: min(560px, calc(100vw - 24px)); padding-top: 42px; padding-bottom: 34px; }
+      .collection-modal, .ranking-modal { width: min(560px, 100%); padding-top: 42px; padding-bottom: 34px; }
       .collection-modal { padding-top: 10px; padding-bottom: 6px; }
+      #collectionOverlay .collection-modal { padding-top: 30px; padding-bottom: 30px; }
+      #collectionOverlay .collection-modal h2 { margin: 0 0 8px; }
       .collection-guide { max-width: 280px; margin-bottom: 5px; font-size: 12.5px; font-weight: 400; }
+      #collectionOverlay .collection-guide { margin: 0 auto 12px; }
       .treasure-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 7px; max-width: 318px; margin-bottom: 14px; }
+      #collectionOverlay .treasure-grid { margin: 0 auto 19px; }
       .treasure-card { padding: 5px 3px 5px; }
       .treasure-card-image { width: 64px; height: 64px; }
       .treasure-card-name { font-size: 10.5px; }
@@ -2303,6 +2482,10 @@
       .ranking-row { grid-template-columns: 32px minmax(0, 1fr) auto; padding: 4px 8px; font-size: 12px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
+      #nameInputOverlay .modal { width: min(520px, 100%); justify-self: center; margin-left: auto; margin-right: auto; padding-top: 58px; padding-bottom: 28px; }
+      #nameInputOverlay .modal h2 { font-size: 32px; }
+      .name-input-guide { max-width: 280px; font-size: 13px; }
+      .name-input-field { width: min(300px, 100%); padding: 12px 14px; font-size: 16px; }
     }
   </style>
 </head>
@@ -2330,6 +2513,7 @@
       <div class="right-wall"></div>
       <div class="back-wall"></div>
       <div class="floor"></div>
+      <div id="torchSequenceLayer" class="torch-sequence-layer" aria-hidden="true"></div>
       <div class="torch left"></div>
       <div class="torch right"></div>
     </section>
@@ -2397,7 +2581,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.45</div>
+          <div class="start-version">버전 0.46</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2446,6 +2630,22 @@
         <div class="reset-confirm-actions">
           <button id="resetCancelButton" class="secondary-button" type="button">취소</button>
           <button id="resetConfirmButton" type="button">확인</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="overlay hidden" id="nameInputOverlay" role="dialog" aria-modal="true" aria-labelledby="nameInputTitle">
+      <div class="modal name-input-modal">
+        <h2 id="nameInputTitle" class="sr-only">이름 입력</h2>
+        <p class="name-input-guide">한글 8자, 영문/숫자 16자까지</p>
+        <input id="nameInputText" class="name-input-field" type="text" maxlength="16" autocomplete="off" spellcheck="false" aria-label="플레이어 이름" />
+        <div class="name-input-actions">
+          <button id="nameInputCancelButton" class="secondary-button" type="button">취소</button>
+          <div class="end-action-col">
+            <button id="nameInputConfirmButton" type="button">확인</button>
+            <div class="button-hint"><span class="kbd">Space</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -2600,8 +2800,26 @@
       },
     };
     const DEFAULT_DIFFICULTY_KEY = 'normal';
+    const DEFAULT_RANKING_DIFFICULTY_KEY = 'easy';
     const LOBBY_BG_IMAGE_SRC = 'dungeon_bg.png';
     const LOBBY_BG_FALLBACK_WIDTH = 1180;
+    const TORCH_SPRITE_CONFIG = {
+      imageSrc: 'torchlight.png',
+      referenceBgWidth: 1024,
+      referenceBgHeight: 512,
+      frameWidth: 64,
+      frameHeight: 64,
+      columns: 4,
+      rows: 2,
+      frameCount: 8,
+      frameDurationMs: 90,
+      placements: [
+        { x: 39, y: 150, scale: 1, mirrored: false, startFrame: 0 },
+        { x: 301, y: 206, scale: 0.5, mirrored: false, startFrame: 2 },
+        { x: 684, y: 206, scale: 0.5, mirrored: true, startFrame: 4 },
+        { x: 928, y: 151, scale: 1, mirrored: true, startFrame: 6 },
+      ],
+    };
     const LOBBY_BUTTON_CONFIG = {
       width: 128,
       height: 256,
@@ -2622,7 +2840,7 @@
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
     const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
     // true: 치트 버튼 표시 / false: 치트 버튼 숨김
-    const SHOW_CHEAT_CONTROLS = false;
+    const SHOW_CHEAT_CONTROLS = true;
 
 
     const game = document.getElementById('game');
@@ -2663,6 +2881,10 @@
     const resetConfirmOverlay = document.getElementById('resetConfirmOverlay');
     const resetCancelButton = document.getElementById('resetCancelButton');
     const resetConfirmButton = document.getElementById('resetConfirmButton');
+    const nameInputOverlay = document.getElementById('nameInputOverlay');
+    const nameInputText = document.getElementById('nameInputText');
+    const nameInputCancelButton = document.getElementById('nameInputCancelButton');
+    const nameInputConfirmButton = document.getElementById('nameInputConfirmButton');
     const restartButton = document.getElementById('restartButton');
     const homeButton = document.getElementById('homeButton');
     const homeHintKbd = document.querySelector('.home-hint .kbd');
@@ -2675,6 +2897,7 @@
     const playTimeHud = document.getElementById('playTimeHud');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
     const dungeonEl = document.querySelector('.dungeon');
+    const torchSequenceLayer = document.getElementById('torchSequenceLayer');
     const lobbyDifficultyLayer = document.getElementById('lobbyDifficultyLayer');
     const lobbyDifficultyButtons = document.getElementById('lobbyDifficultyButtons');
     const lobbyInfoButton = document.getElementById('lobbyInfoButton');
@@ -2720,9 +2943,12 @@
     let clearResultRecordSeconds = 0;
     let clearResultDifficultyKey = DEFAULT_DIFFICULTY_KEY;
     let clearResultPlayerName = DEFAULT_PLAYER_NAME;
+    let pendingNameInputCallback = null;
     let activeRankingDifficultyKey = 'easy';
     let isSceneTransitioning = false;
     let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
+    let torchSequenceTick = 0;
+    let torchSequenceTimer = null;
     const lobbyBgImage = new Image();
     lobbyBgImage.src = LOBBY_BG_IMAGE_SRC;
 
@@ -2747,6 +2973,84 @@
     ['touchmove', 'gesturestart', 'gesturechange', 'gestureend'].forEach(eventName => {
       document.addEventListener(eventName, preventScreenGesture, { passive: false });
     });
+
+
+    function createTorchSequenceSprites() {
+      if (!torchSequenceLayer) return [];
+      torchSequenceLayer.innerHTML = '';
+      return TORCH_SPRITE_CONFIG.placements.map((placement, index) => {
+        const el = document.createElement('div');
+        el.className = 'torch-sequence';
+        el.dataset.torchIndex = String(index);
+        el.dataset.startFrame = String(((placement.startFrame ?? index) % TORCH_SPRITE_CONFIG.frameCount + TORCH_SPRITE_CONFIG.frameCount) % TORCH_SPRITE_CONFIG.frameCount);
+        el.dataset.scale = String(placement.scale ?? 1);
+        el.dataset.mirrored = placement.mirrored ? 'true' : 'false';
+        el.style.backgroundImage = `url('${TORCH_SPRITE_CONFIG.imageSrc}')`;
+        torchSequenceLayer.appendChild(el);
+        return el;
+      });
+    }
+
+    const torchSequenceEls = createTorchSequenceSprites();
+
+    function setTorchSequenceFrame(el, frameIndex) {
+      if (!el) return;
+      const safeFrame = ((frameIndex % TORCH_SPRITE_CONFIG.frameCount) + TORCH_SPRITE_CONFIG.frameCount) % TORCH_SPRITE_CONFIG.frameCount;
+      const column = safeFrame % TORCH_SPRITE_CONFIG.columns;
+      const row = Math.floor(safeFrame / TORCH_SPRITE_CONFIG.columns);
+      const frameWidth = Number(el.dataset.renderedFrameWidth) || TORCH_SPRITE_CONFIG.frameWidth;
+      const frameHeight = Number(el.dataset.renderedFrameHeight) || TORCH_SPRITE_CONFIG.frameHeight;
+      el.style.backgroundPosition = `${-column * frameWidth}px ${-row * frameHeight}px`;
+    }
+
+    function updateTorchSequenceLayout() {
+      if (!dungeonEl || !torchSequenceLayer || !torchSequenceEls.length) return;
+
+      const dungeonRect = dungeonEl.getBoundingClientRect();
+      const bgScale = Math.max(
+        dungeonRect.width / TORCH_SPRITE_CONFIG.referenceBgWidth,
+        dungeonRect.height / TORCH_SPRITE_CONFIG.referenceBgHeight,
+      );
+      const renderedBgWidth = TORCH_SPRITE_CONFIG.referenceBgWidth * bgScale;
+      const renderedBgHeight = TORCH_SPRITE_CONFIG.referenceBgHeight * bgScale;
+      const bgLeft = (dungeonRect.width - renderedBgWidth) / 2;
+      const bgTop = dungeonRect.height - renderedBgHeight;
+
+      torchSequenceEls.forEach((el, index) => {
+        const placement = TORCH_SPRITE_CONFIG.placements[index];
+        if (!placement) return;
+        const placementScale = placement.scale ?? 1;
+        const renderedFrameWidth = TORCH_SPRITE_CONFIG.frameWidth * bgScale * placementScale;
+        const renderedFrameHeight = TORCH_SPRITE_CONFIG.frameHeight * bgScale * placementScale;
+        const left = bgLeft + (placement.x * bgScale);
+        const top = bgTop + (placement.y * bgScale);
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+        el.style.width = `${renderedFrameWidth}px`;
+        el.style.height = `${renderedFrameHeight}px`;
+        el.style.backgroundSize = `${renderedFrameWidth * TORCH_SPRITE_CONFIG.columns}px ${renderedFrameHeight * TORCH_SPRITE_CONFIG.rows}px`;
+        el.style.transform = placement.mirrored ? 'scaleX(-1)' : 'none';
+        el.style.transformOrigin = '50% 50%';
+        el.dataset.renderedFrameWidth = String(renderedFrameWidth);
+        el.dataset.renderedFrameHeight = String(renderedFrameHeight);
+        const startFrame = Number(el.dataset.startFrame) || 0;
+        setTorchSequenceFrame(el, startFrame + torchSequenceTick);
+      });
+    }
+
+    function startTorchSequenceAnimation() {
+      if (torchSequenceTimer) clearInterval(torchSequenceTimer);
+      torchSequenceTimer = window.setInterval(() => {
+        torchSequenceTick = (torchSequenceTick + 1) % TORCH_SPRITE_CONFIG.frameCount;
+        torchSequenceEls.forEach((el) => {
+          const startFrame = Number(el.dataset.startFrame) || 0;
+          setTorchSequenceFrame(el, startFrame + torchSequenceTick);
+        });
+      }, TORCH_SPRITE_CONFIG.frameDurationMs);
+    }
+
+    updateTorchSequenceLayout();
+    startTorchSequenceAnimation();
     document.addEventListener('dragstart', preventScreenGesture, { passive: false });
     window.addEventListener('wheel', (e) => {
       if (e.ctrlKey && e.cancelable) e.preventDefault();
@@ -2993,14 +3297,14 @@
     function getSavedRankingDifficultyKey() {
       try {
         const stored = window.localStorage.getItem(RANKING_ACTIVE_TAB_KEY);
-        return DIFFICULTY_CONFIGS[stored] ? stored : DEFAULT_DIFFICULTY_KEY;
+        return DIFFICULTY_CONFIGS[stored] ? stored : DEFAULT_RANKING_DIFFICULTY_KEY;
       } catch (error) {
-        return DEFAULT_DIFFICULTY_KEY;
+        return DEFAULT_RANKING_DIFFICULTY_KEY;
       }
     }
 
     function saveRankingDifficultyKey(difficultyKey) {
-      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
       try {
         window.localStorage.setItem(RANKING_ACTIVE_TAB_KEY, key);
       } catch (error) {
@@ -3069,11 +3373,17 @@
           window.localStorage.removeItem(getBestClearTimeKey(key));
         });
         window.localStorage.removeItem(RANKING_STORAGE_KEY);
+        window.localStorage.removeItem(RANKING_ACTIVE_TAB_KEY);
         clearOwnedTreasureData();
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 초기화 요청을 조용히 무시합니다.
       }
       pendingRewardTreasure = null;
+      clearResultRankingSaved = false;
+      clearResultRecordSeconds = 0;
+      clearResultDifficultyKey = DEFAULT_DIFFICULTY_KEY;
+      clearResultPlayerName = DEFAULT_PLAYER_NAME;
+      activeRankingDifficultyKey = DEFAULT_RANKING_DIFFICULTY_KEY;
     }
 
     function isResetConfirmOverlayOpen() {
@@ -3101,12 +3411,70 @@
       }, POPUP_CLOSE_MS);
     }
 
+    function isNameInputOverlayOpen() {
+      return !!nameInputOverlay && !nameInputOverlay.classList.contains('hidden');
+    }
+
+    function limitNameInputValue() {
+      if (!nameInputText) return;
+      const normalized = String(nameInputText.value || '').replace(/\s+/g, ' ');
+      const hasHangul = /[가-힣]/.test(normalized);
+      const maxLength = hasHangul ? 8 : 16;
+      const limited = Array.from(normalized).slice(0, maxLength).join('');
+      if (nameInputText.value !== limited) nameInputText.value = limited;
+    }
+
+    function showNameInputOverlay(currentName, onConfirm) {
+      if (!nameInputOverlay || !nameInputText) return;
+      pendingNameInputCallback = typeof onConfirm === 'function' ? onConfirm : null;
+      nameInputText.value = currentName || getPlayerName();
+      nameInputOverlay.classList.remove('closing');
+      nameInputOverlay.classList.remove('hidden');
+      window.setTimeout(() => {
+        try {
+          nameInputText.focus({ preventScroll: true });
+        } catch (error) {
+          nameInputText.focus();
+        }
+        nameInputText.select();
+      }, 0);
+    }
+
+    function hideNameInputOverlay(onClosed) {
+      if (!nameInputOverlay || nameInputOverlay.classList.contains('hidden')) {
+        pendingNameInputCallback = null;
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (nameInputOverlay.classList.contains('closing')) return;
+      nameInputOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        nameInputOverlay.classList.add('hidden');
+        nameInputOverlay.classList.remove('closing');
+        pendingNameInputCallback = null;
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function cancelNameInputOverlay() {
+      hideNameInputOverlay();
+    }
+
+    function confirmNameInputOverlay() {
+      if (!nameInputText) return;
+      limitNameInputValue();
+      const safeName = setPlayerName(nameInputText.value);
+      if (typeof pendingNameInputCallback === 'function') pendingNameInputCallback(safeName);
+      hideNameInputOverlay();
+    }
+
     function confirmResetSavedData() {
       resetSavedData();
       renderTreasureCollection();
       renderRanking();
       hideResetConfirmOverlay();
     }
+
 
     function updatePlayTimeHud() {
       if (playTimeHud) playTimeHud.textContent = formatPlayTime(elapsed);
@@ -3163,7 +3531,7 @@
 
     function renderRanking() {
       if (!rankingList || !rankingTabs) return;
-      const key = DIFFICULTY_CONFIGS[activeRankingDifficultyKey] ? activeRankingDifficultyKey : DEFAULT_DIFFICULTY_KEY;
+      const key = DIFFICULTY_CONFIGS[activeRankingDifficultyKey] ? activeRankingDifficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
       activeRankingDifficultyKey = key;
       rankingTabs.querySelectorAll('.ranking-tab-button').forEach(button => {
         const isActive = button.dataset.difficulty === key;
@@ -3244,10 +3612,9 @@
     function updateActionButtonStates() {
       if (!alphaKeyboard) return;
       const shieldButton = alphaKeyboard.querySelector('.shield-key');
-      const shieldEnabled = (gameState === 'playing' || gameState === 'lobby') && player && player.shields > 0;
       if (shieldButton) {
-        shieldButton.classList.toggle('disabled', !shieldEnabled);
-        shieldButton.disabled = !shieldEnabled;
+        shieldButton.classList.remove('disabled');
+        shieldButton.disabled = false;
         shieldButton.textContent = '방어';
       }
     }
@@ -4323,7 +4690,7 @@
         if (cheatFloorPanel) cheatFloorPanel.classList.add('hidden');
         return;
       }
-      if (cheatResetButton) cheatResetButton.classList.remove('hidden');
+      if (cheatResetButton) cheatResetButton.classList.toggle('hidden', !cheatCodeEnabled);
       if (cheatToggle) {
         cheatToggle.classList.toggle('active', cheatCodeEnabled);
         cheatToggle.classList.toggle('hidden', cheatCodeEnabled);
@@ -4375,6 +4742,26 @@
     }
 
     function handleKeydown(e) {
+      if (isNameInputOverlayOpen()) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelNameInputOverlay();
+          return;
+        }
+        if (e.target === nameInputText) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            confirmNameInputOverlay();
+          }
+          return;
+        }
+        if (nameInputOverlay.contains(e.target)) {
+          return;
+        }
+        e.preventDefault();
+        return;
+      }
+
       if (isResetConfirmOverlayOpen()) {
         e.preventDefault();
         if (e.key === 'Escape') hideResetConfirmOverlay();
@@ -4891,10 +5278,10 @@
       const nameText = document.getElementById('clearPlayerNameText');
       if (!editor || !nameText) return;
       const editName = () => {
-        const nextName = window.prompt('플레이어 이름을 입력하세요. (한글/공백 8자, 영문/숫자 16자까지)', clearResultPlayerName || getPlayerName());
-        if (nextName === null) return;
-        clearResultPlayerName = setPlayerName(nextName);
-        nameText.textContent = clearResultPlayerName;
+        showNameInputOverlay(clearResultPlayerName || getPlayerName(), (safeName) => {
+          clearResultPlayerName = safeName;
+          nameText.textContent = clearResultPlayerName;
+        });
       };
       editor.addEventListener('click', (e) => {
         e.preventDefault();
@@ -5105,7 +5492,7 @@
         const button = e.target.closest('.ranking-tab-button');
         if (!button) return;
         e.preventDefault();
-        activeRankingDifficultyKey = saveRankingDifficultyKey(button.dataset.difficulty || DEFAULT_DIFFICULTY_KEY);
+        activeRankingDifficultyKey = saveRankingDifficultyKey(button.dataset.difficulty || DEFAULT_RANKING_DIFFICULTY_KEY);
         renderRanking();
       });
     }
@@ -5147,6 +5534,27 @@
     if (resetConfirmOverlay) {
       resetConfirmOverlay.addEventListener('click', (e) => {
         if (e.target === resetConfirmOverlay) hideResetConfirmOverlay();
+      });
+    }
+
+    if (nameInputText) {
+      nameInputText.addEventListener('input', limitNameInputValue);
+    }
+    if (nameInputCancelButton) {
+      nameInputCancelButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        cancelNameInputOverlay();
+      });
+    }
+    if (nameInputConfirmButton) {
+      nameInputConfirmButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        confirmNameInputOverlay();
+      });
+    }
+    if (nameInputOverlay) {
+      nameInputOverlay.addEventListener('click', (e) => {
+        if (e.target === nameInputOverlay) cancelNameInputOverlay();
       });
     }
     if (cheatToggle) {
@@ -5192,11 +5600,15 @@
     window.addEventListener('keyup', handleKeyup, { passive: false });
     function handleWindowResize() {
       updateLobbyDifficultyLayout();
+      updateTorchSequenceLayout();
       if (player) renderHud();
     }
 
     window.addEventListener('resize', handleWindowResize);
-    lobbyBgImage.addEventListener('load', updateLobbyDifficultyLayout);
+    lobbyBgImage.addEventListener('load', () => {
+      updateLobbyDifficultyLayout();
+      updateTorchSequenceLayout();
+    });
 
     setCheatControlsVisible(true);
     updateCheatToggle();
