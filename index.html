@@ -2215,7 +2215,7 @@
 
     #lobbyDifficultyLayer {
       position: absolute;
-      z-index: 20;
+      z-index: auto;
       left: 0;
       top: 0;
       width: 100%;
@@ -2229,6 +2229,7 @@
 
     #lobbyDifficultyButtons {
       position: absolute;
+      z-index: 20;
       left: var(--lobby-button-center-x, 50%);
       top: calc(var(--lobby-button-center-y, 50%) + var(--lobby-button-offset-y, 0px));
       display: flex;
@@ -2241,6 +2242,7 @@
 
     #lobbyInfoButton {
       position: absolute;
+      z-index: 13;
       left: var(--lobby-info-center-x, 50%);
       top: calc(var(--lobby-info-center-y, 50%) + var(--lobby-info-offset-y, 0px));
       width: var(--lobby-info-size-scaled, 128px);
@@ -2529,8 +2531,7 @@
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
-      #lobbyInfoButton { z-index: 13; }
-      #guardShield { left: 0px; bottom: 158px; scale: .7; z-index: 14; }
+      #guardShield { left: 0px; bottom: 158px; scale: .7; }
       #sword { right: -4px; bottom: 206px; scale: .7; }
       #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
       .portrait-panel { width: 78px; translate: 0 -20px; }
@@ -2700,7 +2701,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 1.02</div>
+          <div class="start-version">버전 1.03</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
