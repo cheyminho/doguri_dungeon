@@ -990,7 +990,7 @@
       padding: 0;
       border-radius: 30px;
       color: #2b2b2b;
-      background: #fbf9f3;
+      background: #fcf4e7;
       font-size: 13px;
       font-weight: 950;
       line-height: 1;
@@ -1051,7 +1051,7 @@
 
     #hud #alphaKeyboard .alpha-key {
       color: #2b2b2b;
-      background: #fbf9f3;
+      background: #fcf4e7;
     }
 
     #hud #alphaKeyboard .alpha-key.next-key {
@@ -1656,9 +1656,9 @@
 
     .ranking-row {
       display: grid;
-      grid-template-columns: 38px minmax(0, 1fr) auto;
+      grid-template-columns: 38px 16px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 8px;
+      column-gap: 8px;
       padding: 5px 10px;
       border-radius: 9px;
       background: rgba(255, 255, 255, .35);
@@ -1673,8 +1673,26 @@
       opacity: .76;
     }
 
+    .ranking-device {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .ranking-device-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      filter: brightness(0) saturate(100%);
+      pointer-events: none;
+    }
+
     .ranking-name {
       min-width: 0;
+      padding-left: 6px;
       text-align: left;
       white-space: nowrap;
       overflow: hidden;
@@ -2566,7 +2584,8 @@
       .ranking-tabs { gap: 5px; margin-bottom: 10px; }
       .ranking-tab-button { width: 80px; height: 30px; min-width: 80px; padding: 0; border-radius: 5px; font-size: 12px; }
       .ranking-list { width: min(340px, 100%); gap: 4px; margin-bottom: 12px; }
-      .ranking-row { grid-template-columns: 32px minmax(0, 1fr) auto; padding: 4px 8px; font-size: 12px; }
+      .ranking-row { grid-template-columns: 32px 16px minmax(0, 1fr) auto; column-gap: 7px; padding: 4px 8px; font-size: 12px; }
+      .ranking-name { padding-left: 7px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
       #nameInputOverlay .modal { width: min(520px, 100%); justify-self: center; margin-left: auto; margin-right: auto; padding-top: 58px; padding-bottom: 28px; }
@@ -2669,7 +2688,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.5</div>
+          <div class="start-version">버전 0.51</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3848,10 +3867,31 @@
         .collection('records');
     }
 
+    function getPlayDeviceType() {
+      const ua = navigator.userAgent || '';
+      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      const isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      const isSmallScreen = window.innerWidth <= 768;
+      return (isMobileUA || (isTouchDevice && isSmallScreen)) ? 'mobile' : 'pc';
+    }
+
+    function normalizeDeviceType(device) {
+      return device === 'mobile' ? 'mobile' : 'pc';
+    }
+
+    function getDeviceIconSrc(device) {
+      return normalizeDeviceType(device) === 'mobile' ? 'device_mobile.png' : 'device_pc.png';
+    }
+
+    function getDeviceLabel(device) {
+      return normalizeDeviceType(device) === 'mobile' ? 'Mobile' : 'PC';
+    }
+
     function normalizeRankingItem(item) {
       return {
         name: sanitizePlayerName(item && item.name),
         time: Number(item && item.time),
+        device: normalizeDeviceType(item && item.device),
       };
     }
 
@@ -3929,6 +3969,7 @@
           name: sanitizePlayerName(name),
           time,
           difficulty: key,
+          device: getPlayDeviceType(),
           createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
           version: 'dungeon-doguri-047',
         });
@@ -3954,6 +3995,7 @@
               .map(item => ({
                 name: sanitizePlayerName(item.name),
                 time: Number(item.time),
+                device: normalizeDeviceType(item.device),
               }))
               .filter(item => Number.isFinite(item.time) && item.time > 0)
               .sort((a, b) => a.time - b.time)
@@ -3985,7 +4027,7 @@
       const qualifies = list.length < RANKING_SIZE || time < list[list.length - 1].time;
 
       if (qualifies) {
-        list.push({ name: safeName, time });
+        list.push({ name: safeName, time, device: getPlayDeviceType() });
         rankings[key] = list.sort((a, b) => a.time - b.time).slice(0, RANKING_SIZE);
         saveRankings(rankings);
       }
@@ -4202,11 +4244,16 @@
       updateRankingStatusText(key);
       const rows = Array.from({ length: RANKING_SIZE }, (_, index) => {
         const defaultRankingName = DEFAULT_RANKING_NAMES[key] || DEFAULT_PLAYER_NAME;
-        const item = list[index] || { name: defaultRankingName, time: 0 };
+        const item = list[index] || { name: defaultRankingName, time: 0, device: 'pc' };
         const timeText = item.time > 0 ? formatPlayTime(item.time) : '00:00.00';
+        const device = normalizeDeviceType(item.device);
+        const deviceLabel = getDeviceLabel(device);
         return `
           <div class="ranking-row">
             <div class="ranking-rank">${index + 1}위</div>
+            <div class="ranking-device" title="${deviceLabel}" aria-label="${deviceLabel}">
+              <img class="ranking-device-icon" src="${getDeviceIconSrc(device)}" alt="${deviceLabel}" />
+            </div>
             <div class="ranking-name">${escapeHtml(item.name || defaultRankingName)}</div>
             <div class="ranking-time">${timeText}</div>
           </div>
