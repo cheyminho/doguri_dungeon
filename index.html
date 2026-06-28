@@ -2606,6 +2606,80 @@
       .name-input-guide { max-width: 280px; font-size: 13px; }
       .name-input-field { width: min(300px, 100%); padding: 12px 14px; font-size: 16px; }
     }
+
+    @media (any-pointer: coarse) and (orientation: portrait) and (min-width: 761px) and (max-width: 1024px) {
+      #game {
+        height: 100vh;
+        border: 0;
+      }
+
+      .dungeon {
+        bottom: 318px;
+        background-size: cover;
+        background-position: center bottom;
+      }
+
+      #hud {
+        min-height: 318px;
+        padding: 24px 18px 18px;
+        grid-template-columns: 104px minmax(0, 1fr) 76px;
+        grid-template-rows: auto auto auto;
+        gap: 10px 14px;
+        bottom: 0;
+      }
+
+      .portrait-panel {
+        translate: 0 -12px;
+      }
+
+      .hud-main {
+        gap: 8px;
+      }
+
+      #message {
+        height: 52px;
+        transform: translateY(-6px);
+      }
+
+      #potionSlot {
+        transform: translate(-8px, -16px);
+      }
+
+      #alphaKeyboard {
+        display: flex;
+        width: min(760px, 100%);
+        gap: 8px;
+        padding-top: 0;
+        transform: translateY(-8px);
+      }
+
+      .alpha-row {
+        gap: 6px;
+      }
+
+      .alpha-row:nth-child(2) {
+        padding-left: 30px;
+      }
+
+      .alpha-row:nth-child(3) {
+        padding-left: 24px;
+      }
+
+      .alpha-key {
+        width: clamp(44px, 6.4vw, 56px);
+        height: 44px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+
+      .shield-key,
+      .threat-key {
+        width: 64px;
+        min-width: 64px;
+        font-size: 14px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2701,7 +2775,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 1.03</div>
+          <div class="start-version">버전 1.04</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2759,7 +2833,7 @@
       <div class="modal name-input-modal">
         <h2 id="nameInputTitle" class="sr-only">이름 입력</h2>
         <p class="name-input-guide">한글 8자, 영문/숫자 16자까지</p>
-        <input id="nameInputText" class="name-input-field" type="text" maxlength="16" autocomplete="off" spellcheck="false" aria-label="플레이어 이름" />
+        <input id="nameInputText" class="name-input-field" type="text" maxlength="16" autocomplete="off" autocapitalize="off" inputmode="text" enterkeyhint="done" spellcheck="false" aria-label="플레이어 이름" />
         <div class="name-input-actions">
           <button id="nameInputCancelButton" class="secondary-button" type="button">취소</button>
           <div class="end-action-col">
@@ -4110,20 +4184,31 @@
       if (nameInputText.value !== limited) nameInputText.value = limited;
     }
 
+    function focusNameInputText() {
+      if (!nameInputText) return;
+      try {
+        nameInputText.focus({ preventScroll: true });
+      } catch (error) {
+        nameInputText.focus();
+      }
+      try {
+        nameInputText.setSelectionRange(0, nameInputText.value.length);
+      } catch (error) {
+        nameInputText.select();
+      }
+    }
+
     function showNameInputOverlay(currentName, onConfirm) {
       if (!nameInputOverlay || !nameInputText) return;
       pendingNameInputCallback = typeof onConfirm === 'function' ? onConfirm : null;
       nameInputText.value = currentName || getPlayerName();
       nameInputOverlay.classList.remove('closing');
       nameInputOverlay.classList.remove('hidden');
-      window.setTimeout(() => {
-        try {
-          nameInputText.focus({ preventScroll: true });
-        } catch (error) {
-          nameInputText.focus();
-        }
-        nameInputText.select();
-      }, 0);
+
+      // 모바일 키보드는 사용자 터치 직후 동기 focus가 들어갈 때 가장 안정적으로 열립니다.
+      focusNameInputText();
+      window.requestAnimationFrame(() => focusNameInputText());
+      window.setTimeout(() => focusNameInputText(), 60);
     }
 
     function hideNameInputOverlay(onClosed) {
