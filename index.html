@@ -1253,6 +1253,80 @@
       gap: 12px;
     }
 
+    #collectionCompleteRewardOverlay {
+      z-index: 210;
+    }
+
+    #collectionCompleteRewardOverlay:not(.hidden):not(.closing) .modal {
+      animation: popupOpen .2s ease-in-out both;
+    }
+
+    #collectionCompleteRewardOverlay.closing .modal {
+      animation: popupClose .1s ease-in-out both;
+    }
+
+    #collectionCompleteRewardOverlay .modal {
+      position: relative;
+      z-index: 0;
+      width: min(560px, calc(100vw - 40px));
+      margin: 20px 0;
+      padding-top: 58px;
+      padding-bottom: 48px;
+      color: #000;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    #collectionCompleteRewardOverlay .modal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      box-sizing: border-box;
+      border: 126px solid transparent;
+      border-image-source: url("popupbg.png");
+      border-image-slice: 126 fill;
+      border-image-width: 126px;
+      border-image-repeat: stretch;
+      pointer-events: none;
+    }
+
+    #collectionCompleteRewardOverlay .modal h2,
+    #collectionCompleteRewardOverlay .modal p,
+    #collectionCompleteRewardOverlay .modal .button-hint,
+    #collectionCompleteRewardOverlay .modal .kbd,
+    #collectionCompleteRewardOverlay .modal button {
+      color: #000;
+      text-shadow: none;
+    }
+
+    #collectionCompleteRewardOverlay .modal button {
+      border-radius: 30px;
+      color: #21131c;
+      background: #f6bc4e;
+      font-weight: 950;
+    }
+
+    #collectionCompleteRewardOverlay .modal .button-hint {
+      margin-top: 11px;
+    }
+
+    #collectionCompleteRewardOverlay .modal .button-hint .kbd {
+      color: #fff;
+      background: #000;
+    }
+
+    .collection-complete-reward-desc {
+      margin: 0 auto 22px;
+      max-width: 360px;
+      color: #000;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
     #rewardOverlay {
       z-index: 130;
     }
@@ -1452,13 +1526,13 @@
     .treasure-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px 10px;
-      margin: 4px auto 13px;
-      max-width: 560px;
+      gap: 8px 8px;
+      margin: 2px auto 10px;
+      max-width: 520px;
     }
 
     #collectionOverlay .treasure-grid {
-      margin: 0 auto 18px;
+      margin: 0 auto 14px;
     }
 
     .treasure-card {
@@ -1467,14 +1541,14 @@
       align-items: center;
       justify-content: flex-start;
       min-width: 0;
-      padding: 6px 3px 6px;
-      border-radius: 14px;
+      padding: 2px 3px 8px;
+      border-radius: 13px;
       background: rgba(255, 255, 255, .35);
     }
 
     .treasure-card-image {
-      width: 76px;
-      height: 76px;
+      width: 68px;
+      height: 68px;
       background-image: url('treasure.png');
       background-repeat: no-repeat;
       background-size: 400% 400%;
@@ -1573,7 +1647,11 @@
       flex-direction: column;
       gap: 5px;
       width: min(430px, 100%);
-      margin: 0 auto 18px;
+      margin: 0 auto 12px;
+    }
+
+    .ranking-status {
+      display: none;
     }
 
     .ranking-row {
@@ -1852,7 +1930,8 @@
     }
 
     .cheat-toggle,
-    .cheat-reset-button {
+    .cheat-reset-button,
+    .cheat-collection-test-button {
       position: static;
       padding: 9px 14px;
       border: 1px solid #000;
@@ -1876,8 +1955,15 @@
       opacity: 0;
     }
 
+    .cheat-collection-test-button {
+      width: auto;
+      min-width: 86px;
+      white-space: nowrap;
+    }
+
     .cheat-toggle.hidden,
-    .cheat-reset-button.hidden {
+    .cheat-reset-button.hidden,
+    .cheat-collection-test-button.hidden {
       display: none;
     }
 
@@ -2432,12 +2518,12 @@
       #potionHotkey { display: inline-flex; font-size: 11px; }
       .stats-row { gap: 4px; padding-right: 0; }
       .level-box { min-width: 0; width: 100%; gap: 6px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-5px); }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-3px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
 
       #levelText { font-size: 14px; font-weight: 1000; }
       .exp-bar { height: 5px; }
-      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-5px); }
+      #message { font-size: 10.5px; width: 100%; height: 48px; line-height: 15.5px; max-width: none; overflow: hidden; transform: translateY(-3px); }
       #message .kbd { padding: 1px 4px; font-size: .9em; }
       #alphaKeyboard { display: flex; gap: 5px; transform: translateY(-29px); }
       .alpha-row { gap: 3px; }
@@ -2450,6 +2536,7 @@
       #endOverlay .modal,
       #infoOverlay .modal,
       #rewardOverlay .modal,
+      #collectionCompleteRewardOverlay .modal,
       #collectionOverlay .collection-modal,
       #rankingOverlay .ranking-modal,
       #resetConfirmOverlay .reset-confirm-modal {
@@ -2459,26 +2546,26 @@
         margin-right: auto;
       }
       .cheat-controls { top: 12px; right: 12px; gap: 7px; }
-      .cheat-toggle, .cheat-reset-button { padding: 8px 12px; font-size: 11px; }
+      .cheat-toggle, .cheat-reset-button, .cheat-collection-test-button { padding: 8px 12px; font-size: 11px; }
       .cheat-floor-panel { gap: 6px; }
       .cheat-floor-button { width: 38px; height: 38px; min-width: 38px; font-size: 10px; }
 
       .collection-modal, .ranking-modal { width: min(560px, 100%); padding-top: 42px; padding-bottom: 34px; }
       .collection-modal { padding-top: 10px; padding-bottom: 6px; }
-      #collectionOverlay .collection-modal { padding-top: 30px; padding-bottom: 30px; }
-      #collectionOverlay .collection-modal h2 { margin: 0 0 8px; }
+      #collectionOverlay .collection-modal { padding-top: 28px; padding-bottom: 26px; }
+      #collectionOverlay .collection-modal h2 { margin: 0 0 7px; }
       .collection-guide { max-width: 280px; margin-bottom: 5px; font-size: 12.5px; font-weight: 400; }
-      #collectionOverlay .collection-guide { margin: 0 auto 12px; }
-      .treasure-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 7px; max-width: 318px; margin-bottom: 14px; }
-      #collectionOverlay .treasure-grid { margin: 0 auto 19px; }
-      .treasure-card { padding: 5px 3px 5px; }
-      .treasure-card-image { width: 64px; height: 64px; }
-      .treasure-card-name { font-size: 10.5px; }
-      .treasure-card-count { font-size: 10px; }
+      #collectionOverlay .collection-guide { margin: 0 auto 10px; }
+      .treasure-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 6px; max-width: 292px; margin-bottom: 10px; }
+      #collectionOverlay .treasure-grid { margin: 0 auto 14px; }
+      .treasure-card { padding: 4px 2px 4px; border-radius: 12px; }
+      .treasure-card-image { width: 58px; height: 58px; }
+      .treasure-card-name { font-size: 10px; }
+      .treasure-card-count { font-size: 9.5px; }
       .clear-player-name-text { font-size: 24px; }
       .ranking-tabs { gap: 5px; margin-bottom: 10px; }
       .ranking-tab-button { width: 80px; height: 30px; min-width: 80px; padding: 0; border-radius: 5px; font-size: 12px; }
-      .ranking-list { width: min(340px, 100%); gap: 4px; margin-bottom: 14px; }
+      .ranking-list { width: min(340px, 100%); gap: 4px; margin-bottom: 12px; }
       .ranking-row { grid-template-columns: 32px minmax(0, 1fr) auto; padding: 4px 8px; font-size: 12px; }
       .dungeon-entrance { width: min(440px, 84vw); height: min(260px, 33vh); min-height: 190px; }
       .start-hint, .button-hint { font-size: 12px; }
@@ -2494,6 +2581,7 @@
     <div id="cheatControls" class="cheat-controls">
       <div class="cheat-top-row">
         <button id="cheatResetButton" class="cheat-reset-button" type="button">초기화</button>
+        <button id="cheatCollectionTestButton" class="cheat-collection-test-button" type="button">도감 테스트</button>
         <div class="cheat-mode-column">
           <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
           <div id="cheatFloorPanel" class="cheat-floor-panel hidden" aria-label="치트 시작 층 선택">
@@ -2581,7 +2669,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 0.46</div>
+          <div class="start-version">버전 0.5</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2663,15 +2751,27 @@
       </div>
     </div>
 
+    <div class="overlay hidden" id="collectionCompleteRewardOverlay" role="dialog" aria-modal="true" aria-labelledby="collectionCompleteRewardTitle">
+      <div class="modal collection-complete-reward-modal">
+        <h2 id="collectionCompleteRewardTitle">도감 100% 완성!</h2>
+        <p class="collection-complete-reward-desc">기념 장비를 획득했습니다.</p>
+        <div class="collection-close-col">
+          <button id="collectionCompleteRewardCloseButton" type="button">확인</button>
+          <div class="button-hint"><span class="kbd">Space</span></div>
+        </div>
+      </div>
+    </div>
+
     <div class="overlay hidden" id="rankingOverlay" role="dialog" aria-modal="true" aria-labelledby="rankingTitle">
       <div class="modal ranking-modal">
-        <h2 id="rankingTitle">랭킹</h2>
+        <h2 id="rankingTitle">온라인 랭킹</h2>
         <div class="ranking-tabs" role="tablist" aria-label="난이도별 랭킹">
           <button type="button" class="ranking-tab-button active" data-difficulty="easy" aria-selected="true">쉬움</button>
           <button type="button" class="ranking-tab-button" data-difficulty="normal" aria-selected="false">보통</button>
           <button type="button" class="ranking-tab-button" data-difficulty="hard" aria-selected="false">어려움</button>
         </div>
         <div id="rankingList" class="ranking-list" aria-label="랭킹 목록"></div>
+        <p id="rankingStatus" class="ranking-status"></p>
         <div class="ranking-close-col">
           <button id="rankingCloseButton" type="button">닫기</button>
           <div class="button-hint"><span class="kbd">Space</span></div>
@@ -2681,6 +2781,9 @@
 
 
   </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
   <script>
     const MONSTER_SPRITE_A = 'monsters.png';
@@ -2743,10 +2846,26 @@
     const TREASURE_COLLECTION_KEY = 'dungeonDoguriOwnedTreasures';
     const TREASURE_COUNTS_KEY = 'dungeonDoguriTreasureCounts';
     const TREASURE_COLLECTION_LEGACY_KEYS = ['dungeonDoguriTreasureCollection', 'dungeonDoguriTreasures'];
+    const COLLECTION_COMPLETE_REWARD_KEY = 'dungeonDoguriCollectionCompleteRewardShown';
     const PLAYER_NAME_KEY = 'dungeonDoguriPlayerName';
     const RANKING_STORAGE_KEY = 'dungeonDoguriRankings.v1';
     const RANKING_ACTIVE_TAB_KEY = 'dungeonDoguriRankingActiveTab';
     const RANKING_SIZE = 10;
+
+    // Firebase 온라인 랭킹 설정
+    // Firebase Console > 프로젝트 설정 > 일반 > 내 앱(Web)의 firebaseConfig 값을 아래에 붙여 넣으세요.
+    const FIREBASE_RANKING_ENABLED = true;
+    const FIREBASE_RANKING_COLLECTION = 'dungeonDoguriRankings';
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCZzXnCZS_UnZRsc2-ESAWKQuOd2L2UvCc",
+      authDomain: "doguri-dungeon.firebaseapp.com",
+      projectId: "doguri-dungeon",
+      storageBucket: "doguri-dungeon.firebasestorage.app",
+      messagingSenderId: "202511141140",
+      appId: "1:202511141140:web:0ae48a7ec4d9b9a1d29a01",
+      measurementId: "G-CFTG5DS9Z9",
+    };
+
     const DEFAULT_PLAYER_NAME = '도구리';
     const DEFAULT_RANKING_NAMES = {
       easy: '초보 도구리',
@@ -2759,6 +2878,14 @@
       idle: 'profile_idle.png',
       pain: 'profile_pain.png',
       dying: 'profile_dying.png',
+    };
+    const COLLECTION_COMPLETE_EQUIPMENT_IMAGES = {
+      profileIdleDefault: 'profile_idle.png',
+      profileIdleReward: 'profile_idle_s.png',
+      shieldDefault: 'shield.png',
+      shieldReward: 'shield_s.png',
+      swordDefault: 'sword.png',
+      swordReward: 'sword_s.png',
     };
     const BASE_MAX_HP = 3;
     const MAX_PLAYER_HP = 12;
@@ -2840,7 +2967,292 @@
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
     const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
     // true: 치트 버튼 표시 / false: 치트 버튼 숨김
-    const SHOW_CHEAT_CONTROLS = true;
+    const SHOW_CHEAT_CONTROLS = false;
+
+    // Web Audio로 생성하는 효과음 설정
+    // 음량 조정: masterVolume, sfxVolume 값을 0~1 사이로 수정하면 됩니다.
+    const AUDIO_CONFIG = {
+      enabled: true,
+      masterVolume: 0.82,
+      sfxVolume: 1,
+    };
+
+    const audioState = {
+      ctx: null,
+      master: null,
+      sfxBus: null,
+      lastSfxTimes: {},
+    };
+
+    function ensureGameAudio() {
+      if (!AUDIO_CONFIG.enabled) return null;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+
+      if (!audioState.ctx) {
+        const ctx = new AudioContextClass();
+        const master = ctx.createGain();
+        const sfxBus = ctx.createGain();
+        const limiter = ctx.createDynamicsCompressor();
+
+        master.gain.value = AUDIO_CONFIG.masterVolume;
+        sfxBus.gain.value = AUDIO_CONFIG.sfxVolume;
+
+        limiter.threshold.value = -12;
+        limiter.knee.value = 18;
+        limiter.ratio.value = 8;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.2;
+
+        sfxBus.connect(master);
+        master.connect(limiter);
+        limiter.connect(ctx.destination);
+
+        audioState.ctx = ctx;
+        audioState.master = master;
+        audioState.sfxBus = sfxBus;
+      }
+
+      if (audioState.ctx.state === 'suspended') {
+        audioState.ctx.resume().catch(() => {});
+      }
+      return audioState.ctx;
+    }
+
+    function unlockGameAudio() {
+      ensureGameAudio();
+    }
+
+    function canPlaySound(key, minGapMs = 28) {
+      const now = performance.now();
+      const prev = audioState.lastSfxTimes[key] || 0;
+      if (now - prev < minGapMs) return false;
+      audioState.lastSfxTimes[key] = now;
+      return true;
+    }
+
+    function clampAudioPower(power) {
+      return Math.max(0.25, Math.min(2, Number.isFinite(power) ? power : 1));
+    }
+
+    function makeNoiseBuffer(ctx, duration = 0.2) {
+      const frameCount = Math.max(1, Math.floor(ctx.sampleRate * duration));
+      const buffer = ctx.createBuffer(1, frameCount, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < frameCount; i += 1) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      return buffer;
+    }
+
+    function connectWithOptionalPan(ctx, source, dest, pan = 0) {
+      if (ctx.createStereoPanner) {
+        const panner = ctx.createStereoPanner();
+        panner.pan.value = Math.max(-1, Math.min(1, pan));
+        source.connect(panner);
+        panner.connect(dest);
+        return panner;
+      }
+      source.connect(dest);
+      return source;
+    }
+
+    function playTone(options = {}) {
+      const ctx = ensureGameAudio();
+      if (!ctx) return;
+      const dest = options.dest || audioState.sfxBus;
+      if (!dest) return;
+
+      const t = ctx.currentTime + (options.delay || 0);
+      const duration = Math.max(0.02, options.duration || 0.15);
+      const attack = Math.max(0.001, Math.min(duration * 0.5, options.attack || 0.006));
+      const gainValue = Math.max(0.0001, options.gain || 0.04);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = options.type || 'sine';
+      osc.frequency.setValueAtTime(Math.max(20, options.freq || 440), t);
+      if (Number.isFinite(options.endFreq)) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, options.endFreq), t + duration);
+      }
+
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(gainValue, t + attack);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+
+      osc.connect(gain);
+      connectWithOptionalPan(ctx, gain, dest, options.pan || 0);
+      osc.start(t);
+      osc.stop(t + duration + 0.03);
+    }
+
+    function playNoise(options = {}) {
+      const ctx = ensureGameAudio();
+      if (!ctx) return;
+      const dest = options.dest || audioState.sfxBus;
+      if (!dest) return;
+
+      const t = ctx.currentTime + (options.delay || 0);
+      const duration = Math.max(0.03, options.duration || 0.18);
+      const source = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+
+      source.buffer = makeNoiseBuffer(ctx, duration);
+      filter.type = options.filterType || 'bandpass';
+      filter.frequency.value = Math.max(20, options.freq || 900);
+      filter.Q.value = Math.max(0.01, options.q || 0.8);
+
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, options.gain || 0.04), t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+
+      source.connect(filter);
+      filter.connect(gain);
+      connectWithOptionalPan(ctx, gain, dest, options.pan || 0);
+      source.start(t);
+      source.stop(t + duration + 0.03);
+    }
+
+    function playChord(freqs, options = {}) {
+      const spread = options.spread || 0.018;
+      freqs.forEach((freq, index) => {
+        playTone({
+          type: options.type || 'triangle',
+          freq,
+          duration: options.duration || 0.22,
+          delay: (options.delay || 0) + index * spread,
+          gain: (options.gain || 0.035) / Math.sqrt(freqs.length),
+          dest: options.dest,
+          pan: options.pan || 0,
+        });
+      });
+    }
+
+    function playGameSound(name, power = 1) {
+      const ctx = ensureGameAudio();
+      if (!ctx || !audioState.sfxBus) return;
+      const p = clampAudioPower(power);
+
+      switch (name) {
+        case 'ui':
+          if (!canPlaySound('ui', 70)) return;
+          playTone({ type: 'triangle', freq: 620, endFreq: 820, duration: 0.075, gain: 0.028 * p });
+          break;
+        case 'start':
+          if (!canPlaySound('start', 200)) return;
+          playNoise({ filterType: 'lowpass', freq: 420, q: 0.6, duration: 0.34, gain: 0.05 * p });
+          playChord([146.83, 196, 293.66], { type: 'triangle', duration: 0.36, gain: 0.045 * p, spread: 0.045 });
+          break;
+        case 'scene':
+          if (!canPlaySound('scene', 160)) return;
+          playNoise({ filterType: 'bandpass', freq: 620, q: 0.45, duration: 0.34, gain: 0.045 * p });
+          playTone({ type: 'sine', freq: 130, endFreq: 82, duration: 0.36, gain: 0.032 * p });
+          break;
+        case 'spawn':
+          if (!canPlaySound('spawn', 90)) return;
+          playTone({ type: 'sine', freq: 98, endFreq: 62, duration: 0.2, gain: 0.035 * p });
+          playNoise({ filterType: 'lowpass', freq: 520, q: 0.7, duration: 0.16, gain: 0.035 * p });
+          break;
+        case 'bossSpawn':
+          if (!canPlaySound('bossSpawn', 300)) return;
+          playTone({ type: 'sawtooth', freq: 74, endFreq: 49, duration: 0.42, gain: 0.05 * p });
+          playNoise({ filterType: 'lowpass', freq: 360, q: 0.8, duration: 0.38, gain: 0.055 * p });
+          break;
+        case 'chestAppear':
+          if (!canPlaySound('chestAppear', 250)) return;
+          playTone({ type: 'triangle', freq: 196, endFreq: 146.83, duration: 0.18, gain: 0.042 * p });
+          playNoise({ filterType: 'bandpass', freq: 820, q: 1.2, duration: 0.16, gain: 0.026 * p, delay: 0.04 });
+          break;
+        case 'swing':
+          if (!canPlaySound('swing', 38)) return;
+          playNoise({ filterType: 'highpass', freq: 1500, q: 0.7, duration: 0.055, gain: 0.026 * p, pan: 0.18 });
+          break;
+        case 'hit':
+          if (!canPlaySound('hit', 35)) return;
+          playTone({ type: 'triangle', freq: 220, endFreq: 146.83, duration: 0.075, gain: 0.028 * p });
+          playNoise({ filterType: 'bandpass', freq: 2200, q: 0.9, duration: 0.06, gain: 0.026 * p });
+          break;
+        case 'miss':
+          if (!canPlaySound('miss', 90)) return;
+          playTone({ type: 'square', freq: 150, endFreq: 115, duration: 0.12, gain: 0.025 * p });
+          playNoise({ filterType: 'lowpass', freq: 460, q: 0.8, duration: 0.1, gain: 0.026 * p });
+          break;
+        case 'kill':
+          if (!canPlaySound('kill', 80)) return;
+          playNoise({ filterType: 'lowpass', freq: 780, q: 0.75, duration: 0.22, gain: 0.045 * p });
+          playChord([261.63, 329.63, 392], { type: 'triangle', duration: 0.22, gain: 0.04 * p, delay: 0.04, spread: 0.02 });
+          break;
+        case 'levelUp':
+          if (!canPlaySound('levelUp', 250)) return;
+          playChord([329.63, 392, 493.88, 659.25], { type: 'triangle', duration: 0.42, gain: 0.052 * p, spread: 0.055 });
+          break;
+        case 'shieldReady':
+          if (!canPlaySound('shieldReady', 120)) return;
+          playTone({ type: 'triangle', freq: 300, endFreq: 240, duration: 0.09, gain: 0.024 * p });
+          break;
+        case 'block':
+          if (!canPlaySound('block', 90)) return;
+          playNoise({ filterType: 'bandpass', freq: 1800, q: 2.4, duration: 0.13, gain: 0.052 * p });
+          playTone({ type: 'square', freq: 210, endFreq: 160, duration: 0.13, gain: 0.034 * p });
+          break;
+        case 'heal':
+          if (!canPlaySound('heal', 220)) return;
+          playChord([392, 523.25, 659.25], { type: 'sine', duration: 0.42, gain: 0.048 * p, spread: 0.055 });
+          playTone({ type: 'sine', freq: 784, endFreq: 1046.5, duration: 0.36, gain: 0.024 * p, delay: 0.08 });
+          break;
+        case 'damage':
+          if (!canPlaySound('damage', 90)) return;
+          playTone({ type: 'sawtooth', freq: 120, endFreq: 72, duration: 0.19, gain: 0.05 * p });
+          playNoise({ filterType: 'lowpass', freq: 380, q: 0.8, duration: 0.16, gain: 0.045 * p });
+          break;
+        case 'bigDamage':
+          if (!canPlaySound('bigDamage', 220)) return;
+          playTone({ type: 'sawtooth', freq: 86, endFreq: 42, duration: 0.36, gain: 0.06 * p });
+          playNoise({ filterType: 'lowpass', freq: 300, q: 0.7, duration: 0.34, gain: 0.06 * p });
+          break;
+        case 'chestOpen':
+          if (!canPlaySound('chestOpen', 300)) return;
+          playTone({ type: 'triangle', freq: 174.61, endFreq: 130.81, duration: 0.18, gain: 0.036 * p });
+          playChord([523.25, 659.25, 783.99, 1046.5], { type: 'sine', duration: 0.46, gain: 0.06 * p, delay: 0.1, spread: 0.04 });
+          break;
+        case 'reward':
+          if (!canPlaySound('reward', 260)) return;
+          playChord([659.25, 783.99, 987.77], { type: 'sine', duration: 0.34, gain: 0.052 * p, spread: 0.055 });
+          break;
+        case 'rewardBig':
+          if (!canPlaySound('rewardBig', 500)) return;
+          playChord([523.25, 659.25, 783.99, 1046.5, 1318.51], { type: 'sine', duration: 0.65, gain: 0.07 * p, spread: 0.07 });
+          break;
+        case 'stageClear':
+          if (!canPlaySound('stageClear', 400)) return;
+          playChord([261.63, 329.63, 392], { type: 'triangle', duration: 0.3, gain: 0.052 * p, spread: 0.05 });
+          playChord([329.63, 415.3, 493.88], { type: 'triangle', duration: 0.42, gain: 0.052 * p, delay: 0.22, spread: 0.05 });
+          break;
+        case 'gameClear':
+          if (!canPlaySound('gameClear', 650)) return;
+          playChord([261.63, 329.63, 392], { type: 'triangle', duration: 0.38, gain: 0.055 * p, spread: 0.04 });
+          playChord([392, 493.88, 587.33, 783.99], { type: 'triangle', duration: 0.72, gain: 0.065 * p, delay: 0.28, spread: 0.045 });
+          break;
+        case 'gameOver':
+          if (!canPlaySound('gameOver', 650)) return;
+          playTone({ type: 'triangle', freq: 392, endFreq: 311.13, duration: 0.34, gain: 0.044 * p });
+          playTone({ type: 'triangle', freq: 311.13, endFreq: 246.94, duration: 0.42, gain: 0.044 * p, delay: 0.25 });
+          playTone({ type: 'sine', freq: 98, endFreq: 61.74, duration: 0.7, gain: 0.04 * p, delay: 0.36 });
+          break;
+        case 'bestiary':
+          if (!canPlaySound('bestiary', 160)) return;
+          playNoise({ filterType: 'bandpass', freq: 1200, q: 0.9, duration: 0.11, gain: 0.027 * p });
+          playTone({ type: 'triangle', freq: 440, endFreq: 554.37, duration: 0.12, gain: 0.023 * p, delay: 0.03 });
+          break;
+        case 'reset':
+          if (!canPlaySound('reset', 250)) return;
+          playTone({ type: 'triangle', freq: 185, endFreq: 124, duration: 0.22, gain: 0.035 * p });
+          break;
+        default:
+          break;
+      }
+    }
 
 
     const game = document.getElementById('game');
@@ -2859,7 +3271,9 @@
     const profileImage = document.getElementById('profileImage');
     const inputBubble = document.getElementById('inputBubble');
     const guardShield = document.getElementById('guardShield');
+    const guardShieldImage = guardShield ? guardShield.querySelector('img') : null;
     const sword = document.getElementById('sword');
+    const swordImage = sword ? sword.querySelector('img') : null;
     const bloodFlash = document.getElementById('bloodFlash');
     const startOverlay = document.getElementById('startOverlay');
     const endOverlay = document.getElementById('endOverlay');
@@ -2877,6 +3291,7 @@
     const cheatControls = document.getElementById('cheatControls');
     const cheatToggle = document.getElementById('cheatToggle');
     const cheatResetButton = document.getElementById('cheatResetButton');
+    const cheatCollectionTestButton = document.getElementById('cheatCollectionTestButton');
     const cheatFloorPanel = document.getElementById('cheatFloorPanel');
     const resetConfirmOverlay = document.getElementById('resetConfirmOverlay');
     const resetCancelButton = document.getElementById('resetCancelButton');
@@ -2906,8 +3321,11 @@
     const collectionOverlay = document.getElementById('collectionOverlay');
     const treasureGrid = document.getElementById('treasureGrid');
     const collectionCloseButton = document.getElementById('collectionCloseButton');
+    const collectionCompleteRewardOverlay = document.getElementById('collectionCompleteRewardOverlay');
+    const collectionCompleteRewardCloseButton = document.getElementById('collectionCompleteRewardCloseButton');
     const rankingOverlay = document.getElementById('rankingOverlay');
     const rankingList = document.getElementById('rankingList');
+    const rankingStatus = document.getElementById('rankingStatus');
     const rankingCloseButton = document.getElementById('rankingCloseButton');
     const rankingTabs = document.querySelector('.ranking-tabs');
 
@@ -2945,6 +3363,12 @@
     let clearResultPlayerName = DEFAULT_PLAYER_NAME;
     let pendingNameInputCallback = null;
     let activeRankingDifficultyKey = 'easy';
+    let onlineRankingsCache = null;
+    let onlineRankingsLoaded = {};
+    let firebaseRankingDb = null;
+    let firebaseRankingInitAttempted = false;
+    let firebaseRankingReady = false;
+    let firebaseRankingStatus = 'local';
     let isSceneTransitioning = false;
     let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
     let torchSequenceTick = 0;
@@ -3260,10 +3684,68 @@
       try {
         window.localStorage.removeItem(TREASURE_COLLECTION_KEY);
         window.localStorage.removeItem(TREASURE_COUNTS_KEY);
+        window.localStorage.removeItem(COLLECTION_COMPLETE_REWARD_KEY);
         TREASURE_COLLECTION_LEGACY_KEYS.forEach(key => window.localStorage.removeItem(key));
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 보물 초기화 요청을 조용히 무시합니다.
       }
+    }
+
+    function getOwnedTreasureCount(counts = getTreasureCounts()) {
+      return TREASURE_DATA.reduce((sum, treasure) => sum + ((counts[getTreasureId(treasure)] || 0) > 0 ? 1 : 0), 0);
+    }
+
+    function isTreasureCollectionComplete(counts = getTreasureCounts()) {
+      return TREASURE_DATA.length > 0 && getOwnedTreasureCount(counts) >= TREASURE_DATA.length;
+    }
+
+    function isCollectionCompleteRewardShown() {
+      try {
+        return window.localStorage.getItem(COLLECTION_COMPLETE_REWARD_KEY) === 'true';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function markCollectionCompleteRewardShown() {
+      try {
+        window.localStorage.setItem(COLLECTION_COMPLETE_REWARD_KEY, 'true');
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 이번 세션에서만 팝업을 표시합니다.
+      }
+    }
+
+    function applyCollectionCompleteEquipment() {
+      const isComplete = isTreasureCollectionComplete();
+      PROFILE_IMAGES.idle = isComplete
+        ? COLLECTION_COMPLETE_EQUIPMENT_IMAGES.profileIdleReward
+        : COLLECTION_COMPLETE_EQUIPMENT_IMAGES.profileIdleDefault;
+
+      if (guardShieldImage) {
+        guardShieldImage.src = isComplete
+          ? COLLECTION_COMPLETE_EQUIPMENT_IMAGES.shieldReward
+          : COLLECTION_COMPLETE_EQUIPMENT_IMAGES.shieldDefault;
+      }
+      if (swordImage) {
+        swordImage.src = isComplete
+          ? COLLECTION_COMPLETE_EQUIPMENT_IMAGES.swordReward
+          : COLLECTION_COMPLETE_EQUIPMENT_IMAGES.swordDefault;
+      }
+      updateProfileImage();
+    }
+
+    function grantCollectionTestTreasures() {
+      const counts = getTreasureCounts();
+      const excludedTreasureId = getTreasureId(TREASURE_DATA[0]);
+      TREASURE_DATA.forEach(treasure => {
+        const id = getTreasureId(treasure);
+        if (id === excludedTreasureId) return;
+        counts[id] = Math.max(1, counts[id] || 0);
+      });
+      saveTreasureCounts(counts);
+      applyCollectionCompleteEquipment();
+      renderTreasureCollection();
+      setMessage('<span class="message-line">도감 테스트 적용!</span><span class="message-line">보물 벌레를 제외한 보물을 1개씩 획득했습니다.</span>');
     }
 
     function sanitizePlayerName(name) {
@@ -3320,6 +3802,146 @@
       }, {});
     }
 
+    function isFirebasePlaceholderValue(value) {
+      return !value || /^PASTE_/i.test(String(value)) || String(value).includes('YOUR_PROJECT_ID');
+    }
+
+    function isFirebaseRankingConfigured() {
+      if (!FIREBASE_RANKING_ENABLED) return false;
+      if (!window.firebase || typeof window.firebase.initializeApp !== 'function') return false;
+      return ['apiKey', 'authDomain', 'projectId', 'appId'].every(key => !isFirebasePlaceholderValue(FIREBASE_CONFIG[key]));
+    }
+
+    function initFirebaseRanking() {
+      if (firebaseRankingReady) return true;
+      if (firebaseRankingInitAttempted) return false;
+      firebaseRankingInitAttempted = true;
+
+      if (!isFirebaseRankingConfigured()) {
+        firebaseRankingStatus = 'local';
+        return false;
+      }
+
+      try {
+        const app = window.firebase.apps && window.firebase.apps.length
+          ? window.firebase.app()
+          : window.firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseRankingDb = window.firebase.firestore(app);
+        firebaseRankingReady = true;
+        firebaseRankingStatus = 'ready';
+        onlineRankingsCache = getEmptyRankings();
+        onlineRankingsLoaded = {};
+        return true;
+      } catch (error) {
+        firebaseRankingStatus = 'error';
+        console.warn('Firebase 랭킹 초기화에 실패했습니다.', error);
+        return false;
+      }
+    }
+
+    function getOnlineRankingRecordsRef(difficultyKey) {
+      if (!firebaseRankingDb) return null;
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
+      return firebaseRankingDb
+        .collection(FIREBASE_RANKING_COLLECTION)
+        .doc(key)
+        .collection('records');
+    }
+
+    function normalizeRankingItem(item) {
+      return {
+        name: sanitizePlayerName(item && item.name),
+        time: Number(item && item.time),
+      };
+    }
+
+    function getDisplayRankings() {
+      const localRankings = getRankings();
+      if (!firebaseRankingReady || !onlineRankingsCache) return localRankings;
+
+      const rankings = getEmptyRankings();
+      Object.keys(DIFFICULTY_CONFIGS).forEach(key => {
+        rankings[key] = onlineRankingsLoaded[key]
+          ? (onlineRankingsCache[key] || [])
+          : (localRankings[key] || []);
+      });
+      return rankings;
+    }
+
+    function updateRankingStatusText(difficultyKey) {
+      if (!rankingStatus) return;
+      rankingStatus.textContent = '';
+    }
+
+    async function refreshOnlineRankings(difficultyKey = activeRankingDifficultyKey) {
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
+      if (!initFirebaseRanking()) {
+        updateRankingStatusText(key);
+        return;
+      }
+
+      const recordsRef = getOnlineRankingRecordsRef(key);
+      if (!recordsRef) return;
+
+      firebaseRankingStatus = 'loading';
+      updateRankingStatusText(key);
+
+      try {
+        const snapshot = await recordsRef
+          .orderBy('time', 'asc')
+          .limit(RANKING_SIZE)
+          .get();
+
+        onlineRankingsCache[key] = snapshot.docs
+          .map(doc => normalizeRankingItem(doc.data()))
+          .filter(item => Number.isFinite(item.time) && item.time > 0)
+          .sort((a, b) => a.time - b.time)
+          .slice(0, RANKING_SIZE);
+        onlineRankingsLoaded[key] = true;
+        firebaseRankingStatus = 'ready';
+
+        if (isRankingOverlayOpen() && activeRankingDifficultyKey === key) {
+          renderRanking();
+        } else {
+          updateRankingStatusText(key);
+        }
+      } catch (error) {
+        firebaseRankingStatus = 'error';
+        onlineRankingsLoaded[key] = false;
+        console.warn('온라인 랭킹을 불러오지 못했습니다.', error);
+        updateRankingStatusText(key);
+      }
+    }
+
+    async function saveOnlineRankingRecord(seconds, difficultyKey = currentDifficultyKey, name = getPlayerName()) {
+      if (currentRunUsedCheat) return false;
+      const time = Number(seconds);
+      if (!Number.isFinite(time) || time <= 0) return false;
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+
+      if (!initFirebaseRanking()) return false;
+
+      try {
+        const recordsRef = getOnlineRankingRecordsRef(key);
+        if (!recordsRef) return false;
+
+        await recordsRef.add({
+          name: sanitizePlayerName(name),
+          time,
+          difficulty: key,
+          createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+          version: 'dungeon-doguri-047',
+        });
+
+        await refreshOnlineRankings(key);
+        return true;
+      } catch (error) {
+        firebaseRankingStatus = 'error';
+        console.warn('온라인 랭킹 저장에 실패했습니다.', error);
+        return false;
+      }
+    }
+
     function getRankings() {
       const rankings = getEmptyRankings();
       try {
@@ -3357,14 +3979,19 @@
       const time = Number(seconds);
       if (!Number.isFinite(time) || time <= 0) return false;
       const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      const safeName = sanitizePlayerName(name);
       const rankings = getRankings();
       const list = rankings[key] || [];
       const qualifies = list.length < RANKING_SIZE || time < list[list.length - 1].time;
-      if (!qualifies) return false;
-      list.push({ name: sanitizePlayerName(name), time });
-      rankings[key] = list.sort((a, b) => a.time - b.time).slice(0, RANKING_SIZE);
-      saveRankings(rankings);
-      return true;
+
+      if (qualifies) {
+        list.push({ name: safeName, time });
+        rankings[key] = list.sort((a, b) => a.time - b.time).slice(0, RANKING_SIZE);
+        saveRankings(rankings);
+      }
+
+      saveOnlineRankingRecord(time, key, safeName);
+      return qualifies;
     }
 
     function resetSavedData() {
@@ -3374,16 +4001,20 @@
         });
         window.localStorage.removeItem(RANKING_STORAGE_KEY);
         window.localStorage.removeItem(RANKING_ACTIVE_TAB_KEY);
+        window.localStorage.removeItem(PLAYER_NAME_KEY);
         clearOwnedTreasureData();
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 초기화 요청을 조용히 무시합니다.
       }
+      onlineRankingsCache = firebaseRankingReady ? getEmptyRankings() : null;
+      onlineRankingsLoaded = {};
       pendingRewardTreasure = null;
       clearResultRankingSaved = false;
       clearResultRecordSeconds = 0;
       clearResultDifficultyKey = DEFAULT_DIFFICULTY_KEY;
       clearResultPlayerName = DEFAULT_PLAYER_NAME;
       activeRankingDifficultyKey = DEFAULT_RANKING_DIFFICULTY_KEY;
+      applyCollectionCompleteEquipment();
     }
 
     function isResetConfirmOverlayOpen() {
@@ -3484,8 +4115,8 @@
     function renderTreasureCollection() {
       if (!treasureGrid) return;
       const counts = getTreasureCounts();
-      const ownedCount = TREASURE_DATA.reduce((sum, treasure) => sum + ((counts[getTreasureId(treasure)] || 0) > 0 ? 1 : 0), 0);
-      const percent = Math.floor((ownedCount / TREASURE_DATA.length) * 100);
+      const ownedCount = getOwnedTreasureCount(counts);
+      const percent = TREASURE_DATA.length > 0 ? Math.floor((ownedCount / TREASURE_DATA.length) * 100) : 0;
       if (collectionTitle) collectionTitle.textContent = `보물 도감 ${String(percent).padStart(2, '0')}%`;
       treasureGrid.innerHTML = TREASURE_DATA.map((treasure, index) => {
         const id = getTreasureId(treasure);
@@ -3506,6 +4137,7 @@
 
     function showTreasureCollectionOverlay() {
       if (!collectionOverlay) return;
+      playGameSound('bestiary');
       renderTreasureCollection();
       collectionOverlay.classList.remove('closing');
       collectionOverlay.classList.remove('hidden');
@@ -3529,6 +4161,33 @@
       return !!(collectionOverlay && !collectionOverlay.classList.contains('hidden'));
     }
 
+    function showCollectionCompleteRewardOverlay() {
+      if (!collectionCompleteRewardOverlay) return;
+      playGameSound('rewardBig');
+      markCollectionCompleteRewardShown();
+      applyCollectionCompleteEquipment();
+      collectionCompleteRewardOverlay.classList.remove('closing');
+      collectionCompleteRewardOverlay.classList.remove('hidden');
+    }
+
+    function hideCollectionCompleteRewardOverlay(onClosed) {
+      if (!collectionCompleteRewardOverlay || collectionCompleteRewardOverlay.classList.contains('hidden')) {
+        if (typeof onClosed === 'function') onClosed();
+        return;
+      }
+      if (collectionCompleteRewardOverlay.classList.contains('closing')) return;
+      collectionCompleteRewardOverlay.classList.add('closing');
+      window.setTimeout(() => {
+        collectionCompleteRewardOverlay.classList.add('hidden');
+        collectionCompleteRewardOverlay.classList.remove('closing');
+        if (typeof onClosed === 'function') onClosed();
+      }, POPUP_CLOSE_MS);
+    }
+
+    function isCollectionCompleteRewardOverlayOpen() {
+      return !!(collectionCompleteRewardOverlay && !collectionCompleteRewardOverlay.classList.contains('hidden'));
+    }
+
     function renderRanking() {
       if (!rankingList || !rankingTabs) return;
       const key = DIFFICULTY_CONFIGS[activeRankingDifficultyKey] ? activeRankingDifficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
@@ -3538,8 +4197,9 @@
         button.classList.toggle('active', isActive);
         button.setAttribute('aria-selected', String(isActive));
       });
-      const rankings = getRankings();
+      const rankings = getDisplayRankings();
       const list = rankings[key] || [];
+      updateRankingStatusText(key);
       const rows = Array.from({ length: RANKING_SIZE }, (_, index) => {
         const defaultRankingName = DEFAULT_RANKING_NAMES[key] || DEFAULT_PLAYER_NAME;
         const item = list[index] || { name: defaultRankingName, time: 0 };
@@ -3557,9 +4217,11 @@
 
     function showRankingOverlay(difficultyKey = null) {
       if (!rankingOverlay) return;
+      playGameSound('ui');
       const nextKey = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : getSavedRankingDifficultyKey();
       activeRankingDifficultyKey = saveRankingDifficultyKey(nextKey);
       renderRanking();
+      refreshOnlineRankings(activeRankingDifficultyKey);
       rankingOverlay.classList.remove('closing');
       rankingOverlay.classList.remove('hidden');
     }
@@ -3648,6 +4310,7 @@
     function usePotion() {
       if (gameState !== 'playing') return;
       if (!player || player.potions <= 0) {
+        playGameSound('miss');
         setMessage('사과가 없습니다.');
         updateActionButtonStates();
         return;
@@ -3655,6 +4318,7 @@
       player.potions = Math.max(0, player.potions - 1);
       player.hp = player.maxHp;
       renderHud();
+      playGameSound('heal');
       animateHealFeedback();
       setMessage('사과 사용! 생명력이 모두 회복되었습니다.');
     }
@@ -3721,6 +4385,10 @@
       if (rewardOverlay) {
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
+      }
+      if (collectionCompleteRewardOverlay) {
+        collectionCompleteRewardOverlay.classList.add('hidden');
+        collectionCompleteRewardOverlay.classList.remove('closing');
       }
       if (resetConfirmOverlay) {
         resetConfirmOverlay.classList.add('hidden');
@@ -3920,8 +4588,32 @@
       }, 1000);
     }
 
+    function isBoneDragonData(data) {
+      return data && data.type === 'B' && data.level === 12;
+    }
+
     function isBoneDragonVariant(monster) {
-      return monster && monster.type === 'B' && monster.level === 12;
+      return isBoneDragonData(monster);
+    }
+
+    function getBoneDragonStepSize(value) {
+      const stepSize = Number(value);
+      if (!Number.isFinite(stepSize)) return 5;
+      return Math.max(1, Math.min(5, Math.ceil(stepSize)));
+    }
+
+    function getNextBoneDragonStepSize(monster) {
+      return Math.max(1, getBoneDragonStepSize(monster && monster.boneDragonStepSize) - 1);
+    }
+
+    function shouldSwapBoneDragonToFlame(monster) {
+      if (!isBoneDragonVariant(monster)) return false;
+      if (monster.progress >= monster.normalized.length) return false;
+      const stepStartProgress = Number.isFinite(monster.boneDragonStepStartProgress)
+        ? monster.boneDragonStepStartProgress
+        : 0;
+      const typedInStep = monster.progress - stepStartProgress;
+      return typedInStep >= getBoneDragonStepSize(monster.boneDragonStepSize);
     }
 
     function createBoneDragonReturnState(monster) {
@@ -3929,11 +4621,12 @@
         data: getMonsterDataByLevel(12, 'B'),
         lane: monster.lane,
         progress: monster.progress,
+        boneDragonStepSize: getNextBoneDragonStepSize(monster),
       };
     }
 
     function swapBoneDragonToFlame(monster) {
-      if (!isBoneDragonVariant(monster)) return false;
+      if (!shouldSwapBoneDragonToFlame(monster)) return false;
       const flameData = getMonsterDataByLevel(13, 'B');
       const returnState = createBoneDragonReturnState(monster);
       if (!flameData || !returnState.data) return false;
@@ -3963,16 +4656,19 @@
       if (!returnMonster || gameState !== 'playing') return;
       const data = returnMonster.data || getMonsterDataByLevel(12, 'B');
       if (!data) return;
+      const boneDragonStepSize = getBoneDragonStepSize(returnMonster.boneDragonStepSize);
       spawnMonster(data, returnMonster.lane || 'lane-mid', {
         progress: returnMonster.progress || 0,
-        attackTimeOverride: 1,
+        boneDragonStepSize,
       });
       updateKeyboardHint();
     }
 
     function setBlocking(nextState) {
       const canBlock = (gameState === 'playing' || gameState === 'lobby') && player && player.shields > 0;
+      const wasBlocking = isBlocking;
       isBlocking = !!nextState && canBlock;
+      if (isBlocking && !wasBlocking) playGameSound('shieldReady');
       if (!isBlocking) {
         guardShield.classList.remove('block');
         if (shieldBlockTimeout) {
@@ -3985,6 +4681,7 @@
     }
 
     function animateShieldBlock() {
+      playGameSound('block');
       if (shieldBlockTimeout) {
         clearTimeout(shieldBlockTimeout);
         shieldBlockTimeout = null;
@@ -4066,6 +4763,7 @@
 
     function applyTypoPenalty(reason) {
       if (gameState !== 'playing') return;
+      playGameSound('miss');
 
       getInputDelta();
 
@@ -4237,9 +4935,14 @@
         dragonSpawned = true;
       }
 
+      const boneDragonStepSize = isBoneDragonData(data)
+        ? getBoneDragonStepSize(options.boneDragonStepSize)
+        : null;
       const adjustedAttackTime = Number.isFinite(options.attackTimeOverride)
         ? Math.max(0.1, options.attackTimeOverride)
-        : applyDifficultyAttackTime(data.attackTime);
+        : isBoneDragonData(data)
+          ? boneDragonStepSize
+          : applyDifficultyAttackTime(data.attackTime);
       const monster = {
         id: nextMonsterId++,
         level: data.level,
@@ -4256,6 +4959,10 @@
         isTreasureChest: !!options.treasureChest || !!data.isTreasureChest,
         chestConfig: options.chestConfig || data.chestConfig || null,
         veilTimer: null,
+        boneDragonStepSize,
+        boneDragonStepStartProgress: isBoneDragonData(data)
+          ? Math.max(0, Math.min(normalizeName(data.name).length, options.progress || 0))
+          : 0,
       };
 
       const dataSpriteIndex = Number.isFinite(data.spriteIndex) ? data.spriteIndex : data.level - 1;
@@ -4294,6 +5001,7 @@
       monster.timerEl = el.querySelector('.timer-ring');
       monsterLayer.appendChild(el);
       monsters.push(monster);
+      playGameSound(monster.isTreasureChest ? 'chestAppear' : (monster.level >= 12 ? 'bossSpawn' : 'spawn'), monster.level >= 12 ? 1.25 : 1);
       if (!monster.temporarySummon) lastSpawnedMonsterKey = getMonsterSpawnKey(monster);
       renderMonsterWord(monster);
       updateMonsterElement(monster);
@@ -4432,6 +5140,7 @@
 
     function showInfoOverlay() {
       if (!infoOverlay) return;
+      playGameSound('ui');
       infoOverlay.classList.remove('closing');
       infoOverlay.classList.remove('hidden');
     }
@@ -4457,6 +5166,7 @@
 
     function runSceneFade(onBlack, onAfterFadeOut) {
       if (!screenFade || isSceneTransitioning) return;
+      playGameSound('scene');
       isSceneTransitioning = true;
       screenFade.classList.add('show');
       window.setTimeout(() => {
@@ -4545,6 +5255,10 @@
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
       }
+      if (collectionCompleteRewardOverlay) {
+        collectionCompleteRewardOverlay.classList.add('hidden');
+        collectionCompleteRewardOverlay.classList.remove('closing');
+      }
       if (resetConfirmOverlay) {
         resetConfirmOverlay.classList.add('hidden');
         resetConfirmOverlay.classList.remove('closing');
@@ -4588,11 +5302,15 @@
 
     function enterLobby() {
       if (isSceneTransitioning) return;
+      unlockGameAudio();
+      playGameSound('start');
       runSceneFade(() => setupLobby());
     }
 
     function startDifficultyGame(difficultyKey = DEFAULT_DIFFICULTY_KEY) {
       if (isSceneTransitioning || gameState !== 'lobby' || isInfoOverlayOpen()) return;
+      unlockGameAudio();
+      playGameSound('ui');
       setCurrentDifficulty(difficultyKey);
       clearLobbyButtonPress();
       runSceneFade(() => {
@@ -4637,6 +5355,10 @@
       if (rewardOverlay) {
         rewardOverlay.classList.add('hidden');
         rewardOverlay.classList.remove('closing');
+      }
+      if (collectionCompleteRewardOverlay) {
+        collectionCompleteRewardOverlay.classList.add('hidden');
+        collectionCompleteRewardOverlay.classList.remove('closing');
       }
       if (collectionOverlay) {
         collectionOverlay.classList.add('hidden');
@@ -4687,10 +5409,12 @@
         setCheatControlsVisible(false);
         if (cheatToggle) cheatToggle.classList.add('hidden');
         if (cheatResetButton) cheatResetButton.classList.add('hidden');
+        if (cheatCollectionTestButton) cheatCollectionTestButton.classList.add('hidden');
         if (cheatFloorPanel) cheatFloorPanel.classList.add('hidden');
         return;
       }
       if (cheatResetButton) cheatResetButton.classList.toggle('hidden', !cheatCodeEnabled);
+      if (cheatCollectionTestButton) cheatCollectionTestButton.classList.toggle('hidden', !cheatCodeEnabled);
       if (cheatToggle) {
         cheatToggle.classList.toggle('active', cheatCodeEnabled);
         cheatToggle.classList.toggle('hidden', cheatCodeEnabled);
@@ -4766,6 +5490,12 @@
         e.preventDefault();
         if (e.key === 'Escape') hideResetConfirmOverlay();
         if (e.key === ' ' || e.key === 'Enter') confirmResetSavedData();
+        return;
+      }
+
+      if (isCollectionCompleteRewardOverlayOpen()) {
+        e.preventDefault();
+        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') hideCollectionCompleteRewardOverlay();
         return;
       }
 
@@ -4945,25 +5675,28 @@
       const inputDelta = getInputDelta();
       const inputResult = getResultLabel(inputDelta);
       target.progress += 1;
+      playGameSound(target.isTreasureChest ? 'ui' : 'hit', 0.85 + Math.min(0.6, target.level * 0.035));
       animateMonsterHit(target);
       showMonsterResult(target, inputResult.text, inputResult.className);
       renderAllMonsterWords();
       updateMonsterElement(target);
 
-      if (isBoneDragonVariant(target) && target.progress < target.normalized.length) {
+      if (target.progress >= target.normalized.length) {
+        updateKeyboardHint();
+        killMonster(target);
+        return;
+      }
+
+      if (shouldSwapBoneDragonToFlame(target)) {
         swapBoneDragonToFlame(target);
         return;
       }
 
-      if (target.level === 11 && target.type !== 'B' && target.progress < target.normalized.length) {
+      if (target.level === 11 && target.type !== 'B') {
         swapLevel11MonsterLane(target);
       }
 
       updateKeyboardHint();
-
-      if (target.progress >= target.normalized.length) {
-        killMonster(target);
-      }
     }
 
     function killMonster(monster) {
@@ -4976,6 +5709,7 @@
 
       if (monster.temporarySummon) {
         const returnMonster = monster.returnMonster;
+        playGameSound('kill', 0.9 + Math.min(0.7, monster.level * 0.04));
         setMessage(`${monster.name} 처치!`);
         monster.el.classList.add('dead');
         monsters = monsters.filter(m => m.id !== monster.id);
@@ -4988,6 +5722,7 @@
         return;
       }
 
+      playGameSound('kill', 0.9 + Math.min(0.7, monster.level * 0.04));
       player.kills += 1;
       floorKills += 1;
       const gained = expReward(monster.level);
@@ -5009,6 +5744,7 @@
         const hpIncreased = player.maxHp < MAX_PLAYER_HP;
         if (hpIncreased) player.maxHp = Math.min(MAX_PLAYER_HP, player.maxHp + 1);
         player.hp = player.maxHp;
+        playGameSound('levelUp');
         showToast('레벨업!');
         setMessage(hpIncreased
           ? `레벨 업! 도구리 Lv. ${player.level}. 최대 생명력 +1, 생명력이 모두 회복되었습니다.`
@@ -5039,6 +5775,7 @@
 
     function spawnClearChest() {
       if (clearChestSpawned || gameState !== 'playing') return;
+      playGameSound('chestAppear', 1.2);
       const chestConfig = getChestConfigForDifficulty();
       clearChestSpawned = true;
       setBlocking(false);
@@ -5066,6 +5803,7 @@
 
     function openTreasureChest(chest) {
       if (!chest || !chest.isTreasureChest || chest.chestOpened) return;
+      playGameSound('chestOpen', 1.15);
       const chestConfig = chest.chestConfig || getChestConfigForDifficulty();
       chest.chestOpened = true;
       chest.progress = chest.normalized.length;
@@ -5092,6 +5830,7 @@
 
     function showRewardOverlay(treasure) {
       if (!rewardOverlay || !treasure) return;
+      playGameSound('reward');
       gameState = 'reward';
       setTreasureSpritePosition(rewardTreasureImage, treasure.spriteIndex);
       const particle = getObjectParticle(treasure.name);
@@ -5127,6 +5866,7 @@
     }
 
     function stageClear() {
+      playGameSound('stageClear');
       gameState = 'stageclear';
       setBlocking(false);
       stageProgressReady = false;
@@ -5199,7 +5939,9 @@
 
     function damageDoguri(reason, amount = 1) {
       if (gameState !== 'playing') return;
-      player.hp = Math.max(0, player.hp - amount);
+      const nextHp = Math.max(0, player.hp - amount);
+      playGameSound(nextHp <= 0 ? 'bigDamage' : 'damage');
+      player.hp = nextHp;
       renderHud();
       setMessage(reason);
 
@@ -5218,6 +5960,7 @@
     }
 
     function animateSword() {
+      playGameSound('swing');
       sword.classList.remove('slash');
       void sword.offsetWidth;
       sword.classList.add('slash');
@@ -5244,6 +5987,7 @@
     }
 
     function gameOver() {
+      playGameSound('gameOver');
       gameState = 'gameover';
       setBlocking(false);
       clearAllMonsterSpecialTimers();
@@ -5304,6 +6048,7 @@
     }
 
     function winGame(treasure = pendingRewardTreasure) {
+      playGameSound('gameClear');
       gameState = 'clear';
       setBlocking(false);
       clearAllMonsterSpecialTimers();
@@ -5331,9 +6076,14 @@
       endTitle.textContent = '게임 클리어';
       endDesc.innerHTML = `<span class="message-line clear-difficulty-label">- ${difficultyLabel} 난이도 -</span><span class="message-line">현재 기록: <b>${currentRecordText}</b></span><span class="message-line">최단 기록: <b>${bestRecordText}</b></span>${playerNameHtml}${rewardHtml}`;
       wireClearPlayerNameEditor();
+      const wasCollectionComplete = isTreasureCollectionComplete();
+      let shouldShowCollectionCompleteReward = false;
       if (rewardTreasure) {
         setTreasureSpritePosition(document.getElementById('clearRewardTreasureImage'), rewardTreasure.spriteIndex);
         unlockTreasure(rewardTreasure);
+        const isCollectionCompleteNow = isTreasureCollectionComplete();
+        applyCollectionCompleteEquipment();
+        shouldShowCollectionCompleteReward = !wasCollectionComplete && isCollectionCompleteNow && !isCollectionCompleteRewardShown();
       }
       pendingRewardTreasure = null;
       restartButton.textContent = '도감 보기';
@@ -5348,6 +6098,9 @@
       if (homeHintEl) homeHintEl.style.display = '';
       if (homeHintKbd) homeHintKbd.textContent = 'Space';
       showEndOverlay();
+      if (shouldShowCollectionCompleteReward) {
+        showCollectionCompleteRewardOverlay();
+      }
       updateKeyboardHint();
     }
 
@@ -5476,6 +6229,17 @@
         if (e.target === collectionOverlay) hideTreasureCollectionOverlay();
       });
     }
+    if (collectionCompleteRewardCloseButton) {
+      collectionCompleteRewardCloseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideCollectionCompleteRewardOverlay();
+      });
+    }
+    if (collectionCompleteRewardOverlay) {
+      collectionCompleteRewardOverlay.addEventListener('click', (e) => {
+        if (e.target === collectionCompleteRewardOverlay) hideCollectionCompleteRewardOverlay();
+      });
+    }
     if (rankingCloseButton) {
       rankingCloseButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -5494,6 +6258,7 @@
         e.preventDefault();
         activeRankingDifficultyKey = saveRankingDifficultyKey(button.dataset.difficulty || DEFAULT_RANKING_DIFFICULTY_KEY);
         renderRanking();
+        refreshOnlineRankings(activeRankingDifficultyKey);
       });
     }
 
@@ -5517,6 +6282,13 @@
         e.preventDefault();
         if (!SHOW_CHEAT_CONTROLS) return;
         showResetConfirmOverlay();
+      });
+    }
+    if (cheatCollectionTestButton) {
+      cheatCollectionTestButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!SHOW_CHEAT_CONTROLS) return;
+        grantCollectionTestTreasures();
       });
     }
     if (resetCancelButton) {
@@ -5598,6 +6370,8 @@
     });
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
+    window.addEventListener('pointerdown', unlockGameAudio, { passive: true });
+    window.addEventListener('touchstart', unlockGameAudio, { passive: true });
     function handleWindowResize() {
       updateLobbyDifficultyLayout();
       updateTorchSequenceLayout();
@@ -5617,6 +6391,7 @@
     player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
     elapsed = 0;
     updatePlayTimeHud();
+    applyCollectionCompleteEquipment();
     renderHud();
   </script>
 </body>
