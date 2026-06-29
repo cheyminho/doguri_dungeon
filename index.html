@@ -395,10 +395,10 @@
     }
 
     @keyframes resultPop {
-      0% { opacity: 0; transform: translate(-50%, calc(var(--stack-offset) + 6px)) scale(.96); }
-      8% { opacity: 1; transform: translate(-50%, var(--stack-offset)) scale(1); }
-      17% { opacity: 1; transform: translate(-50%, var(--stack-offset)) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, var(--stack-offset)) scale(.98); }
+      0% { opacity: 0; transform: translateY(calc(var(--stack-offset) + 6px)) scale(.96); }
+      8% { opacity: 1; transform: translateY(var(--stack-offset)) scale(1); }
+      17% { opacity: 1; transform: translateY(var(--stack-offset)) scale(1); }
+      100% { opacity: 0; transform: translateY(var(--stack-offset)) scale(.98); }
     }
 
     @keyframes monsterDead {
@@ -489,12 +489,15 @@
 
     .monster-result {
       position: absolute;
-      left: 50%;
+      left: 0;
+      right: 0;
       top: 0;
-      translate: -50% 0;
+      width: 100%;
+      translate: 0 0;
       font-size: 14px;
       font-weight: 950;
       letter-spacing: .03em;
+      text-align: center;
       text-shadow: 0 2px 0 rgba(0,0,0,.65);
       white-space: nowrap;
       --stack-offset: 0px;
@@ -2786,7 +2789,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 1.06</div>
+          <div class="start-version">버전 1.07</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
