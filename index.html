@@ -2327,6 +2327,13 @@
       filter: none;
     }
 
+    #lobbyInfoButton:focus,
+    #lobbyInfoButton:focus-visible,
+    #potionSlot:focus,
+    #potionSlot:focus-visible {
+      outline: none;
+    }
+
     .lobby-difficulty-button {
       position: relative;
       display: block;
@@ -2835,7 +2842,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.17</div>
+        <div class="start-version">v1.18</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2899,7 +2906,7 @@
           <button id="nameInputCancelButton" class="secondary-button" type="button">취소</button>
           <div class="end-action-col">
             <button id="nameInputConfirmButton" type="button">확인</button>
-            <div class="button-hint"><span class="kbd">Space</span></div>
+            <div class="button-hint"><span class="kbd">Enter</span></div>
           </div>
         </div>
       </div>
@@ -4547,6 +4554,7 @@
     }
 
     function hideTreasureCollectionOverlay(onClosed) {
+      blurActiveInteractiveElement();
       if (!collectionOverlay || collectionOverlay.classList.contains('hidden')) {
         if (typeof onClosed === 'function') onClosed();
         return;
@@ -4558,6 +4566,12 @@
         collectionOverlay.classList.remove('closing');
         if (typeof onClosed === 'function') onClosed();
       }, POPUP_CLOSE_MS);
+    }
+
+    function blurActiveInteractiveElement() {
+      const active = document.activeElement;
+      if (!active || active === document.body || active === document.documentElement) return;
+      if (typeof active.blur === 'function') active.blur();
     }
 
     function isTreasureCollectionOpen() {
@@ -4574,6 +4588,7 @@
     }
 
     function hideCollectionCompleteRewardOverlay(onClosed) {
+      blurActiveInteractiveElement();
       if (!collectionCompleteRewardOverlay || collectionCompleteRewardOverlay.classList.contains('hidden')) {
         if (typeof onClosed === 'function') onClosed();
         return;
@@ -5562,6 +5577,7 @@
     }
 
     function hideInfoOverlay(onClosed) {
+      blurActiveInteractiveElement();
       if (!infoOverlay || infoOverlay.classList.contains('hidden')) {
         if (typeof onClosed === 'function') onClosed();
         return;
@@ -5888,8 +5904,12 @@
           cancelNameInputOverlay();
           return;
         }
+        if (e.key === ' ') {
+          if (e.target !== nameInputText) e.preventDefault();
+          return;
+        }
         if (e.target === nameInputText) {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === 'Enter') {
             e.preventDefault();
             confirmNameInputOverlay();
           }
@@ -6035,6 +6055,11 @@
     }
 
     function handleKeyup(e) {
+      if (isNameInputOverlayOpen()) {
+        if (e.key === ' ') e.preventDefault();
+        return;
+      }
+
       if (e.key === ' ' || e.key === 'Enter') {
         progressKeyArmed = true;
       }
