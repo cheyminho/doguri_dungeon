@@ -2835,7 +2835,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.16</div>
+        <div class="start-version">v1.17</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3018,6 +3018,7 @@
     const RANKING_STORAGE_KEY = 'dungeonDoguriRankings.v1';
     const RANKING_ACTIVE_TAB_KEY = 'dungeonDoguriRankingActiveTab';
     const RANKING_SIZE = 10;
+    const FIREBASE_LEGACY_RANKING_SCAN_LIMIT = 300;
     const RANKING_MIN_VALID_CLEAR_TIME = {
       easy: 90,
       normal: 70,
@@ -4179,11 +4180,10 @@
     }
 
     function getPlayDeviceType() {
-      const ua = navigator.userAgent || '';
-      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
-      const isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-      const isSmallScreen = window.innerWidth <= 768;
-      return (isMobileUA || (isTouchDevice && isSmallScreen)) ? 'mobile' : 'pc';
+      const useMobileLayout = window.matchMedia && window.matchMedia(
+        '(max-width: 760px), (any-pointer: coarse) and (orientation: portrait) and (min-width: 761px) and (max-width: 1024px)'
+      ).matches;
+      return useMobileLayout ? 'mobile' : 'pc';
     }
 
     function normalizeDeviceType(device) {
@@ -4206,6 +4206,31 @@
       };
     }
 
+    function trimRankingListByDevice(list) {
+      const normalizedList = (Array.isArray(list) ? list : [])
+        .map(item => normalizeRankingItem(item))
+        .filter(item => Number.isFinite(item.time) && item.time > 0);
+
+      return ['mobile', 'pc'].flatMap(device => normalizedList
+        .filter(item => normalizeDeviceType(item.device) === device)
+        .sort((a, b) => a.time - b.time)
+        .slice(0, RANKING_SIZE)
+      );
+    }
+
+    function getCurrentDeviceRankingList(list, device = getPlayDeviceType()) {
+      const currentDevice = normalizeDeviceType(device);
+      return (Array.isArray(list) ? list : [])
+        .map(item => normalizeRankingItem(item))
+        .filter(item => (
+          Number.isFinite(item.time)
+          && item.time > 0
+          && normalizeDeviceType(item.device) === currentDevice
+        ))
+        .sort((a, b) => a.time - b.time)
+        .slice(0, RANKING_SIZE);
+    }
+
     function getDisplayRankings() {
       const localRankings = getRankings();
       if (!firebaseRankingReady || !onlineRankingsCache) return localRankings;
@@ -4224,6 +4249,12 @@
       rankingStatus.textContent = '';
     }
 
+    function rankingRawDeviceMatches(rawDevice, targetDevice) {
+      const target = normalizeDeviceType(targetDevice);
+      if (target === 'mobile') return rawDevice === 'mobile';
+      return rawDevice !== 'mobile';
+    }
+
     async function refreshOnlineRankings(difficultyKey = activeRankingDifficultyKey) {
       const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_RANKING_DIFFICULTY_KEY;
       if (!initFirebaseRanking()) {
@@ -4238,14 +4269,26 @@
       updateRankingStatusText(key);
 
       try {
+        const device = getPlayDeviceType();
         const snapshot = await recordsRef
           .orderBy('time', 'asc')
-          .limit(RANKING_SIZE)
+          .limit(FIREBASE_LEGACY_RANKING_SCAN_LIMIT)
           .get();
 
         onlineRankingsCache[key] = snapshot.docs
-          .map(doc => normalizeRankingItem(doc.data()))
-          .filter(item => Number.isFinite(item.time) && item.time > 0)
+          .map(doc => {
+            const data = doc.data() || {};
+            return {
+              rawDevice: data.device,
+              item: normalizeRankingItem(data),
+            };
+          })
+          .filter(entry => (
+            Number.isFinite(entry.item.time)
+            && entry.item.time > 0
+            && rankingRawDeviceMatches(entry.rawDevice, device)
+          ))
+          .map(entry => entry.item)
           .sort((a, b) => a.time - b.time)
           .slice(0, RANKING_SIZE);
         onlineRankingsLoaded[key] = true;
@@ -4303,15 +4346,7 @@
         if (parsed && typeof parsed === 'object') {
           Object.keys(DIFFICULTY_CONFIGS).forEach(key => {
             const list = Array.isArray(parsed[key]) ? parsed[key] : [];
-            rankings[key] = list
-              .map(item => ({
-                name: sanitizePlayerName(item.name),
-                time: Number(item.time),
-                device: normalizeDeviceType(item.device),
-              }))
-              .filter(item => Number.isFinite(item.time) && item.time > 0)
-              .sort((a, b) => a.time - b.time)
-              .slice(0, RANKING_SIZE);
+            rankings[key] = trimRankingListByDevice(list);
           });
         }
       } catch (error) {
@@ -4337,11 +4372,13 @@
       const safeName = sanitizePlayerName(name);
       const rankings = getRankings();
       const list = rankings[key] || [];
-      const qualifies = list.length < RANKING_SIZE || time < list[list.length - 1].time;
+      const device = getPlayDeviceType();
+      const currentDeviceList = getCurrentDeviceRankingList(list, device);
+      const qualifies = currentDeviceList.length < RANKING_SIZE || time < currentDeviceList[currentDeviceList.length - 1].time;
 
       if (qualifies) {
-        list.push({ name: safeName, time, device: getPlayDeviceType() });
-        rankings[key] = list.sort((a, b) => a.time - b.time).slice(0, RANKING_SIZE);
+        list.push({ name: safeName, time, device });
+        rankings[key] = trimRankingListByDevice(list);
         saveRankings(rankings);
       }
 
@@ -4564,11 +4601,12 @@
         button.setAttribute('aria-selected', String(isActive));
       });
       const rankings = getDisplayRankings();
-      const list = rankings[key] || [];
+      const currentDevice = getPlayDeviceType();
+      const list = getCurrentDeviceRankingList(rankings[key] || [], currentDevice);
       updateRankingStatusText(key);
       const rows = Array.from({ length: RANKING_SIZE }, (_, index) => {
         const defaultRankingName = DEFAULT_RANKING_NAMES[key] || DEFAULT_PLAYER_NAME;
-        const item = list[index] || { name: defaultRankingName, time: 0, device: 'pc' };
+        const item = list[index] || { name: defaultRankingName, time: 0, device: currentDevice };
         const timeText = item.time > 0 ? formatPlayTime(item.time) : '00:00.00';
         const device = normalizeDeviceType(item.device);
         const deviceLabel = getDeviceLabel(device);
