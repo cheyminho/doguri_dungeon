@@ -2842,7 +2842,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.18</div>
+        <div class="start-version">v1.19</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -4278,25 +4278,14 @@
       try {
         const device = getPlayDeviceType();
         const snapshot = await recordsRef
+          .where('device', '==', device)
           .orderBy('time', 'asc')
-          .limit(FIREBASE_LEGACY_RANKING_SCAN_LIMIT)
+          .limit(RANKING_SIZE)
           .get();
 
         onlineRankingsCache[key] = snapshot.docs
-          .map(doc => {
-            const data = doc.data() || {};
-            return {
-              rawDevice: data.device,
-              item: normalizeRankingItem(data),
-            };
-          })
-          .filter(entry => (
-            Number.isFinite(entry.item.time)
-            && entry.item.time > 0
-            && rankingRawDeviceMatches(entry.rawDevice, device)
-          ))
-          .map(entry => entry.item)
-          .sort((a, b) => a.time - b.time)
+          .map(doc => normalizeRankingItem(doc.data() || {}))
+          .filter(item => Number.isFinite(item.time) && item.time > 0)
           .slice(0, RANKING_SIZE);
         onlineRankingsLoaded[key] = true;
         firebaseRankingStatus = 'ready';
@@ -4314,6 +4303,7 @@
       }
     }
 
+
     async function saveOnlineRankingRecord(seconds, difficultyKey = currentDifficultyKey, name = getPlayerName()) {
       if (currentRunUsedCheat) return false;
       const time = Number(seconds);
@@ -4327,11 +4317,40 @@
         const recordsRef = getOnlineRankingRecordsRef(key);
         if (!recordsRef) return false;
 
+        const device = getPlayDeviceType();
+        const snapshot = await recordsRef
+          .where('device', '==', device)
+          .orderBy('time', 'asc')
+          .limit(RANKING_SIZE)
+          .get();
+
+        const currentDeviceRankings = snapshot.docs
+          .map(doc => normalizeRankingItem(doc.data() || {}))
+          .filter(item => Number.isFinite(item.time) && item.time > 0)
+          .sort((a, b) => a.time - b.time)
+          .slice(0, RANKING_SIZE);
+        const slowestRankingTime = currentDeviceRankings.length
+          ? currentDeviceRankings[currentDeviceRankings.length - 1].time
+          : Infinity;
+        const qualifies = currentDeviceRankings.length < RANKING_SIZE || time < slowestRankingTime;
+
+        if (!qualifies) {
+          onlineRankingsCache[key] = currentDeviceRankings;
+          onlineRankingsLoaded[key] = true;
+          firebaseRankingStatus = 'ready';
+          if (isRankingOverlayOpen() && activeRankingDifficultyKey === key) {
+            renderRanking();
+          } else {
+            updateRankingStatusText(key);
+          }
+          return false;
+        }
+
         await recordsRef.add({
           name: sanitizePlayerName(name),
           time,
           difficulty: key,
-          device: getPlayDeviceType(),
+          device,
           createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
           version: 'dungeon-doguri-047',
         });
