@@ -2835,7 +2835,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.11</div>
+        <div class="start-version">v1.12</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3018,6 +3018,11 @@
     const RANKING_STORAGE_KEY = 'dungeonDoguriRankings.v1';
     const RANKING_ACTIVE_TAB_KEY = 'dungeonDoguriRankingActiveTab';
     const RANKING_SIZE = 10;
+    const RANKING_MIN_VALID_CLEAR_TIME = {
+      easy: 90,
+      normal: 70,
+      hard: 50,
+    };
 
     // Firebase 온라인 랭킹 설정
     // Firebase Console > 프로젝트 설정 > 일반 > 내 앱(Web)의 firebaseConfig 값을 아래에 붙여 넣으세요.
@@ -4119,6 +4124,14 @@
       }, {});
     }
 
+    function isRankingClearTimeAllowed(seconds, difficultyKey = currentDifficultyKey) {
+      const time = Number(seconds);
+      if (!Number.isFinite(time) || time <= 0) return false;
+      const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      const minTime = RANKING_MIN_VALID_CLEAR_TIME[key];
+      return !Number.isFinite(minTime) || time >= minTime;
+    }
+
     function isFirebasePlaceholderValue(value) {
       return !value || /^PASTE_/i.test(String(value)) || String(value).includes('YOUR_PROJECT_ID');
     }
@@ -4256,6 +4269,7 @@
       const time = Number(seconds);
       if (!Number.isFinite(time) || time <= 0) return false;
       const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      if (!isRankingClearTimeAllowed(time, key)) return false;
 
       if (!initFirebaseRanking()) return false;
 
@@ -4319,6 +4333,7 @@
       const time = Number(seconds);
       if (!Number.isFinite(time) || time <= 0) return false;
       const key = DIFFICULTY_CONFIGS[difficultyKey] ? difficultyKey : DEFAULT_DIFFICULTY_KEY;
+      if (!isRankingClearTimeAllowed(time, key)) return false;
       const safeName = sanitizePlayerName(name);
       const rankings = getRankings();
       const list = rankings[key] || [];
