@@ -26,6 +26,10 @@
       --good: #68e0a8;
       --panel: rgba(28, 28, 28, .82);
       --panel-line: rgba(255, 255, 255, .16);
+      --app-height: 100vh;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --mobile-hud-bottom: max(14px, var(--safe-bottom));
+      --tablet-hud-bottom: max(0px, var(--safe-bottom));
     }
 
     * {
@@ -35,7 +39,7 @@
 
     html, body {
       width: 100%;
-      height: 100%;
+      height: var(--app-height, 100%);
       margin: 0;
       overflow: hidden;
       background: #fcf9f2;
@@ -64,7 +68,7 @@
     #game {
       position: relative;
       width: min(100vw, 1180px);
-      height: min(100vh, 720px);
+      height: min(var(--app-height, 100vh), 720px);
       min-height: 560px;
       overflow: hidden;
       background: var(--bg);
@@ -1131,14 +1135,21 @@
       animation: popupClose .1s ease-in-out both;
     }
 
+    .overlay .modal {
+      --popup-snap-x: 0px;
+      --popup-snap-y: 0px;
+      transform: translate(var(--popup-snap-x), var(--popup-snap-y));
+      will-change: transform;
+    }
+
     @keyframes popupOpen {
-      0% { opacity: 0; transform: scale(.8); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 0; transform: translate(var(--popup-snap-x), var(--popup-snap-y)) scale(.8); }
+      100% { opacity: 1; transform: translate(var(--popup-snap-x), var(--popup-snap-y)) scale(1); }
     }
 
     @keyframes popupClose {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(.8); }
+      0% { opacity: 1; transform: translate(var(--popup-snap-x), var(--popup-snap-y)) scale(1); }
+      100% { opacity: 0; transform: translate(var(--popup-snap-x), var(--popup-snap-y)) scale(.8); }
     }
 
     #endOverlay .modal,
@@ -2500,8 +2511,8 @@
 
     @media (max-width: 760px) {
       #game {
-        height: 100vh;
-        min-height: 540px;
+        height: var(--app-height, 100dvh);
+        min-height: min(540px, var(--app-height, 100dvh));
         border: 0;
       }
 
@@ -2510,7 +2521,7 @@
       #floorText { font-size: 34px; }
       #floorProgressText { margin-top: 5px; font-size: 14px; }
       .dungeon {
-        bottom: 294px;
+        bottom: calc(280px + var(--mobile-hud-bottom, 14px));
         transform: none;
         transform-origin: 50% 0;
         background-size: cover;
@@ -2531,9 +2542,9 @@
       .monster-result { font-size: 12px; }
       .word { font-size: 15px; }
       .timer-ring { width: 30px; height: 30px; }
-      #guardShield { left: 0px; bottom: 158px; scale: .7; }
-      #sword { right: -4px; bottom: 206px; scale: .7; }
-      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px 14px; gap: 8px 10px; bottom: 14px; }
+      #guardShield { left: 0px; bottom: calc(144px + var(--mobile-hud-bottom, 14px)); scale: .7; }
+      #sword { right: -4px; bottom: calc(192px + var(--mobile-hud-bottom, 14px)); scale: .7; }
+      #hud { grid-template-columns: 82px minmax(0, 1fr) 54px; min-height: 280px; padding: 24px 10px max(14px, var(--safe-bottom)); gap: 8px 10px; bottom: var(--mobile-hud-bottom, 14px); }
       .portrait-panel { width: 78px; translate: 0 -20px; }
       .input-bubble { top: -41px; min-width: 40px; padding: 6px 11px; border-radius: 13px; font-size: 14px; }
       #portrait { width: 78px; height: 78px; border-radius: 19px; }
@@ -2609,12 +2620,12 @@
 
     @media (any-pointer: coarse) and (orientation: portrait) and (min-width: 761px) and (max-width: 1024px) {
       #game {
-        height: 100vh;
+        height: var(--app-height, 100dvh);
         border: 0;
       }
 
       .dungeon {
-        bottom: 318px;
+        bottom: calc(318px + var(--tablet-hud-bottom, 0px));
         background-size: cover;
         background-position: center bottom;
       }
@@ -2625,7 +2636,7 @@
         grid-template-columns: 104px minmax(0, 1fr) 76px;
         grid-template-rows: auto auto auto;
         gap: 10px 14px;
-        bottom: 0;
+        bottom: var(--tablet-hud-bottom, 0px);
       }
 
       .portrait-panel {
@@ -2775,7 +2786,7 @@
       <div class="modal start-screen">
         <div class="start-copy">
           <h2>던전앤도구리</h2>
-          <div class="start-version">버전 1.05</div>
+          <div class="start-version">버전 1.06</div>
         </div>
         <div class="dungeon-entrance" aria-hidden="true">
           <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3070,6 +3081,7 @@
     const SCENE_FADE_IN_MS = 340;
     const SCENE_FADE_OUT_MS = 340;
     const POPUP_CLOSE_MS = 100;
+    const POPUP_OPEN_MS = 200;
     const FIRST_MONSTER_SPAWN_DELAY = 0.5;
     const MONSTER_DEFEAT_REMOVE_DELAY_MS = 440;
     // true: 치트 버튼 표시 / false: 치트 버튼 숨김
@@ -3430,6 +3442,155 @@
     const collectionCompleteRewardOverlay = document.getElementById('collectionCompleteRewardOverlay');
     const collectionCompleteRewardCloseButton = document.getElementById('collectionCompleteRewardCloseButton');
     const rankingOverlay = document.getElementById('rankingOverlay');
+    const POPUP_POSITION_SNAP_OVERLAY_IDS = [
+      'endOverlay',
+      'infoOverlay',
+      'rewardOverlay',
+      'collectionOverlay',
+      'collectionCompleteRewardOverlay',
+      'rankingOverlay',
+      'resetConfirmOverlay',
+      'nameInputOverlay',
+    ];
+    const popupPositionObservers = [];
+    let popupSnapFrame = 0;
+
+    function roundPopupSnapValue(value) {
+      if (!Number.isFinite(value) || Math.abs(value) < 0.001) return 0;
+      return Math.round(value * 1000) / 1000;
+    }
+
+    function getPopupPositionSnapOverlays() {
+      return POPUP_POSITION_SNAP_OVERLAY_IDS
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+    }
+
+    function resetPopupModalSnap(modal) {
+      if (!modal) return;
+      modal.style.setProperty('--popup-snap-x', '0px');
+      modal.style.setProperty('--popup-snap-y', '0px');
+    }
+
+    function snapPopupModalPosition(modal) {
+      if (!modal || !modal.isConnected) return;
+      const overlay = modal.closest('.overlay');
+      if (!overlay || overlay.classList.contains('hidden')) return;
+
+      resetPopupModalSnap(modal);
+      const rect = modal.getBoundingClientRect();
+      const snapX = roundPopupSnapValue(Math.round(rect.left) - rect.left);
+      const snapY = roundPopupSnapValue(Math.round(rect.top) - rect.top);
+      modal.style.setProperty('--popup-snap-x', `${snapX}px`);
+      modal.style.setProperty('--popup-snap-y', `${snapY}px`);
+    }
+
+    function snapVisiblePopupModalPositions() {
+      popupSnapFrame = 0;
+      getPopupPositionSnapOverlays().forEach(overlay => {
+        if (overlay.classList.contains('hidden')) return;
+        snapPopupModalPosition(overlay.querySelector('.modal'));
+      });
+    }
+
+    function schedulePopupPositionSnap(delayMs = 0) {
+      if (delayMs > 0) {
+        window.setTimeout(() => schedulePopupPositionSnap(), delayMs);
+        return;
+      }
+      if (popupSnapFrame) cancelAnimationFrame(popupSnapFrame);
+      popupSnapFrame = requestAnimationFrame(() => {
+        popupSnapFrame = requestAnimationFrame(snapVisiblePopupModalPositions);
+      });
+    }
+
+    let viewportSizingFrame = 0;
+
+    function getVisibleViewportSize() {
+      const visualViewport = window.visualViewport;
+      const width = visualViewport && Number.isFinite(visualViewport.width) ? visualViewport.width : window.innerWidth;
+      const height = visualViewport && Number.isFinite(visualViewport.height) ? visualViewport.height : window.innerHeight;
+      return {
+        width: Math.max(1, Math.round(width || document.documentElement.clientWidth || 1)),
+        height: Math.max(1, Math.round(height || document.documentElement.clientHeight || 1)),
+      };
+    }
+
+    function applyVisibleViewportSize() {
+      viewportSizingFrame = 0;
+      const viewport = getVisibleViewportSize();
+      const rootStyle = document.documentElement.style;
+      rootStyle.setProperty('--app-width', `${viewport.width}px`);
+      rootStyle.setProperty('--app-height', `${viewport.height}px`);
+      rootStyle.setProperty('--visual-viewport-offset-top', `${Math.round(window.visualViewport?.offsetTop || 0)}px`);
+      rootStyle.setProperty('--visual-viewport-offset-left', `${Math.round(window.visualViewport?.offsetLeft || 0)}px`);
+    }
+
+    function scheduleVisibleViewportSizeUpdate(delayMs = 0) {
+      if (delayMs > 0) {
+        window.setTimeout(() => scheduleVisibleViewportSizeUpdate(), delayMs);
+        return;
+      }
+      if (viewportSizingFrame) cancelAnimationFrame(viewportSizingFrame);
+      viewportSizingFrame = requestAnimationFrame(() => {
+        applyVisibleViewportSize();
+        updateLobbyDifficultyLayout();
+        updateTorchSequenceLayout();
+        schedulePopupPositionSnap();
+        if (player) renderHud();
+      });
+    }
+
+    function setupVisibleViewportSizing() {
+      applyVisibleViewportSize();
+      const refreshViewport = () => scheduleVisibleViewportSizeUpdate();
+      window.addEventListener('resize', refreshViewport, { passive: true });
+      window.addEventListener('orientationchange', () => {
+        scheduleVisibleViewportSizeUpdate();
+        scheduleVisibleViewportSizeUpdate(80);
+        scheduleVisibleViewportSizeUpdate(240);
+      }, { passive: true });
+      window.addEventListener('pageshow', refreshViewport, { passive: true });
+      document.addEventListener('visibilitychange', refreshViewport, { passive: true });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', refreshViewport, { passive: true });
+        window.visualViewport.addEventListener('scroll', refreshViewport, { passive: true });
+      }
+    }
+
+    function setupPopupPositionSnapping() {
+      const overlays = getPopupPositionSnapOverlays();
+      overlays.forEach(overlay => {
+        const modal = overlay.querySelector('.modal');
+        if (!modal) return;
+        const classObserver = new MutationObserver(() => {
+          if (overlay.classList.contains('hidden')) {
+            resetPopupModalSnap(modal);
+            return;
+          }
+          schedulePopupPositionSnap();
+          schedulePopupPositionSnap(POPUP_OPEN_MS + 24);
+        });
+        classObserver.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+        popupPositionObservers.push(classObserver);
+      });
+
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => schedulePopupPositionSnap());
+        overlays.forEach(overlay => {
+          const modal = overlay.querySelector('.modal');
+          if (modal) resizeObserver.observe(modal);
+        });
+        popupPositionObservers.push(resizeObserver);
+      }
+
+      window.addEventListener('resize', () => schedulePopupPositionSnap());
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => schedulePopupPositionSnap());
+        window.visualViewport.addEventListener('scroll', () => schedulePopupPositionSnap());
+      }
+    }
+
     const rankingList = document.getElementById('rankingList');
     const rankingStatus = document.getElementById('rankingStatus');
     const rankingCloseButton = document.getElementById('rankingCloseButton');
@@ -6518,8 +6679,10 @@
     window.addEventListener('pointerdown', unlockGameAudio, { passive: true });
     window.addEventListener('touchstart', unlockGameAudio, { passive: true });
     function handleWindowResize() {
+      applyVisibleViewportSize();
       updateLobbyDifficultyLayout();
       updateTorchSequenceLayout();
+      schedulePopupPositionSnap();
       if (player) renderHud();
     }
 
@@ -6529,6 +6692,8 @@
       updateTorchSequenceLayout();
     });
 
+    setupVisibleViewportSizing();
+    setupPopupPositionSnapping();
     setCheatControlsVisible(true);
     updateCheatToggle();
     renderAlphabetKeyboard();
