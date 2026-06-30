@@ -522,6 +522,11 @@
       text-shadow: 0 2px 0 #000;
     }
 
+    .monster.east-monster .word,
+    .monster.korean-name-serif .word {
+      font-family: "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
+    }
+
     .word .done {
       color: #4e4853;
       text-shadow: none;
@@ -530,6 +535,25 @@
     .word .need-input {
       color: #ff5a6d;
       text-shadow: 0 2px 0 rgba(0,0,0,.75);
+    }
+
+    .word .current-input-dot {
+      position: relative;
+      display: inline-block;
+    }
+
+    .word .current-input-dot::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -7px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #ffd166;
+      box-shadow: 0 1px 0 rgba(0,0,0,.65);
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     .word .space {
@@ -2389,6 +2413,8 @@
     .lobby-difficulty-button.normal::after { background-image: url('gate_c.png'); }
     .lobby-difficulty-button.hard::before,
     .lobby-difficulty-button.hard::after { background-image: url('gate_r.png'); }
+    .lobby-difficulty-button.east::before,
+    .lobby-difficulty-button.east::after { background-image: url('gate_e.png'); }
 
     .lobby-difficulty-button:hover,
     .lobby-difficulty-button:active,
@@ -2405,14 +2431,63 @@
       animation: gateHoverPulse 1s cubic-bezier(.37, 0, .63, 1) infinite alternate;
     }
 
+    .lobby-difficulty-button.east::after {
+      animation: eastGateIdlePulse 1s cubic-bezier(.37, 0, .63, 1) infinite alternate;
+    }
+
+    .lobby-difficulty-button.east:hover::after,
+    .lobby-difficulty-button.east:active::after,
+    .lobby-difficulty-button.east.pressed::after {
+      animation: eastGateHoverPulse 1s cubic-bezier(.37, 0, .63, 1) infinite alternate;
+    }
+
     @keyframes gateHoverPulse {
       from { opacity: .5; }
       to { opacity: .75; }
     }
 
+    @keyframes eastGateIdlePulse {
+      from { opacity: .5; }
+      to { opacity: .75; }
+    }
+
+    @keyframes eastGateHoverPulse {
+      from { opacity: .75; }
+      to { opacity: 1; }
+    }
+
+    .lobby-difficulty-button:focus,
     .lobby-difficulty-button:focus-visible {
-      outline: 2px solid rgba(255, 246, 215, .9);
-      outline-offset: 4px;
+      outline: none;
+    }
+
+    .ime-input {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      border: 0;
+      padding: 0;
+    }
+
+    @keyframes eastTypoShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(3px); }
+    }
+
+    .nameplate.east-typo-shake {
+      animation: eastTypoShake .18s ease-out both;
+    }
+
+    .word .typo-flash {
+      color: #ff5a6d;
+      text-shadow: 0 2px 0 rgba(0,0,0,.75);
     }
 
 
@@ -2757,12 +2832,13 @@
         <div class="cheat-mode-column">
           <button id="cheatToggle" class="cheat-toggle" type="button" aria-pressed="false">치트 OFF</button>
           <div id="cheatFloorPanel" class="cheat-floor-panel hidden" aria-label="치트 시작 층 선택">
-            <button type="button" class="cheat-floor-button active" data-floor="1" aria-pressed="true">B1F</button>
-            <button type="button" class="cheat-floor-button" data-floor="2" aria-pressed="false">B2F</button>
-            <button type="button" class="cheat-floor-button" data-floor="3" aria-pressed="false">B3F</button>
-            <button type="button" class="cheat-floor-button" data-floor="4" aria-pressed="false">B4F</button>
-            <button type="button" class="cheat-floor-button" data-floor="5" aria-pressed="false">B5F</button>
-            <button type="button" class="cheat-floor-button" data-floor="6" aria-pressed="false">B6F</button>
+            <button type="button" class="cheat-floor-button active" data-floor="1" aria-pressed="true">B1</button>
+            <button type="button" class="cheat-floor-button" data-floor="2" aria-pressed="false">B2</button>
+            <button type="button" class="cheat-floor-button" data-floor="3" aria-pressed="false">B3</button>
+            <button type="button" class="cheat-floor-button" data-floor="4" aria-pressed="false">B4</button>
+            <button type="button" class="cheat-floor-button" data-floor="5" aria-pressed="false">B5</button>
+            <button type="button" class="cheat-floor-button" data-floor="6" aria-pressed="false">B6</button>
+            <button id="cheatEastButton" type="button" class="cheat-floor-button cheat-east-button" aria-pressed="false" aria-label="동방 던전 치트">東</button>
           </div>
         </div>
       </div>
@@ -2835,6 +2911,8 @@
       <div id="alphaKeyboard" aria-label="알파벳 입력 버튼"></div>
     </section>
 
+    <input id="imeInput" class="ime-input" type="text" autocomplete="off" autocapitalize="off" inputmode="text" spellcheck="false" aria-hidden="true" tabindex="-1" />
+
     <div class="blood-flash" id="bloodFlash"></div>
 
     <div class="overlay" id="startOverlay">
@@ -2842,7 +2920,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.19</div>
+        <div class="start-version">v1.2</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -2943,6 +3021,7 @@
           <button type="button" class="ranking-tab-button active" data-difficulty="easy" aria-selected="true">쉬움</button>
           <button type="button" class="ranking-tab-button" data-difficulty="normal" aria-selected="false">보통</button>
           <button type="button" class="ranking-tab-button" data-difficulty="hard" aria-selected="false">어려움</button>
+          <button type="button" class="ranking-tab-button" data-difficulty="east" aria-selected="false">동방</button>
         </div>
         <div id="rankingList" class="ranking-list" aria-label="랭킹 목록"></div>
         <p id="rankingStatus" class="ranking-status"></p>
@@ -2962,6 +3041,7 @@
   <script>
     const MONSTER_SPRITE_A = 'monsters.png';
     const MONSTER_SPRITE_B = 'monsters_b.png';
+    const MONSTER_SPRITE_E = 'monsters_e.png';
 
     const MONSTER_DATA = [
       { type: 'A', level: 1, name: 'Rat', attackTime: 4.0, spriteSheet: MONSTER_SPRITE_A, colors: ['#7a7080', '#3d3545'] },
@@ -2991,12 +3071,27 @@
       { type: 'B', level: 11, name: 'Veiled Warlock', attackTime: 7.0, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#c379d6', '#55316d'] },
       { type: 'B', level: 12, name: 'Ancient Bone Dragon', attackTime: 7.5, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#e35b45', '#741c19'] },
       { type: 'B', level: 13, name: 'Flame', attackTime: 2.0, spriteSheet: MONSTER_SPRITE_B, normalSpawn: false, colors: ['#ffb347', '#d92f1f'] },
+
+      { type: 'E', level: 1, name: '혼', attackTime: 4.0, spriteSheet: MONSTER_SPRITE_E, colors: ['#7a7080', '#3d3545'] },
+      { type: 'E', level: 2, name: '귀신', attackTime: 4.2, spriteSheet: MONSTER_SPRITE_E, colors: ['#6d82a3', '#344259'] },
+      { type: 'E', level: 3, name: '도깨비', attackTime: 4.4, spriteSheet: MONSTER_SPRITE_E, colors: ['#85a27d', '#40543b'] },
+      { type: 'E', level: 4, name: '처녀 귀신', attackTime: 4.7, spriteSheet: MONSTER_SPRITE_E, colors: ['#78c26b', '#32743f'] },
+      { type: 'E', level: 5, name: '붉은 도깨비', attackTime: 5.0, spriteSheet: MONSTER_SPRITE_E, colors: ['#8bd0e7', '#3d678d'] },
+      { type: 'E', level: 6, name: '굶주린 해태', attackTime: 5.3, spriteSheet: MONSTER_SPRITE_E, colors: ['#d9d1ba', '#827665'] },
+      { type: 'E', level: 7, name: '버려진 돌장승', attackTime: 5.7, spriteSheet: MONSTER_SPRITE_E, colors: ['#b7865d', '#65402d'] },
+      { type: 'E', level: 8, name: '검은 갑옷 무사', attackTime: 6.0, spriteSheet: MONSTER_SPRITE_E, colors: ['#9096a0', '#545a63'] },
+      { type: 'E', level: 9, name: '홀리는 구미호', attackTime: 6.3, spriteSheet: MONSTER_SPRITE_E, colors: ['#7b5ab8', '#2b2348'] },
+      { type: 'E', level: 10, name: '저주받은 요승', attackTime: 6.6, spriteSheet: MONSTER_SPRITE_E, colors: ['#bd5f86', '#512540'] },
+      { type: 'E', level: 11, name: '악귀 들린 대장군', attackTime: 7.0, spriteSheet: MONSTER_SPRITE_E, normalSpawn: false, colors: ['#c379d6', '#55316d'] },
+      { type: 'E', level: 12, name: '오랜 잠에 든 백룡', finalName: '오랜 잠에서 깨어난 백룡', transformAfterText: '오랜 잠', attackTime: 7.5, spriteSheet: MONSTER_SPRITE_E, normalSpawn: false, colors: ['#e35b45', '#741c19'] },
+      { type: 'E', level: 13, name: '도깨비불', attackTime: 2.0, spriteSheet: MONSTER_SPRITE_E, normalSpawn: false, colors: ['#42d9c8', '#1b5d65'] },
     ];
 
     const CHEST_CONFIGS = {
-      easy: { grade: 'common', name: 'Common Chest', spriteIndex: 13 },
-      normal: { grade: 'fine', name: 'Fine Chest', spriteIndex: 14 },
-      hard: { grade: 'rare', name: 'Rare Chest', spriteIndex: 15 },
+      easy: { grade: 'common', name: 'Common Chest', spriteIndex: 13, spriteSheet: MONSTER_SPRITE_A, openSpriteSheet: MONSTER_SPRITE_B, openSpriteIndex: 13 },
+      normal: { grade: 'fine', name: 'Fine Chest', spriteIndex: 14, spriteSheet: MONSTER_SPRITE_A, openSpriteSheet: MONSTER_SPRITE_B, openSpriteIndex: 14 },
+      hard: { grade: 'rare', name: 'Rare Chest', spriteIndex: 15, spriteSheet: MONSTER_SPRITE_A, openSpriteSheet: MONSTER_SPRITE_B, openSpriteIndex: 15 },
+      east: { grade: 'rare', name: '보물함', spriteIndex: 13, spriteSheet: MONSTER_SPRITE_E, openSpriteSheet: MONSTER_SPRITE_E, openSpriteIndex: 14 },
     };
     const TREASURE_DATA = [
       { name: '보물 벌레', spriteIndex: 0 },
@@ -3016,6 +3111,7 @@
       easy: 0.335,
       normal: 0.24,
       hard: 0.12,
+      east: 0.12,
     };
     const TREASURE_COLLECTION_KEY = 'dungeonDoguriOwnedTreasures';
     const TREASURE_COUNTS_KEY = 'dungeonDoguriTreasureCounts';
@@ -3030,6 +3126,7 @@
       easy: 90,
       normal: 70,
       hard: 50,
+      east: 70,
     };
 
     // Firebase 온라인 랭킹 설정
@@ -3051,6 +3148,7 @@
       easy: '초보 도구리',
       normal: '모험가 도구리',
       hard: '베테랑 도구리',
+      east: '동방의 도구리',
     };
     const LANES = ['lane-left', 'lane-mid', 'lane-right'];
     const KEYBOARD_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
@@ -3105,9 +3203,19 @@
         spawnIntervalMultiplier: 0.5,
         allowedMonsterTypes: ['A', 'B'],
       },
+      east: {
+        label: '동방',
+        attackTimeMultiplier: 1,
+        spawnIntervalMultiplier: 1,
+        allowedMonsterTypes: ['E'],
+      },
     };
     const DEFAULT_DIFFICULTY_KEY = 'normal';
     const DEFAULT_RANKING_DIFFICULTY_KEY = 'easy';
+    const EAST_DUNGEON_CLEAR_COUNT_KEY = 'dungeonDoguriEastClearCount';
+    const EAST_DUNGEON_AVAILABLE_KEY = 'dungeonDoguriEastAvailable';
+    const EAST_DUNGEON_CHEAT_AVAILABLE_KEY = 'dungeonDoguriEastCheatAvailable';
+    const EAST_DUNGEON_APPEAR_RATES = [0, 0.2, 0.3, 0.45, 0.7, 1];
     const LOBBY_BG_IMAGE_SRC = 'dungeon_bg.png';
     const LOBBY_BG_FALLBACK_WIDTH = 1180;
     const TORCH_SPRITE_CONFIG = {
@@ -3474,6 +3582,7 @@
     const cheatResetButton = document.getElementById('cheatResetButton');
     const cheatCollectionTestButton = document.getElementById('cheatCollectionTestButton');
     const cheatFloorPanel = document.getElementById('cheatFloorPanel');
+    const cheatEastButton = document.getElementById('cheatEastButton');
     const resetConfirmOverlay = document.getElementById('resetConfirmOverlay');
     const resetCancelButton = document.getElementById('resetCancelButton');
     const resetConfirmButton = document.getElementById('resetConfirmButton');
@@ -3492,6 +3601,7 @@
     const floorProgressText = document.getElementById('floorProgressText');
     const playTimeHud = document.getElementById('playTimeHud');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
+    const imeInput = document.getElementById('imeInput');
     const dungeonEl = document.querySelector('.dungeon');
     const torchSequenceLayer = document.getElementById('torchSequenceLayer');
     const lobbyDifficultyLayer = document.getElementById('lobbyDifficultyLayer');
@@ -3701,6 +3811,15 @@
     let firebaseRankingStatus = 'local';
     let isSceneTransitioning = false;
     let currentDifficultyKey = DEFAULT_DIFFICULTY_KEY;
+    let eastUnlockProcessedForRun = false;
+    let isComposingEastInput = false;
+    let lastEastCompositionJamoText = '';
+    let lastEastCommittedText = '';
+    let lastEastCommittedAt = 0;
+    let eastImmediateCompositionText = '';
+    let eastVirtualJamoText = '';
+    let eastCompositionDotMonsterId = null;
+    let eastCompositionDotIndex = -1;
     let torchSequenceTick = 0;
     let torchSequenceTimer = null;
     const lobbyBgImage = new Image();
@@ -3872,6 +3991,587 @@
       const code = lastHangul.charCodeAt(0) - 0xAC00;
       if (code < 0 || code > 11171) return '를';
       return code % 28 === 0 ? '를' : '을';
+    }
+
+
+    function isEastDifficultyKey(key = currentDifficultyKey) {
+      return key === 'east';
+    }
+
+    function getEastDungeonClearCount() {
+      try {
+        const value = Number(window.localStorage.getItem(EAST_DUNGEON_CLEAR_COUNT_KEY));
+        return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function setEastDungeonClearCount(count) {
+      try {
+        window.localStorage.setItem(EAST_DUNGEON_CLEAR_COUNT_KEY, String(Math.max(0, Math.floor(count || 0))));
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 이번 세션에서만 동방 등장 상태가 유지되지 않습니다.
+      }
+    }
+
+    function isEastDungeonAvailable() {
+      try {
+        return window.localStorage.getItem(EAST_DUNGEON_AVAILABLE_KEY) === 'true';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setEastDungeonAvailable(isAvailable) {
+      try {
+        window.localStorage.setItem(EAST_DUNGEON_AVAILABLE_KEY, isAvailable ? 'true' : 'false');
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 이번 세션에서만 동방 등장 상태가 유지되지 않습니다.
+      }
+    }
+
+    function isEastDungeonForcedByCheat() {
+      try {
+        return window.localStorage.getItem(EAST_DUNGEON_CHEAT_AVAILABLE_KEY) === 'true';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setEastDungeonForcedByCheat(isForced) {
+      try {
+        window.localStorage.setItem(EAST_DUNGEON_CHEAT_AVAILABLE_KEY, isForced ? 'true' : 'false');
+      } catch (error) {
+        // 저장소 접근이 막힌 환경에서는 이번 세션에서만 치트 동방 상태가 유지됩니다.
+      }
+    }
+
+    function resetEastDungeonUnlockState() {
+      setEastDungeonClearCount(0);
+      setEastDungeonAvailable(false);
+      setEastDungeonForcedByCheat(false);
+    }
+
+    function rollEastDungeonAvailabilityAfterClear(difficultyKey = currentDifficultyKey) {
+      if (isEastDifficultyKey(difficultyKey)) {
+        resetEastDungeonUnlockState();
+        return;
+      }
+      if (currentRunUsedCheat) return;
+      if (isEastDungeonAvailable()) return;
+      const nextCount = getEastDungeonClearCount() + 1;
+      setEastDungeonClearCount(nextCount);
+      const rateIndex = Math.min(nextCount, EAST_DUNGEON_APPEAR_RATES.length - 1);
+      const appearRate = EAST_DUNGEON_APPEAR_RATES[rateIndex] || 0;
+      if (Math.random() < appearRate) {
+        setEastDungeonAvailable(true);
+        setEastDungeonForcedByCheat(false);
+      }
+    }
+
+    function updateLobbyEastButton() {
+      if (!lobbyDifficultyButtons) return;
+      const button = lobbyDifficultyButtons.querySelector('.lobby-difficulty-button[data-hotkey="2"]');
+      if (!button) return;
+      const useEast = isEastDungeonAvailable();
+      button.dataset.difficulty = useEast ? 'east' : 'normal';
+      button.setAttribute('aria-label', useEast ? '동방' : '보통');
+      button.classList.toggle('normal', !useEast);
+      button.classList.toggle('east', useEast);
+      const label = button.querySelector('.sr-only');
+      if (label) label.textContent = useEast ? '동방' : '보통';
+      updateCheatEastButton();
+      if (gameState === 'lobby') setLobbyMessage();
+    }
+
+    function updateCheatEastButton() {
+      if (!cheatEastButton) return;
+      const isActive = isEastDungeonAvailable();
+      cheatEastButton.classList.toggle('active', isActive);
+      cheatEastButton.setAttribute('aria-pressed', String(isActive));
+    }
+
+    function toggleEastDungeonCheatAvailability() {
+      const nextAvailable = !isEastDungeonAvailable();
+      setEastDungeonAvailable(nextAvailable);
+      setEastDungeonForcedByCheat(nextAvailable);
+      updateLobbyEastButton();
+      updateCheatEastButton();
+    }
+
+    const HANGUL_INITIAL_JAMO = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+    const HANGUL_MEDIAL_INPUT_JAMO = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅗㅏ', 'ㅗㅐ', 'ㅗㅣ', 'ㅛ', 'ㅜ', 'ㅜㅓ', 'ㅜㅔ', 'ㅜㅣ', 'ㅠ', 'ㅡ', 'ㅡㅣ', 'ㅣ'];
+    const HANGUL_FINAL_INPUT_JAMO = ['', 'ㄱ', 'ㄲ', 'ㄱㅅ', 'ㄴ', 'ㄴㅈ', 'ㄴㅎ', 'ㄷ', 'ㄹ', 'ㄹㄱ', 'ㄹㅁ', 'ㄹㅂ', 'ㄹㅅ', 'ㄹㅌ', 'ㄹㅍ', 'ㄹㅎ', 'ㅁ', 'ㅂ', 'ㅂㅅ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+    const KOREAN_2SET_KEY_TO_JAMO = {
+      q: 'ㅂ', Q: 'ㅃ', w: 'ㅈ', W: 'ㅉ', e: 'ㄷ', E: 'ㄸ', r: 'ㄱ', R: 'ㄲ', t: 'ㅅ', T: 'ㅆ',
+      y: 'ㅛ', u: 'ㅕ', i: 'ㅑ', o: 'ㅐ', O: 'ㅒ', p: 'ㅔ', P: 'ㅖ',
+      a: 'ㅁ', s: 'ㄴ', d: 'ㅇ', f: 'ㄹ', g: 'ㅎ', h: 'ㅗ', j: 'ㅓ', k: 'ㅏ', l: 'ㅣ',
+      z: 'ㅋ', x: 'ㅌ', c: 'ㅊ', v: 'ㅍ', b: 'ㅠ', n: 'ㅜ', m: 'ㅡ',
+    };
+    const KOREAN_2SET_JAMO_TO_KEY = Object.entries(KOREAN_2SET_KEY_TO_JAMO).reduce((result, [key, jamo]) => {
+      if (!result[jamo]) result[jamo] = key.toLowerCase();
+      return result;
+    }, {});
+    const EAST_DOUBLE_CONSONANT_FROM_REPEAT = {
+      'ㄱ': 'ㄲ',
+      'ㄷ': 'ㄸ',
+      'ㅂ': 'ㅃ',
+      'ㅅ': 'ㅆ',
+      'ㅈ': 'ㅉ',
+    };
+    const EAST_DOUBLE_CONSONANT_BASE = Object.entries(EAST_DOUBLE_CONSONANT_FROM_REPEAT).reduce((result, [base, doubled]) => {
+      result[doubled] = base;
+      return result;
+    }, {});
+
+    function pushJamoParts(result, jamoText) {
+      for (const jamo of Array.from(String(jamoText || ''))) {
+        if (/[ㄱ-ㅎㅏ-ㅣ]/.test(jamo)) result.push(jamo);
+      }
+    }
+
+    function splitHangulToInputJamo(text) {
+      const result = [];
+      for (const char of Array.from(String(text || ''))) {
+        const code = char.charCodeAt(0);
+        if (code >= 0xAC00 && code <= 0xD7A3) {
+          const offset = code - 0xAC00;
+          const initialIndex = Math.floor(offset / 588);
+          const medialIndex = Math.floor((offset % 588) / 28);
+          const finalIndex = offset % 28;
+          pushJamoParts(result, HANGUL_INITIAL_JAMO[initialIndex]);
+          pushJamoParts(result, HANGUL_MEDIAL_INPUT_JAMO[medialIndex]);
+          if (finalIndex > 0) pushJamoParts(result, HANGUL_FINAL_INPUT_JAMO[finalIndex]);
+        } else {
+          pushJamoParts(result, char);
+        }
+      }
+      return result;
+    }
+
+    function getEastConsumedJamoText() {
+      return splitHangulToInputJamo(eastImmediateCompositionText || '').join('');
+    }
+
+    function getEastPendingJamoText(jamoText) {
+      const fullJamoText = String(jamoText || '');
+      const consumedJamoText = getEastConsumedJamoText();
+      if (consumedJamoText && fullJamoText.startsWith(consumedJamoText)) {
+        return fullJamoText.slice(consumedJamoText.length);
+      }
+      return fullJamoText;
+    }
+
+
+    function normalizeEastRepeatedDoubleConsonants(jamoText) {
+      const result = [];
+      for (const jamo of Array.from(String(jamoText || ''))) {
+        const lastJamo = result[result.length - 1];
+        if (lastJamo && lastJamo === jamo && EAST_DOUBLE_CONSONANT_FROM_REPEAT[lastJamo]) {
+          result[result.length - 1] = EAST_DOUBLE_CONSONANT_FROM_REPEAT[lastJamo];
+        } else {
+          result.push(jamo);
+        }
+      }
+      return result.join('');
+    }
+
+    function getEastPendingEffectiveJamoText(jamoText) {
+      return normalizeEastRepeatedDoubleConsonants(getEastPendingJamoText(jamoText));
+    }
+
+    function clearEastCompositionDotTarget() {
+      eastCompositionDotMonsterId = null;
+      eastCompositionDotIndex = -1;
+    }
+
+    function setEastCompositionDotTarget(monster, index) {
+      if (!monster) {
+        clearEastCompositionDotTarget();
+        return;
+      }
+      eastCompositionDotMonsterId = monster.id;
+      eastCompositionDotIndex = Math.max(0, index || 0);
+    }
+
+    function resetEastInputTracking() {
+      isComposingEastInput = false;
+      lastEastCompositionJamoText = '';
+      lastEastCommittedText = '';
+      lastEastCommittedAt = 0;
+      eastImmediateCompositionText = '';
+      eastVirtualJamoText = '';
+      clearEastCompositionDotTarget();
+      if (imeInput) imeInput.value = '';
+    }
+
+    function clearEastVirtualJamoInput() {
+      eastVirtualJamoText = '';
+      if (!isComposingEastInput) clearEastCompositionDotTarget();
+    }
+
+    function getMonsterNextHangulJamoText(monster) {
+      if (!monster) return '';
+      const nextChar = monster.normalized?.[monster.progress] || '';
+      if (!/[가-힣]/.test(nextChar)) return '';
+      return splitHangulToInputJamo(nextChar).join('');
+    }
+
+    function getEastNextVirtualJamoText(currentText, inputJamo) {
+      const chars = Array.from(String(currentText || ''));
+      const jamo = String(inputJamo || '');
+      const lastJamo = chars[chars.length - 1];
+      if (lastJamo && lastJamo === jamo && EAST_DOUBLE_CONSONANT_FROM_REPEAT[lastJamo]) {
+        const doubledJamo = EAST_DOUBLE_CONSONANT_FROM_REPEAT[lastJamo];
+        chars[chars.length - 1] = doubledJamo;
+        return { text: chars.join(''), bubbleJamo: doubledJamo, combined: true };
+      }
+      return { text: `${String(currentText || '')}${jamo}`, bubbleJamo: jamo, combined: false };
+    }
+
+    function isEastJamoTextPrefixOfExpected(inputJamoText, expectedJamoText) {
+      const inputChars = Array.from(String(inputJamoText || ''));
+      const expectedChars = Array.from(String(expectedJamoText || ''));
+      if (!inputChars.length || inputChars.length > expectedChars.length) return false;
+
+      for (let index = 0; index < inputChars.length; index += 1) {
+        const inputJamo = inputChars[index];
+        const expectedJamo = expectedChars[index];
+        if (inputJamo === expectedJamo) continue;
+
+        const doubledBase = EAST_DOUBLE_CONSONANT_BASE[expectedJamo];
+        if (doubledBase && inputJamo === doubledBase && index === inputChars.length - 1) {
+          return true;
+        }
+
+        return false;
+      }
+
+      return true;
+    }
+
+    function getEastJamoResultTarget(pendingJamoText) {
+      const jamoText = String(pendingJamoText || '');
+      if (!jamoText || gameState !== 'playing' || !isEastDifficultyKey() || !monsters.length) return null;
+
+      const active = monsters.find(monster => monster.id === activeMonsterId);
+      if (active) {
+        const activeNextJamoText = getMonsterNextHangulJamoText(active);
+        return activeNextJamoText && isEastJamoTextPrefixOfExpected(jamoText, activeNextJamoText) ? active : null;
+      }
+
+      const matching = monsters
+        .filter(monster => {
+          const nextJamoText = getMonsterNextHangulJamoText(monster);
+          return nextJamoText && isEastJamoTextPrefixOfExpected(jamoText, nextJamoText);
+        })
+        .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
+
+      return matching[0] || null;
+    }
+
+    function handleEastJamoTypo(jamoText) {
+      const pendingJamoText = getEastPendingEffectiveJamoText(jamoText);
+      if (!pendingJamoText || gameState !== 'playing' || !isEastDifficultyKey() || !monsters.length) return false;
+
+      const active = monsters.find(monster => monster.id === activeMonsterId);
+      if (active) {
+        flashKoreanTypo(active);
+        setInputHintMode({ type: 'active-next', monsterId: active.id });
+        const nextChar = active.normalized[active.progress] || '';
+        applyTypoPenalty(`오타! ${active.name}의 다음 글자는 “${nextChar}”입니다.`);
+      } else {
+        monsters.forEach(monster => flashKoreanTypo(monster));
+        setInputHintMode({ type: 'all-first' });
+        applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
+      }
+
+      updateKeyboardHint();
+      return true;
+    }
+
+    function showEastJamoInputResult(jamoText, options = {}) {
+      const pendingJamoText = getEastPendingEffectiveJamoText(jamoText);
+      if (!pendingJamoText) return false;
+      const target = getEastJamoResultTarget(pendingJamoText);
+      if (!target) {
+        clearEastCompositionDotTarget();
+        return options.applyTypo ? handleEastJamoTypo(jamoText) : false;
+      }
+      setEastCompositionDotTarget(target, target.progress);
+      renderMonsterWord(target);
+      const inputResult = getResultLabel(getInputDelta());
+      showMonsterResult(target, inputResult.text, inputResult.className);
+      return true;
+    }
+
+    function showEastCompositionBubble(text) {
+      const rawJamoText = splitHangulToInputJamo(text).join('');
+      const jamoText = getEastPendingEffectiveJamoText(rawJamoText);
+      if (!jamoText) return false;
+      if (lastEastCompositionJamoText && jamoText === lastEastCompositionJamoText) return false;
+
+      let samePrefixLength = 0;
+      const prevChars = Array.from(lastEastCompositionJamoText || '');
+      const nextChars = Array.from(jamoText);
+      while (
+        samePrefixLength < prevChars.length
+        && samePrefixLength < nextChars.length
+        && prevChars[samePrefixLength] === nextChars[samePrefixLength]
+      ) {
+        samePrefixLength += 1;
+      }
+
+      const addedChars = nextChars.slice(samePrefixLength);
+      const nextChar = addedChars.length ? addedChars[addedChars.length - 1] : nextChars[nextChars.length - 1];
+      lastEastCompositionJamoText = jamoText;
+      if (nextChar) {
+        showInputBubble(nextChar);
+        showEastJamoInputResult(rawJamoText, { applyTypo: true });
+        return true;
+      }
+      return false;
+    }
+
+    function getKorean2SetJamoFromKey(key, shiftKey = false) {
+      const rawKey = String(key || '');
+      if (rawKey.length !== 1 || !/^[a-zA-Z]$/.test(rawKey)) return '';
+      const mappedKey = shiftKey ? rawKey.toUpperCase() : rawKey.toLowerCase();
+      return KOREAN_2SET_KEY_TO_JAMO[mappedKey] || '';
+    }
+
+    function handleEastVirtualHangulJamo(jamo) {
+      if (!jamo || gameState !== 'playing' || !isEastDifficultyKey()) return false;
+
+      const nextJamoInput = getEastNextVirtualJamoText(eastVirtualJamoText, jamo);
+      const nextJamoText = nextJamoInput.text;
+      const target = getEastJamoResultTarget(nextJamoText);
+
+      showInputBubble(nextJamoInput.bubbleJamo);
+
+      if (!target) {
+        isComposingEastInput = false;
+        eastVirtualJamoText = '';
+        clearEastCompositionDotTarget();
+        renderAllMonsterWords();
+        handleEastJamoTypo(nextJamoText);
+        updateKeyboardHint();
+        focusEastImeInput();
+        return true;
+      }
+
+      activeMonsterId = target.id;
+      isComposingEastInput = true;
+      eastVirtualJamoText = nextJamoText;
+      setEastCompositionDotTarget(target, target.progress);
+      showEastJamoInputResult(eastVirtualJamoText, { applyTypo: true });
+
+      const expectedJamoText = getMonsterNextHangulJamoText(target);
+      if (expectedJamoText && eastVirtualJamoText === expectedJamoText) {
+        const completedChar = target.normalized[target.progress] || '';
+        isComposingEastInput = false;
+        eastVirtualJamoText = '';
+        clearEastCompositionDotTarget();
+        if (completedChar) {
+          typeCharacter(completedChar, { skipBubble: true, skipResult: true });
+        } else {
+          renderAllMonsterWords();
+          updateKeyboardHint();
+        }
+      } else {
+        renderMonsterWord(target);
+        updateKeyboardHint();
+      }
+
+      focusEastImeInput();
+      return true;
+    }
+
+    function handleEastVirtualHangulKeydown(e) {
+      if (!e || gameState !== 'playing' || !isEastDifficultyKey()) return false;
+      if (e.isComposing || e.key === 'Process') return false;
+
+      if (e.key === 'Backspace' && eastVirtualJamoText) {
+        e.preventDefault();
+        isComposingEastInput = false;
+        clearEastVirtualJamoInput();
+        renderAllMonsterWords();
+        updateKeyboardHint();
+        focusEastImeInput();
+        return true;
+      }
+
+      const jamo = getKorean2SetJamoFromKey(e.key, e.shiftKey);
+      if (!jamo) return false;
+      e.preventDefault();
+      if (e.repeat) return true;
+      animateSword();
+      return handleEastVirtualHangulJamo(jamo);
+    }
+
+    function handleEastVirtualHangulButton(key) {
+      const jamo = getKorean2SetJamoFromKey(key, false);
+      if (!jamo) return false;
+      animateSword();
+      return handleEastVirtualHangulJamo(jamo);
+    }
+
+    function focusEastImeInput() {
+      if (!imeInput || gameState !== 'playing' || !isEastDifficultyKey()) return;
+      if (isComposingEastInput) return;
+      if (isNameInputOverlayOpen && isNameInputOverlayOpen()) return;
+      try {
+        if (!/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(imeInput.value || '')) imeInput.value = '';
+        imeInput.focus({ preventScroll: true });
+      } catch (error) {
+        // 일부 브라우저에서는 사용자 입력 직후가 아니면 포커스가 거부될 수 있습니다.
+      }
+    }
+
+    function markEastCommittedText(text) {
+      lastEastCommittedText = String(text || '');
+      lastEastCommittedAt = performance.now();
+    }
+
+    function isDuplicatedEastCommittedInput(text) {
+      const value = String(text || '');
+      if (!value || !lastEastCommittedText) return false;
+      if (performance.now() - lastEastCommittedAt > 120) return false;
+      return value === lastEastCommittedText;
+    }
+
+    function isEastCompositionInputEvent(e) {
+      return !!(isComposingEastInput || (e && e.isComposing) || (e && e.inputType === 'insertCompositionText'));
+    }
+
+    function normalizeEastImeText(text) {
+      return Array.from(normalizeName(String(text || '')))
+        .filter(char => /^[a-z]$/.test(char) || /[가-힣]/.test(char))
+        .join('');
+    }
+
+    function canAcceptImmediateEastCharacter(char) {
+      if (gameState !== 'playing' || !isEastDifficultyKey() || !/[가-힣]/.test(char)) return false;
+      const target = monsters.find(monster => monster.id === activeMonsterId);
+      if (target) return target.normalized[target.progress] === char;
+      return monsters.some(monster => monster.normalized[monster.progress] === char);
+    }
+
+    function getImmediateEastCharacterTarget(char) {
+      if (gameState !== 'playing' || !isEastDifficultyKey() || !/[가-힣]/.test(char)) return null;
+      const active = monsters.find(monster => monster.id === activeMonsterId);
+      if (active) return active.normalized[active.progress] === char ? active : null;
+      const matching = monsters
+        .filter(monster => monster.normalized[monster.progress] === char)
+        .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
+      return matching[0] || null;
+    }
+
+    function getEastCompositionPendingText(text) {
+      const value = normalizeEastImeText(text);
+      if (!value) return '';
+      const consumed = eastImmediateCompositionText || '';
+      if (!consumed) return value;
+      if (value.startsWith(consumed)) return value.slice(consumed.length);
+
+      // 일부 한글 IME는 다음 글자의 초성이 직전 글자의 받침처럼 임시 결합됩니다.
+      // 예: “도깨비” 입력 중 “도”를 이미 처리한 뒤 ㄲ이 들어오면 잠시 “돆”처럼 보일 수 있습니다.
+      // 이때는 오타 처리하지 않고, 현재 조합값이 다음 정답 글자 자체가 되었을 때만 새 조합으로 처리합니다.
+      const chars = Array.from(value);
+      if (chars.length === 1 && canAcceptImmediateEastCharacter(chars[0])) {
+        eastImmediateCompositionText = '';
+        return value;
+      }
+      return '';
+    }
+
+    function processEastCompositionForMonsterInput(text) {
+      const pendingText = getEastCompositionPendingText(text);
+      if (!pendingText) return false;
+
+      let handled = false;
+      for (const rawChar of Array.from(pendingText)) {
+        const char = rawChar.toLowerCase();
+        const target = getImmediateEastCharacterTarget(char);
+        if (!target) break;
+        setEastCompositionDotTarget(target, target.progress);
+        typeCharacter(char, { skipBubble: true, skipResult: true });
+        eastImmediateCompositionText += char;
+        if (gameState === 'playing' && monsters.includes(target) && activeMonsterId === target.id && target.progress < target.normalized.length) {
+          setEastCompositionDotTarget(target, target.progress);
+        } else {
+          clearEastCompositionDotTarget();
+        }
+        renderAllMonsterWords();
+        handled = true;
+        if (gameState !== 'playing') break;
+      }
+      if (handled) markEastCommittedText(eastImmediateCompositionText);
+      return handled;
+    }
+
+
+    function processEastJamoCompositionForMonsterInput(text) {
+      const rawJamoText = splitHangulToInputJamo(text).join('');
+      const pendingJamoText = getEastPendingEffectiveJamoText(rawJamoText);
+      if (!pendingJamoText || gameState !== 'playing' || !isEastDifficultyKey()) return false;
+
+      const target = getEastJamoResultTarget(pendingJamoText);
+      if (!target) return false;
+      const expectedJamoText = getMonsterNextHangulJamoText(target);
+      if (!expectedJamoText || pendingJamoText !== expectedJamoText) return false;
+
+      const completedChar = target.normalized[target.progress] || '';
+      if (!completedChar) return false;
+      activeMonsterId = target.id;
+      setEastCompositionDotTarget(target, target.progress);
+      typeCharacter(completedChar, { skipBubble: true, skipResult: true });
+      eastImmediateCompositionText += completedChar;
+      if (gameState === 'playing' && monsters.includes(target) && activeMonsterId === target.id && target.progress < target.normalized.length) {
+        setEastCompositionDotTarget(target, target.progress);
+      } else {
+        clearEastCompositionDotTarget();
+      }
+      renderAllMonsterWords();
+      markEastCommittedText(eastImmediateCompositionText);
+      return true;
+    }
+
+    function getEastUnprocessedCommittedText(text) {
+      const value = normalizeEastImeText(text);
+      if (!value) return '';
+      const consumed = eastImmediateCompositionText || '';
+      if (!consumed) return value;
+      if (value.startsWith(consumed)) return value.slice(consumed.length);
+      return '';
+    }
+
+    function processEastCommittedTextInput(text, options = {}) {
+      const pendingText = getEastUnprocessedCommittedText(text);
+      if (!pendingText) return false;
+      return processCommittedTextInput(pendingText, options);
+    }
+
+    function processCommittedTextInput(text, options = {}) {
+      if (gameState !== 'playing') return false;
+      let handled = false;
+      for (const rawChar of Array.from(String(text || ''))) {
+        const char = rawChar.toLowerCase();
+        if (/^[ㄱ-ㅎㅏ-ㅣ]$/.test(rawChar)) {
+          showInputBubble(rawChar);
+          if (isEastDifficultyKey()) showEastJamoInputResult(rawChar, { applyTypo: true });
+          handled = true;
+          continue;
+        }
+        if (/^[a-z]$/.test(char) || /[가-힣]/.test(char)) {
+          animateSword();
+          typeCharacter(char, { skipBubble: !!options.suppressHangulBubble && /[가-힣]/.test(char) });
+          handled = true;
+        }
+      }
+      if (handled) focusEastImeInput();
+      return handled;
     }
 
     function escapeHtml(text) {
@@ -4420,6 +5120,9 @@
         window.localStorage.removeItem(RANKING_STORAGE_KEY);
         window.localStorage.removeItem(RANKING_ACTIVE_TAB_KEY);
         window.localStorage.removeItem(PLAYER_NAME_KEY);
+        window.localStorage.removeItem(EAST_DUNGEON_CLEAR_COUNT_KEY);
+        window.localStorage.removeItem(EAST_DUNGEON_AVAILABLE_KEY);
+        window.localStorage.removeItem(EAST_DUNGEON_CHEAT_AVAILABLE_KEY);
         clearOwnedTreasureData();
       } catch (error) {
         // 저장소 접근이 막힌 환경에서는 초기화 요청을 조용히 무시합니다.
@@ -4739,6 +5442,7 @@
         return;
       }
       if (gameState !== 'playing') return;
+      if (isEastDifficultyKey() && handleEastVirtualHangulButton(char)) return;
       animateSword();
       typeCharacter(char);
     }
@@ -4777,6 +5481,7 @@
       const requestedFloor = Number.isFinite(startFloor) ? startFloor : 1;
       const initialFloor = Math.max(1, Math.min(MAX_FLOOR, Math.floor(requestedFloor)));
       currentRunUsedCheat = !!options.usedCheat;
+      eastUnlockProcessedForRun = false;
       cancelAnimationFrame(animationId);
       clearAllMonsterSpecialTimers();
       player = {
@@ -4791,6 +5496,7 @@
       };
       monsters = [];
       activeMonsterId = null;
+      resetEastInputTracking();
       inputHintMode = null;
       lastTime = performance.now();
       spawnTimer = initialSpawnDelay;
@@ -4853,6 +5559,7 @@
       clearProfilePain();
       renderHud();
       updateKeyboardHint();
+      focusEastImeInput();
       if (autoStart) loop(lastTime);
     }
 
@@ -4987,6 +5694,10 @@
     }
 
     function setLobbyMessage() {
+      if (isEastDungeonAvailable()) {
+        setMessage('<span class="message-line">수상한 포탈이 나타났다!</span>');
+        return;
+      }
       setMessage('<span class="message-line">난이도를 선택하세요.</span><span class="message-line">1~3 키를 눌러서도 선택할 수 있습니다.</span>');
     }
 
@@ -5000,6 +5711,9 @@
 
     function getMonsterDataByLevel(level, type = null) {
       if (type) return getMonsterDataByLevelAndType(level, type);
+      if (isEastDifficultyKey()) {
+        return getMonsterDataByLevelAndType(level, 'E') || getMonsterDataByLevelAndType(level, 'A');
+      }
       if (shouldUseHardVariantLevel(level)) {
         return getMonsterDataByLevelAndType(level, 'B') || getMonsterDataByLevelAndType(level, 'A');
       }
@@ -5012,6 +5726,10 @@
       if (monster.veilTimer) {
         clearTimeout(monster.veilTimer);
         monster.veilTimer = null;
+      }
+      if (monster.koreanTypoTimer) {
+        clearTimeout(monster.koreanTypoTimer);
+        monster.koreanTypoTimer = null;
       }
     }
 
@@ -5247,7 +5965,13 @@
       const nextChar = target.normalized[target.progress];
       if (!nextChar) return;
 
-      const nextKey = alphaKeyboard.querySelector(`.alpha-key[data-key="${nextChar}"]`);
+      let nextKeyValue = nextChar;
+      if (isEastDifficultyKey() && /[가-힣]/.test(nextChar)) {
+        const nextJamo = Array.from(getMonsterNextHangulJamoText(target))[0] || '';
+        nextKeyValue = KOREAN_2SET_JAMO_TO_KEY[nextJamo] || '';
+      }
+
+      const nextKey = nextKeyValue ? alphaKeyboard.querySelector(`.alpha-key[data-key="${nextKeyValue}"]`) : null;
       if (nextKey) nextKey.classList.add('next-key');
     }
 
@@ -5381,7 +6105,7 @@
     }
 
     function spawnMonster(data, lane, options = {}) {
-      if (data.name === 'Ancient Red Dragon' || data.name === 'Ancient Bone Dragon') {
+      if (data.name === 'Ancient Red Dragon' || data.name === 'Ancient Bone Dragon' || data.finalName === '오랜 잠에서 깨어난 백룡') {
         dragonSpawned = true;
       }
 
@@ -5413,6 +6137,11 @@
         boneDragonStepStartProgress: isBoneDragonData(data)
           ? Math.max(0, Math.min(normalizeName(data.name).length, options.progress || 0))
           : 0,
+        eastDragonFinalName: data.finalName || null,
+        eastDragonTransformAfterText: data.transformAfterText || null,
+        eastDragonTransformed: false,
+        koreanTypoIndex: null,
+        koreanTypoTimer: null,
       };
 
       const dataSpriteIndex = Number.isFinite(data.spriteIndex) ? data.spriteIndex : data.level - 1;
@@ -5424,7 +6153,9 @@
       const el = document.createElement('div');
       const levelClass = data.level <= 3 && !monster.isTreasureChest ? 'level-low' : '';
       const showLethalSkull = data.level === 12 && currentDifficultyKey !== 'easy' && !monster.isTreasureChest;
-      el.className = `monster ${levelClass} ${showLethalSkull ? 'lethal-warning' : ''} ${monster.isTreasureChest ? 'treasure-chest' : ''} ${lane}`;
+      const eastMonsterClass = monster.type === 'E' && !monster.isTreasureChest ? 'east-monster' : '';
+      const koreanNameSerifClass = monster.isTreasureChest && /[가-힣]/.test(monster.name) ? 'korean-name-serif' : '';
+      el.className = `monster ${levelClass} ${showLethalSkull ? 'lethal-warning' : ''} ${eastMonsterClass} ${koreanNameSerifClass} ${monster.isTreasureChest ? 'treasure-chest' : ''} ${lane}`;
       el.dataset.id = monster.id;
       el.style.setProperty('--monster-sprite-x', spritePosition(spriteCol));
       el.style.setProperty('--monster-sprite-y', spritePosition(spriteRow));
@@ -5487,9 +6218,21 @@
       renderAllMonsterWords();
     }
 
+    function getCurrentInputDotIndex(monster, hasKoreanName) {
+      if (!hasKoreanName || !monster) return -1;
+      if (isComposingEastInput && eastCompositionDotMonsterId === monster.id && eastCompositionDotIndex >= 0) {
+        return eastCompositionDotIndex;
+      }
+      if (monster.id !== activeMonsterId) return -1;
+      if (monster.progress >= monster.normalized.length) return -1;
+      return monster.progress;
+    }
+
     function renderMonsterWord(monster) {
       let normalizedIndex = 0;
       let html = '';
+      const hasKoreanName = /[가-힣]/.test(monster.name);
+      const currentInputDotIndex = getCurrentInputDotIndex(monster, hasKoreanName);
       for (const ch of monster.name) {
         if (ch === ' ') {
           const done = monster.progress > normalizedIndex;
@@ -5497,7 +6240,9 @@
         } else {
           const done = normalizedIndex < monster.progress;
           const needInput = shouldHighlightNeededChar(monster, normalizedIndex);
-          const classes = [done ? 'done' : '', needInput ? 'need-input' : ''].filter(Boolean).join(' ');
+          const typoFlash = normalizedIndex === monster.koreanTypoIndex;
+          const currentInputDot = normalizedIndex === currentInputDotIndex;
+          const classes = [done ? 'done' : '', needInput ? 'need-input' : '', typoFlash ? 'typo-flash' : '', currentInputDot ? 'current-input-dot' : ''].filter(Boolean).join(' ');
           html += `<span class="${classes}">${ch}</span>`;
           normalizedIndex++;
         }
@@ -5539,6 +6284,72 @@
 
       setMonsterLane(monster, nextLane);
       if (otherMonster) setMonsterLane(otherMonster, previousLane);
+    }
+
+
+    function getShuffledArray(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function shuffleEastGeneralName(monster) {
+      if (!monster || monster.type !== 'E' || monster.level !== 11) return;
+      const chars = Array.from(monster.normalized || '');
+      const completed = chars.slice(0, monster.progress);
+      const remaining = chars.slice(monster.progress);
+      if (remaining.length <= 1) return;
+      let shuffled = getShuffledArray(remaining);
+      if (shuffled.join('') === remaining.join('')) shuffled = remaining.slice(1).concat(remaining[0]);
+      monster.name = completed.concat(shuffled).join('');
+      monster.normalized = normalizeName(monster.name);
+    }
+
+    function transformEastDragonNameIfNeeded(monster) {
+      if (!monster || monster.type !== 'E' || monster.level !== 12 || monster.eastDragonTransformed) return false;
+      const threshold = normalizeName(monster.eastDragonTransformAfterText || '오랜 잠').length;
+      if (monster.progress < threshold) return false;
+      const finalName = monster.eastDragonFinalName || '오랜 잠에서 깨어난 백룡';
+      monster.name = finalName;
+      monster.normalized = normalizeName(finalName);
+      monster.progress = Math.min(monster.progress, monster.normalized.length);
+      monster.eastDragonTransformed = true;
+      return true;
+    }
+
+    function clearKoreanTypoFlash(monster) {
+      if (!monster) return;
+      if (monster.koreanTypoTimer) {
+        clearTimeout(monster.koreanTypoTimer);
+        monster.koreanTypoTimer = null;
+      }
+      monster.koreanTypoIndex = null;
+      if (monster.el) {
+        const nameplate = monster.el.querySelector('.nameplate');
+        if (nameplate) nameplate.classList.remove('east-typo-shake');
+      }
+    }
+
+    function flashKoreanTypo(monster) {
+      if (!monster || monster.type !== 'E' || monster.isTreasureChest) return;
+      clearKoreanTypoFlash(monster);
+      monster.koreanTypoIndex = monster.progress;
+      renderMonsterWord(monster);
+      const nameplate = monster.el ? monster.el.querySelector('.nameplate') : null;
+      if (nameplate) {
+        nameplate.classList.remove('east-typo-shake');
+        void nameplate.offsetWidth;
+        nameplate.classList.add('east-typo-shake');
+      }
+      monster.koreanTypoTimer = setTimeout(() => {
+        monster.koreanTypoIndex = null;
+        if (nameplate) nameplate.classList.remove('east-typo-shake');
+        renderMonsterWord(monster);
+        monster.koreanTypoTimer = null;
+      }, 220);
     }
 
     function monsterAttack(monster) {
@@ -5639,6 +6450,7 @@
       elapsed = 0;
       updatePlayTimeHud();
       updateKeyboardHint();
+      focusEastImeInput();
       loop(lastTime);
     }
 
@@ -5648,6 +6460,7 @@
 
     function showLobbyDifficulty() {
       if (!lobbyDifficultyLayer) return;
+      updateLobbyEastButton();
       lobbyDifficultyLayer.classList.remove('hidden');
       updateLobbyDifficultyLayout();
     }
@@ -5691,6 +6504,7 @@
       if (stageProgressDelayTimeout) { clearTimeout(stageProgressDelayTimeout); stageProgressDelayTimeout = null; }
       monsters = [];
       activeMonsterId = null;
+      resetEastInputTracking();
       inputHintMode = null;
       monsterLayer.innerHTML = '';
       isBlocking = false;
@@ -5767,8 +6581,10 @@
       runSceneFade(() => {
         hideLobbyDifficulty();
         game.classList.remove('is-lobby');
-        const usedCheat = !!(cheatCodeEnabled && selectedCheatFloor > 1);
-        const startFloor = usedCheat ? selectedCheatFloor : 1;
+        const floorCheatUsed = !!(cheatCodeEnabled && selectedCheatFloor > 1);
+        const eastCheatUsed = isEastDifficultyKey(difficultyKey) && isEastDungeonForcedByCheat();
+        const usedCheat = floorCheatUsed || eastCheatUsed;
+        const startFloor = floorCheatUsed ? selectedCheatFloor : 1;
         resetGame(startFloor, { autoStart: false, initialSpawnDelay: FIRST_MONSTER_SPAWN_DELAY, usedCheat });
       }, () => beginPreparedGame());
     }
@@ -5836,12 +6652,13 @@
 
     function updateCheatFloorButtons() {
       if (!cheatFloorPanel) return;
-      cheatFloorPanel.querySelectorAll('.cheat-floor-button').forEach(button => {
+      cheatFloorPanel.querySelectorAll('.cheat-floor-button[data-floor]').forEach(button => {
         const floor = Number(button.dataset.floor);
         const isActive = floor === selectedCheatFloor;
         button.classList.toggle('active', isActive);
         button.setAttribute('aria-pressed', String(isActive));
       });
+      updateCheatEastButton();
     }
 
     function setSelectedCheatFloor(floor) {
@@ -5874,6 +6691,7 @@
       }
       if (cheatFloorPanel) cheatFloorPanel.classList.toggle('hidden', !cheatCodeEnabled);
       updateCheatFloorButtons();
+      updateCheatEastButton();
     }
 
     function restartGameWithFade() {
@@ -6039,6 +6857,10 @@
         return;
       }
 
+      if (isEastDifficultyKey() && e.target !== imeInput && ![' ', 'Control', 'Alt'].includes(e.key)) {
+        focusEastImeInput();
+      }
+
       if (e.key === ' ') {
         e.preventDefault();
         if (e.repeat) return;
@@ -6064,9 +6886,12 @@
         return;
       }
 
+      if (isEastDifficultyKey() && handleEastVirtualHangulKeydown(e)) return;
+
+      if (e.isComposing || e.key === 'Process') return;
       if (e.key.length !== 1) return;
       const char = e.key.toLowerCase();
-      if (!/^[a-z]$/.test(char)) return;
+      if (!/^[a-z]$/.test(char) && !/[가-힣]/.test(char)) return;
       e.preventDefault();
 
       animateSword();
@@ -6101,8 +6926,9 @@
       }
     }
 
-    function typeCharacter(char) {
-      showInputBubble(char);
+    function typeCharacter(char, options = {}) {
+      char = String(char || '').toLowerCase();
+      if (!options.skipBubble) showInputBubble(char);
       if (!monsters.length) {
         applyTypoPenalty('허공을 베었습니다. 아직 몬스터가 없습니다!');
         updateKeyboardHint();
@@ -6111,8 +6937,10 @@
 
       let target = monsters.find(m => m.id === activeMonsterId);
       if (target && target.normalized[target.progress] !== char) {
+        if (target.type === 'E' && /[가-힣]/.test(char)) flashKoreanTypo(target);
         setInputHintMode({ type: 'active-next', monsterId: target.id });
-        applyTypoPenalty(`오타! ${target.name}의 다음 글자는 “${target.normalized[target.progress].toUpperCase()}”입니다.`);
+        const nextChar = target.normalized[target.progress] || '';
+        applyTypoPenalty(`오타! ${target.name}의 다음 글자는 “${/[a-z]/.test(nextChar) ? nextChar.toUpperCase() : nextChar}”입니다.`);
         updateKeyboardHint();
         return;
       }
@@ -6123,6 +6951,7 @@
           .sort((a, b) => a.remaining - b.remaining || b.progress - a.progress);
         target = matching[0];
         if (!target) {
+          if (/[가-힣]/.test(char)) monsters.forEach(monster => flashKoreanTypo(monster));
           setInputHintMode({ type: 'all-first' });
           applyTypoPenalty('오타! 몬스터 이름과 맞지 않습니다.');
           updateKeyboardHint();
@@ -6131,31 +6960,41 @@
         activeMonsterId = target.id;
       }
 
+      clearKoreanTypoFlash(target);
       inputHintMode = null;
-      const inputDelta = getInputDelta();
-      const inputResult = getResultLabel(inputDelta);
+      const inputResult = options.skipResult ? null : getResultLabel(getInputDelta());
       target.progress += 1;
       playGameSound(target.isTreasureChest ? 'ui' : 'hit', 0.85 + Math.min(0.6, target.level * 0.035));
       animateMonsterHit(target);
-      showMonsterResult(target, inputResult.text, inputResult.className);
-      renderAllMonsterWords();
-      updateMonsterElement(target);
+      if (inputResult) showMonsterResult(target, inputResult.text, inputResult.className);
+
+      if (transformEastDragonNameIfNeeded(target)) {
+        showToast('백룡 각성!');
+      }
 
       if (target.progress >= target.normalized.length) {
+        renderAllMonsterWords();
+        updateMonsterElement(target);
         updateKeyboardHint();
         killMonster(target);
         return;
       }
 
       if (shouldSwapBoneDragonToFlame(target)) {
+        renderAllMonsterWords();
+        updateMonsterElement(target);
         swapBoneDragonToFlame(target);
         return;
       }
 
-      if (target.level === 11 && target.type !== 'B') {
+      if (target.level === 11 && target.type === 'E') {
+        shuffleEastGeneralName(target);
+      } else if (target.level === 11 && target.type !== 'B') {
         swapLevel11MonsterLane(target);
       }
 
+      renderAllMonsterWords();
+      updateMonsterElement(target);
       updateKeyboardHint();
     }
 
@@ -6247,7 +7086,7 @@
         level: 14,
         name: chestConfig.name,
         attackTime: 999999,
-        spriteSheet: MONSTER_SPRITE_A,
+        spriteSheet: chestConfig.spriteSheet || MONSTER_SPRITE_A,
         spriteIndex: chestConfig.spriteIndex,
         isTreasureChest: true,
         chestConfig,
@@ -6273,9 +7112,15 @@
       cancelAnimationFrame(animationId);
       gameState = 'rewardpending';
       setBlocking(false);
-      chest.spriteSheet = MONSTER_SPRITE_B;
+      chest.spriteSheet = chestConfig.openSpriteSheet || MONSTER_SPRITE_B;
+      const openSpriteIndex = Number.isFinite(chestConfig.openSpriteIndex) ? chestConfig.openSpriteIndex : chestConfig.spriteIndex;
+      const spriteCol = Math.max(0, Math.min(15, openSpriteIndex)) % 4;
+      const spriteRow = Math.floor(Math.max(0, Math.min(15, openSpriteIndex)) / 4);
+      const spritePosition = value => `${(value / 3) * 100}%`;
       if (chest.el) {
-        chest.el.style.setProperty('--monster-sprite-image', `url('${MONSTER_SPRITE_B}')`);
+        chest.el.style.setProperty('--monster-sprite-image', `url('${chest.spriteSheet}')`);
+        chest.el.style.setProperty('--monster-sprite-x', spritePosition(spriteCol));
+        chest.el.style.setProperty('--monster-sprite-y', spritePosition(spriteRow));
         chest.el.classList.remove('hit');
         void chest.el.offsetWidth;
         chest.el.classList.add('chest-opened');
@@ -6387,6 +7232,7 @@
       lastTime = performance.now();
       updatePlayTimeHud();
       updateKeyboardHint();
+      focusEastImeInput();
       loop(lastTime);
     }
 
@@ -6523,6 +7369,10 @@
       clearResultRankingSaved = false;
       clearResultRecordSeconds = elapsed;
       clearResultDifficultyKey = currentDifficultyKey;
+      if (!eastUnlockProcessedForRun) {
+        rollEastDungeonAvailabilityAfterClear(clearResultDifficultyKey);
+        eastUnlockProcessedForRun = true;
+      }
       clearResultPlayerName = getPlayerName();
       const playerNameHtml = `
         <span id="clearPlayerNameEditor" class="clear-player-name-editor" role="button" tabindex="0" aria-label="플레이어 이름 변경">
@@ -6800,7 +7650,13 @@
     if (cheatFloorPanel) {
       cheatFloorPanel.addEventListener('click', (e) => {
         if (!SHOW_CHEAT_CONTROLS) return;
-        const button = e.target.closest('.cheat-floor-button');
+        const eastButton = e.target.closest('.cheat-east-button');
+        if (eastButton) {
+          e.preventDefault();
+          toggleEastDungeonCheatAvailability();
+          return;
+        }
+        const button = e.target.closest('.cheat-floor-button[data-floor]');
         if (!button) return;
         e.preventDefault();
         const floor = Number(button.dataset.floor);
@@ -6828,8 +7684,105 @@
         goToStart();
       }
     });
+    if (imeInput) {
+      imeInput.addEventListener('compositionstart', () => {
+        isComposingEastInput = true;
+        lastEastCompositionJamoText = '';
+        lastEastCommittedText = '';
+        eastImmediateCompositionText = '';
+        eastVirtualJamoText = '';
+        clearEastCompositionDotTarget();
+        renderAllMonsterWords();
+      });
+      imeInput.addEventListener('beforeinput', (e) => {
+        if (!isEastDifficultyKey()) return;
+        if (e.inputType === 'insertCompositionText' || e.inputType === 'insertText') {
+          showEastCompositionBubble(e.data || imeInput.value);
+        }
+      });
+      imeInput.addEventListener('compositionupdate', (e) => {
+        const compositionText = e.data || imeInput.value;
+        showEastCompositionBubble(compositionText);
+        processEastJamoCompositionForMonsterInput(compositionText);
+        processEastCompositionForMonsterInput(compositionText);
+      });
+      imeInput.addEventListener('compositionend', (e) => {
+        const committedText = e.data || imeInput.value;
+        const hadJamoBubble = !!lastEastCompositionJamoText;
+        showEastCompositionBubble(committedText);
+        const jamoImmediateHandled = processEastJamoCompositionForMonsterInput(committedText);
+        const immediateHandled = jamoImmediateHandled || processEastCompositionForMonsterInput(committedText);
+        isComposingEastInput = false;
+        lastEastCompositionJamoText = '';
+
+        if (!committedText) {
+          eastImmediateCompositionText = '';
+          clearEastCompositionDotTarget();
+          renderAllMonsterWords();
+          return;
+        }
+        const handled = processEastCommittedTextInput(committedText, { suppressHangulBubble: hadJamoBubble || immediateHandled });
+        markEastCommittedText(committedText);
+        eastImmediateCompositionText = '';
+        clearEastCompositionDotTarget();
+        imeInput.value = '';
+        renderAllMonsterWords();
+        if ((handled || immediateHandled) && e.cancelable) e.preventDefault();
+      });
+      imeInput.addEventListener('input', (e) => {
+        const value = imeInput.value;
+        if (!isEastDifficultyKey()) {
+          if (value) imeInput.value = '';
+          return;
+        }
+
+        if (isEastCompositionInputEvent(e)) {
+          const compositionText = e.data || value;
+          showEastCompositionBubble(compositionText);
+          processEastJamoCompositionForMonsterInput(compositionText);
+          processEastCompositionForMonsterInput(compositionText);
+          return;
+        }
+
+        if (!value) return;
+
+        if (isDuplicatedEastCommittedInput(value)) {
+          imeInput.value = '';
+          lastEastCompositionJamoText = '';
+          lastEastCommittedText = '';
+          eastImmediateCompositionText = '';
+          clearEastCompositionDotTarget();
+          renderAllMonsterWords();
+          return;
+        }
+
+        if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(value)) {
+          showEastCompositionBubble(value);
+          processEastJamoCompositionForMonsterInput(value);
+          return;
+        }
+
+        const showedJamoBubble = /[가-힣]/.test(value) ? showEastCompositionBubble(value) : false;
+        const jamoImmediateHandled = /[가-힣]/.test(value) ? processEastJamoCompositionForMonsterInput(value) : false;
+        const immediateHandled = /[가-힣]/.test(value) ? (jamoImmediateHandled || processEastCompositionForMonsterInput(value)) : false;
+        lastEastCompositionJamoText = '';
+        const handled = processEastCommittedTextInput(value, { suppressHangulBubble: showedJamoBubble || immediateHandled });
+        markEastCommittedText(value);
+        eastImmediateCompositionText = '';
+        clearEastCompositionDotTarget();
+        imeInput.value = '';
+        renderAllMonsterWords();
+        if ((handled || immediateHandled) && e.cancelable) e.preventDefault();
+      });
+    }
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
+    window.addEventListener('pointerdown', () => focusEastImeInput(), { passive: true });
+    window.addEventListener('touchstart', () => focusEastImeInput(), { passive: true });
+    window.addEventListener('focus', () => focusEastImeInput());
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) focusEastImeInput();
+    });
     window.addEventListener('pointerdown', unlockGameAudio, { passive: true });
     window.addEventListener('touchstart', unlockGameAudio, { passive: true });
     function handleWindowResize() {
@@ -6852,6 +7805,7 @@
     updateCheatToggle();
     renderAlphabetKeyboard();
     renderMonsterTable();
+    updateLobbyEastButton();
     player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
     elapsed = 0;
     updatePlayTimeHud();
