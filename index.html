@@ -2920,7 +2920,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.2</div>
+        <div class="start-version">v1.21</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -6596,6 +6596,8 @@
         return;
       }
 
+      const shouldResetEastAfterGameOver = gameState === 'gameover' && isEastDifficultyKey();
+
       cancelAnimationFrame(animationId);
       clearAllMonsterSpecialTimers();
       gameState = 'start';
@@ -6634,6 +6636,10 @@
       if (rankingOverlay) {
         rankingOverlay.classList.add('hidden');
         rankingOverlay.classList.remove('closing');
+      }
+      if (shouldResetEastAfterGameOver) {
+        resetEastDungeonUnlockState();
+        updateLobbyEastButton();
       }
       currentRunUsedCheat = false;
       hideLobbyDifficulty();
