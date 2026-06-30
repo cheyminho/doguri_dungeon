@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.26</div>
+        <div class="start-version">v1.27</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3985,6 +3985,7 @@
     let eastVirtualJamoText = '';
     let eastCompositionDotMonsterId = null;
     let eastCompositionDotIndex = -1;
+    let suppressEastImeFocusUntil = 0;
     let torchSequenceTick = 0;
     let torchSequenceTimer = null;
     const lobbyBgImage = new Image();
@@ -4582,8 +4583,28 @@
       return handleEastVirtualHangulJamo(jamo);
     }
 
-    function focusEastImeInput() {
+    function suppressEastImeFocusTemporarily(duration = 600) {
+      suppressEastImeFocusUntil = Math.max(suppressEastImeFocusUntil, performance.now() + duration);
+    }
+
+    function isEastImeFocusSuppressed(event = null) {
+      if (performance.now() < suppressEastImeFocusUntil) return true;
+      const target = event && event.target;
+      return !!(target && target.closest && target.closest('#alphaKeyboard'));
+    }
+
+    function blurEastImeInput() {
+      if (!imeInput) return;
+      try {
+        if (document.activeElement === imeInput) imeInput.blur();
+      } catch (error) {
+        // 포커스 해제가 지원되지 않는 환경은 무시합니다.
+      }
+    }
+
+    function focusEastImeInput(event = null) {
       if (!imeInput || gameState !== 'playing' || !isEastDifficultyKey()) return;
+      if (isEastImeFocusSuppressed(event)) return;
       if (isComposingEastInput) return;
       if (isNameInputOverlayOpen && isNameInputOverlayOpen()) return;
       try {
@@ -7624,9 +7645,18 @@
     }
 
     if (alphaKeyboard) {
+      const suppressNativeKeyboardFromAlphaKeyboard = () => {
+        suppressEastImeFocusTemporarily();
+        blurEastImeInput();
+      };
+      alphaKeyboard.addEventListener('touchstart', suppressNativeKeyboardFromAlphaKeyboard, { capture: true, passive: true });
+      alphaKeyboard.addEventListener('pointerdown', suppressNativeKeyboardFromAlphaKeyboard, { capture: true, passive: true });
+      alphaKeyboard.addEventListener('mousedown', suppressNativeKeyboardFromAlphaKeyboard, { capture: true });
+
       alphaKeyboard.addEventListener('pointerdown', (e) => {
         const button = e.target.closest('.alpha-key');
         if (!button) return;
+        suppressNativeKeyboardFromAlphaKeyboard();
         e.preventDefault();
 
         if (button.dataset.action === 'shield') {
@@ -7986,8 +8016,8 @@
     }
     window.addEventListener('keydown', handleKeydown, { passive: false });
     window.addEventListener('keyup', handleKeyup, { passive: false });
-    window.addEventListener('pointerdown', () => focusEastImeInput(), { passive: true });
-    window.addEventListener('touchstart', () => focusEastImeInput(), { passive: true });
+    window.addEventListener('pointerdown', (e) => focusEastImeInput(e), { passive: true });
+    window.addEventListener('touchstart', (e) => focusEastImeInput(e), { passive: true });
     window.addEventListener('focus', () => focusEastImeInput());
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) focusEastImeInput();
