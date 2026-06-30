@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.27</div>
+        <div class="start-version">v1.28</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3767,6 +3767,13 @@
     const playTimeHud = document.getElementById('playTimeHud');
     const alphaKeyboard = document.getElementById('alphaKeyboard');
     const imeInput = document.getElementById('imeInput');
+    const isCoarsePointerDevice = (() => {
+      try {
+        return !!(navigator.maxTouchPoints > 0 || (window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches));
+      } catch (error) {
+        return !!(navigator.maxTouchPoints > 0);
+      }
+    })();
     const dungeonEl = document.querySelector('.dungeon');
     const torchSequenceLayer = document.getElementById('torchSequenceLayer');
     const lobbyDifficultyLayer = document.getElementById('lobbyDifficultyLayer');
@@ -4587,6 +4594,17 @@
       suppressEastImeFocusUntil = Math.max(suppressEastImeFocusUntil, performance.now() + duration);
     }
 
+    function isTouchLikeFocusEvent(event = null) {
+      if (!event) return false;
+      return event.type === 'touchstart' || event.pointerType === 'touch' || event.pointerType === 'pen';
+    }
+
+    function shouldBlockEastDeviceKeyboardFocus(event = null) {
+      if (isNameInputOverlayOpen && isNameInputOverlayOpen()) return false;
+      if (isCoarsePointerDevice) return true;
+      return isTouchLikeFocusEvent(event);
+    }
+
     function isEastImeFocusSuppressed(event = null) {
       if (performance.now() < suppressEastImeFocusUntil) return true;
       const target = event && event.target;
@@ -4604,6 +4622,10 @@
 
     function focusEastImeInput(event = null) {
       if (!imeInput || gameState !== 'playing' || !isEastDifficultyKey()) return;
+      if (shouldBlockEastDeviceKeyboardFocus(event)) {
+        blurEastImeInput();
+        return;
+      }
       if (isEastImeFocusSuppressed(event)) return;
       if (isComposingEastInput) return;
       if (isNameInputOverlayOpen && isNameInputOverlayOpen()) return;
@@ -8043,6 +8065,11 @@
     setCheatControlsVisible(true);
     updateCheatToggle();
     renderAlphabetKeyboard();
+    if (imeInput && isCoarsePointerDevice) {
+      imeInput.setAttribute('inputmode', 'none');
+      imeInput.setAttribute('readonly', 'readonly');
+      imeInput.setAttribute('aria-hidden', 'true');
+    }
     renderMonsterTable();
     updateLobbyEastButton();
     player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
