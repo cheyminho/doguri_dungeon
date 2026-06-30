@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.25</div>
+        <div class="start-version">v1.26</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -7510,6 +7510,9 @@
       if (isEastDifficultyKey()) {
         resetEastDungeonUnlockState();
         updateLobbyEastButton();
+      } else if (!eastUnlockProcessedForRun) {
+        rollEastDungeonAvailabilityAfterClear(currentDifficultyKey);
+        eastUnlockProcessedForRun = true;
       }
       if (endOverlay) endOverlay.classList.remove('clear-result');
       endTitle.textContent = '게임 오버';
