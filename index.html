@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.28</div>
+        <div class="start-version">v1.29</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -6189,6 +6189,40 @@
       setMessage(`${reason} 모든 몬스터의 공격 준비 시간이 ${TYPO_TIME_PENALTY.toFixed(1)}초 줄었습니다.`);
     }
 
+    function getEastActivePendingJamoText(monster) {
+      if (!monster || !isEastDifficultyKey()) return '';
+      if (!isComposingEastInput || eastCompositionDotMonsterId !== monster.id) return '';
+      return eastVirtualJamoText || lastEastCompositionJamoText || '';
+    }
+
+    function getEastNextRequiredJamo(monster) {
+      const expectedChars = Array.from(getMonsterNextHangulJamoText(monster));
+      if (!expectedChars.length) return '';
+
+      const pendingChars = Array.from(getEastActivePendingJamoText(monster));
+      if (!pendingChars.length) return expectedChars[0] || '';
+
+      let expectedIndex = 0;
+      for (const inputJamo of pendingChars) {
+        const expectedJamo = expectedChars[expectedIndex];
+        if (!expectedJamo) return '';
+
+        if (inputJamo === expectedJamo) {
+          expectedIndex += 1;
+          continue;
+        }
+
+        const doubledBase = EAST_DOUBLE_CONSONANT_BASE[expectedJamo];
+        if (doubledBase && inputJamo === doubledBase) {
+          return doubledBase;
+        }
+
+        return expectedJamo;
+      }
+
+      return expectedChars[expectedIndex] || '';
+    }
+
     function updateKeyboardHint() {
       if (!alphaKeyboard) return;
       updateAlphabetKeyboardLabels();
@@ -6206,7 +6240,7 @@
 
       let nextKeyValue = nextChar;
       if (isEastDifficultyKey() && /[가-힣]/.test(nextChar)) {
-        const nextJamo = Array.from(getMonsterNextHangulJamoText(target))[0] || '';
+        const nextJamo = getEastNextRequiredJamo(target);
         nextKeyValue = KOREAN_2SET_JAMO_TO_KEY[nextJamo] || '';
       }
 
