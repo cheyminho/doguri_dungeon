@@ -1044,6 +1044,11 @@
       box-shadow: none;
       transform: translateY(-2px) scale(1.06);
     }
+    .alpha-key.jamo-key {
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
 
 
     .alpha-key:active {
@@ -3080,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.24</div>
+        <div class="start-version">v1.25</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -5558,6 +5563,34 @@
       `).join('');
     }
 
+    function isEastJamoKeyboardLabelMode() {
+      return isEastDifficultyKey() && (gameState === 'playing' || gameState === 'transition');
+    }
+
+    function getKeyboardDisplayLabel(key) {
+      const normalizedKey = String(key || '').toLowerCase();
+      if (isEastJamoKeyboardLabelMode()) {
+        return KOREAN_2SET_KEY_TO_JAMO[normalizedKey] || normalizedKey.toUpperCase();
+      }
+      return normalizedKey.toUpperCase();
+    }
+
+    function updateAlphabetKeyboardLabels() {
+      if (!alphaKeyboard) return;
+      const useJamoLabels = isEastJamoKeyboardLabelMode();
+      const labelMode = useJamoLabels ? 'jamo' : 'alphabet';
+      if (alphaKeyboard.dataset.labelMode === labelMode) return;
+      alphaKeyboard.dataset.labelMode = labelMode;
+      alphaKeyboard.setAttribute('aria-label', useJamoLabels ? '한글 자모 입력 버튼' : '알파벳 입력 버튼');
+      alphaKeyboard.querySelectorAll('.alpha-key[data-key]').forEach(button => {
+        const key = button.dataset.key || '';
+        const displayLabel = getKeyboardDisplayLabel(key);
+        button.textContent = displayLabel;
+        button.setAttribute('aria-label', `${displayLabel} 입력`);
+        button.classList.toggle('jamo-key', useJamoLabels);
+      });
+    }
+
     function renderAlphabetKeyboard() {
       if (!alphaKeyboard) return;
       alphaKeyboard.innerHTML = KEYBOARD_ROWS.map((row, index) => {
@@ -5575,6 +5608,8 @@
           </div>
         `;
       }).join('');
+      alphaKeyboard.dataset.labelMode = '';
+      updateAlphabetKeyboardLabels();
     }
 
     function updateActionButtonStates() {
@@ -6113,6 +6148,7 @@
 
     function updateKeyboardHint() {
       if (!alphaKeyboard) return;
+      updateAlphabetKeyboardLabels();
 
       const keys = alphaKeyboard.querySelectorAll('.alpha-key');
       keys.forEach(key => key.classList.remove('next-key'));
@@ -7471,6 +7507,10 @@
       setProfileImage(PROFILE_IMAGES.dying);
       cancelAnimationFrame(animationId);
       const difficultyLabel = getCurrentDifficultyConfig().label;
+      if (isEastDifficultyKey()) {
+        resetEastDungeonUnlockState();
+        updateLobbyEastButton();
+      }
       if (endOverlay) endOverlay.classList.remove('clear-result');
       endTitle.textContent = '게임 오버';
       endDesc.innerHTML = `도구리가 쓰러졌습니다.<br />도달 층: <b>${difficultyLabel} ${currentFloor}층</b> · 처치한 몬스터: <b>${player.kills}</b>마리`;
