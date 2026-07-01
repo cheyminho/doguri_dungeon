@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.32</div>
+        <div class="start-version">v1.34</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3335,6 +3335,8 @@
     const MOBILE_HP_VISIBLE_SLOTS = 7;
     const HP_RED_IMAGE = 'hp.png';
     const HP_YELLOW_IMAGE = 'hp_y.png';
+    const APPLE_FULL_IMAGE = 'apple.png';
+    const APPLE_HALF_IMAGE = 'apple_half.png';
     const LEVEL_UP_OCCURRENCE_RATE = 0.7;
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
@@ -3716,6 +3718,7 @@
     const potionSlot = document.getElementById('potionSlot');
     const potionIcon = document.getElementById('potionIcon');
     const potionHotkey = document.getElementById('potionHotkey');
+    let lastPotionTouchUseTime = 0;
     const levelText = document.getElementById('levelText');
     const expFill = document.getElementById('expFill');
     const expText = document.getElementById('expText');
@@ -5692,15 +5695,27 @@
     }
 
 
-    function usePotion() {
+    function hasApple() {
+      return !!(player && player.potions > 0);
+    }
+
+    function usePotion(options = {}) {
       if (gameState !== 'playing') return;
-      if (!player || player.potions <= 0) {
+      if (!hasApple()) {
         playGameSound('miss');
         setMessage('사과가 없습니다.');
         updateActionButtonStates();
         return;
       }
-      player.potions = Math.max(0, player.potions - 1);
+
+      const isTouchAppleUse = !!options.touchApple;
+      if (isTouchAppleUse && !player.mobileAppleHalfUsed) {
+        player.mobileAppleHalfUsed = true;
+      } else {
+        player.potions = Math.max(0, player.potions - 1);
+        player.mobileAppleHalfUsed = false;
+      }
+
       player.hp = player.maxHp;
       renderHud();
       playGameSound('heal');
@@ -5728,6 +5743,7 @@
         shields: BASE_MAX_SHIELDS,
         maxShields: BASE_MAX_SHIELDS,
         potions: 1,
+        mobileAppleHalfUsed: false,
         level: 1,
         exp: 0,
         kills: 0,
@@ -5891,11 +5907,12 @@
         potionHotkey.style.display = '';
         potionSlot.style.display = 'inline-flex';
       } else {
-        potionIcon.src = 'apple.png';
-        potionIcon.alt = '사과';
-        potionSlot.setAttribute('aria-label', '사과 사용');
+        const appleIsHalf = !!(player && player.mobileAppleHalfUsed && player.potions > 0);
+        potionIcon.src = appleIsHalf ? APPLE_HALF_IMAGE : APPLE_FULL_IMAGE;
+        potionIcon.alt = appleIsHalf ? '반쯤 먹은 사과' : '사과';
+        potionSlot.setAttribute('aria-label', appleIsHalf ? '반쯤 먹은 사과 사용' : '사과 사용');
         potionHotkey.style.display = '';
-        potionSlot.style.display = player.potions > 0 ? 'inline-flex' : 'none';
+        potionSlot.style.display = hasApple() ? 'inline-flex' : 'none';
       }
 
       const need = expNeeded(player.level);
@@ -6824,6 +6841,7 @@
         shields: BASE_MAX_SHIELDS,
         maxShields: BASE_MAX_SHIELDS,
         potions: 1,
+        mobileAppleHalfUsed: false,
         level: 1,
         exp: 0,
         kills: 0,
@@ -7867,8 +7885,28 @@
       });
     }
 
+    function handlePotionSlotTouch(e) {
+      if (e.cancelable) e.preventDefault();
+      lastPotionTouchUseTime = performance.now();
+      if (gameState === 'lobby') {
+        useBestiaryButton();
+        return;
+      }
+      usePotion({ touchApple: true });
+    }
+
+    if (window.PointerEvent) {
+      potionSlot.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'touch') return;
+        handlePotionSlotTouch(e);
+      });
+    } else {
+      potionSlot.addEventListener('touchstart', handlePotionSlotTouch, { passive: false });
+    }
+
     potionSlot.addEventListener('click', (e) => {
       e.preventDefault();
+      if (performance.now() - lastPotionTouchUseTime < 700) return;
       if (gameState === 'lobby') {
         useBestiaryButton();
         return;
@@ -8106,7 +8144,7 @@
     }
     renderMonsterTable();
     updateLobbyEastButton();
-    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, level: 1, exp: 0, kills: 0 };
+    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, mobileAppleHalfUsed: false, level: 1, exp: 0, kills: 0 };
     elapsed = 0;
     updatePlayTimeHud();
     applyCollectionCompleteEquipment();
