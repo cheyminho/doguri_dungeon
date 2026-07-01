@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.34</div>
+        <div class="start-version">v1.35</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -7265,9 +7265,7 @@
       animateMonsterHit(target);
       if (inputResult) showMonsterResult(target, inputResult.text, inputResult.className);
 
-      if (transformEastDragonNameIfNeeded(target)) {
-        showToast('백룡 각성!');
-      }
+      transformEastDragonNameIfNeeded(target);
 
       if (target.progress >= target.normalized.length) {
         renderAllMonsterWords();
