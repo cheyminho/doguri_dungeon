@@ -3085,7 +3085,7 @@
         <div class="start-copy">
           <img class="start-title-image" src="title.png" width="1024" height="512" alt="던전앤도구리" draggable="false" />
         </div>
-        <div class="start-version">v1.35</div>
+        <div class="start-version">v1.36</div>
         <div class="start-action-area">
           <div class="dungeon-entrance" aria-hidden="true">
             <img class="start-gate-image" src="gate.png" alt="" role="button" aria-label="입장" draggable="false" />
@@ -3337,6 +3337,8 @@
     const HP_YELLOW_IMAGE = 'hp_y.png';
     const APPLE_FULL_IMAGE = 'apple.png';
     const APPLE_HALF_IMAGE = 'apple_half.png';
+    const APPLE_LAST_IMAGE = 'apple_last.png';
+    const MOBILE_APPLE_MAX_TOUCH_USES = 3;
     const LEVEL_UP_OCCURRENCE_RATE = 0.7;
     const BASE_MAX_SHIELDS = 3;
     const MAX_MONSTERS = 3;
@@ -5699,6 +5701,14 @@
       return !!(player && player.potions > 0);
     }
 
+    function getMobileAppleUseCount() {
+      if (!player || player.potions <= 0) return 0;
+      const rawCount = Number.isFinite(player.mobileAppleUseCount)
+        ? player.mobileAppleUseCount
+        : (player.mobileAppleHalfUsed ? 1 : 0);
+      return Math.max(0, Math.min(MOBILE_APPLE_MAX_TOUCH_USES - 1, rawCount));
+    }
+
     function usePotion(options = {}) {
       if (gameState !== 'playing') return;
       if (!hasApple()) {
@@ -5709,12 +5719,19 @@
       }
 
       const isTouchAppleUse = !!options.touchApple;
-      if (isTouchAppleUse && !player.mobileAppleHalfUsed) {
-        player.mobileAppleHalfUsed = true;
+      if (isTouchAppleUse) {
+        const mobileAppleUseCount = getMobileAppleUseCount();
+        if (mobileAppleUseCount < MOBILE_APPLE_MAX_TOUCH_USES - 1) {
+          player.mobileAppleUseCount = mobileAppleUseCount + 1;
+        } else {
+          player.potions = Math.max(0, player.potions - 1);
+          player.mobileAppleUseCount = 0;
+        }
       } else {
         player.potions = Math.max(0, player.potions - 1);
-        player.mobileAppleHalfUsed = false;
+        player.mobileAppleUseCount = 0;
       }
+      player.mobileAppleHalfUsed = false;
 
       player.hp = player.maxHp;
       renderHud();
@@ -5744,6 +5761,7 @@
         maxShields: BASE_MAX_SHIELDS,
         potions: 1,
         mobileAppleHalfUsed: false,
+        mobileAppleUseCount: 0,
         level: 1,
         exp: 0,
         kills: 0,
@@ -5907,10 +5925,16 @@
         potionHotkey.style.display = '';
         potionSlot.style.display = 'inline-flex';
       } else {
-        const appleIsHalf = !!(player && player.mobileAppleHalfUsed && player.potions > 0);
-        potionIcon.src = appleIsHalf ? APPLE_HALF_IMAGE : APPLE_FULL_IMAGE;
-        potionIcon.alt = appleIsHalf ? '반쯤 먹은 사과' : '사과';
-        potionSlot.setAttribute('aria-label', appleIsHalf ? '반쯤 먹은 사과 사용' : '사과 사용');
+        const mobileAppleUseCount = getMobileAppleUseCount();
+        const appleImage = mobileAppleUseCount === 2
+          ? APPLE_LAST_IMAGE
+          : (mobileAppleUseCount === 1 ? APPLE_HALF_IMAGE : APPLE_FULL_IMAGE);
+        const appleAlt = mobileAppleUseCount === 2
+          ? '거의 다 먹은 사과'
+          : (mobileAppleUseCount === 1 ? '반쯤 먹은 사과' : '사과');
+        potionIcon.src = appleImage;
+        potionIcon.alt = appleAlt;
+        potionSlot.setAttribute('aria-label', `${appleAlt} 사용`);
         potionHotkey.style.display = '';
         potionSlot.style.display = hasApple() ? 'inline-flex' : 'none';
       }
@@ -6842,6 +6866,7 @@
         maxShields: BASE_MAX_SHIELDS,
         potions: 1,
         mobileAppleHalfUsed: false,
+        mobileAppleUseCount: 0,
         level: 1,
         exp: 0,
         kills: 0,
@@ -8142,7 +8167,7 @@
     }
     renderMonsterTable();
     updateLobbyEastButton();
-    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, mobileAppleHalfUsed: false, level: 1, exp: 0, kills: 0 };
+    player = { hp: BASE_MAX_HP, maxHp: BASE_MAX_HP, shields: BASE_MAX_SHIELDS, maxShields: BASE_MAX_SHIELDS, potions: 1, mobileAppleHalfUsed: false, mobileAppleUseCount: 0, level: 1, exp: 0, kills: 0 };
     elapsed = 0;
     updatePlayTimeHud();
     applyCollectionCompleteEquipment();
